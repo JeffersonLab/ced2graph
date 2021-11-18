@@ -67,13 +67,18 @@ class TypeTree:
     # Instantiate the object
     def __init__(self):
         self.tree = {}
-        self._populate_tree()
 
     # Retrieve Type tree data from the server and store it in self.tree
     def _populate_tree(self):
         # Set verify to False because of jlab MITM interference w/SSL
         response = requests.get(self.url, verify=False)
         self.tree = response.json()
+
+    # Receive notification of access to self.tree so that it can be populated
+    # if necessary
+    def _notify_access(self):
+        if not self.tree:
+            self._populate_tree()
 
     # Answer if the type2 is a descendant (or identical) type as type1 based on CED hierarchy.
     #
@@ -84,6 +89,7 @@ class TypeTree:
     #
     # Return: boolean
     def is_a(self, type1, type2):
+        self._notify_access()
         found, lineage = self.lineage(type2)
         if not found:
             raise RuntimeError(type2 + " Not found in CED hierarchy.")
@@ -98,6 +104,7 @@ class TypeTree:
     #
     # Return (boolean, list)
     def lineage(self, type_name: str, branch: dict = None, parents: list = None):
+        self._notify_access()
         # The default behavior is to search the entire tree
         if parents is None:
             parents = []
@@ -122,9 +129,8 @@ class TypeTree:
         return found, lineage
 
 
-# Class for storing
 class Node:
-    """Class for merging CED element and Mya archive data for use as Neural Network Graph Nodes """
+    """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
 
     # Instantiate the object
     def __init__(self, element: dict, epics_fields: list, sampler: mya.Sampler):
