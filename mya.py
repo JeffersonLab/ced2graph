@@ -28,7 +28,6 @@ class Sampler:
             interval = '1h'
         if pv_list is None:
             pv_list = []
-        print(pv_list)
         self.pv_list = pv_list
         self.begin_date = pandas.to_datetime(begin_date)
         self.end_date = pandas.to_datetime(end_date)
@@ -41,10 +40,11 @@ class Sampler:
         return self.steps_between(self.begin_date, self.end_date, self.interval)
 
     # Get the number of interval-size steps between the specified begin and end dates
-    def steps_between(self, begin_date, end_date, interval):
-        time_difference = abs(end_date - begin_date)
-        time_difference_in_hours = time_difference / pandas.to_timedelta(interval)
-        return math.floor(time_difference_in_hours)
+    @staticmethod
+    def steps_between(begin_date, end_date, interval):
+        time_difference = abs(pandas.to_datetime(end_date) - pandas.to_datetime(begin_date))
+        time_differences_of_interval_size = time_difference / pandas.to_timedelta(interval)
+        return math.floor(time_differences_of_interval_size)
 
     # Return a dictionary containing the query parameters to be used when making API call.
     def queryParams(self) -> dict:
