@@ -1,0 +1,45 @@
+---
+# Specify the parameters that will be used to query CED
+ced:
+  zone: "Injector"
+  types: ["Quad", "CryoCavity"]
+
+# Classify CED element types as setpoints and readbacks as well
+# as specifying which EPICS records are desired for each type.
+nodes:
+  setpoints:
+    Quad: [".BDL", ".S"]
+    CryoCavity: ['PMES','GMES']
+  readbacks:
+    BPM: [".XPOS", ".YPOS"]
+  global:
+    - ISD0I011G
+    - BOOMHLAMODE
+    - BOOMHLBMODE
+    - BOOMHLCMODE
+    - BOOMHLDMODE
+    - IBC1H04CRCUR2
+    - IBC2C24CRCUR3
+    - IBC3H00CRCUR4
+    - IBCAD00CRCUR6
+    - IGL1I00BEAMODE
+    - IGL1I00HALLAMODE
+    - IGL1I00HALLBMODE
+    - IGL1I00HALLCMODE
+    - IGL1I00HALLDMODE
+# Specify the date range for which data should be retrieved from the archiver
+# as well as the desired interval within the date range at which graph data
+# should be generated.
+mya:
+  begin: "2021-10-01"
+  end: "2021-10-02"
+  interval: "1h"
+  filters:
+    - "IBC0R08CRCUR1 > 0.1"
+
+# Parameters for defining edges.
+edges:
+  connectivity: 2
+  weighted: true
+  directed: false
+
