@@ -1,4 +1,12 @@
-# Test requests package
+#
+# Script that
+#  1) reads yaml config gile
+#  2) fetches CED elements defined in config file
+#  3) fetches Mya data for CED elements as specified in config file
+#  4) fetches global Mya data
+#  5) - TBD for each interval specified in config file that passes filters:
+#  5)   - TBD Output nodes in HBG file format
+#  6)   - TBD Build edges and output in HBF format
 
 import yaml
 from ced import *
@@ -10,21 +18,33 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # Store the list of nodes that will be used to output graph data
-nodeList = []
+node_list = []
+
+# Store the global data that will be used for filtering
+global_data = []
 
 try:
     # Read configuration yaml file
     stream = open("config.yaml", 'r')
-    configDictionary = yaml.load(stream, Loader=yaml.CLoader)
+    config = yaml.load(stream, Loader=yaml.CLoader)
 
     # Obtain a list containing the desired CED elements
-    inventory = Inventory(configDictionary['ced']['zone'], configDictionary['ced']['types'])
+    inventory = Inventory(config['ced']['zone'], config['ced']['types'])
     elements = inventory.elements()
 
     # We need to fetch the CED type hierarchy for use to match specific retrieved types
     # to the possibly more generic (i.e. parent) type names encountered in the config dictionary.
     # For example to determine that an element whose type is QB is also a "Quad" and a "Magnet"
     tree = TypeTree()
+
+    # Retrieve and store the global PV list
+    print(config['mya']['global'])
+    global_data = Sampler(
+            config['mya']['begin'],
+            config['mya']['end'],
+            config['mya']['interval'],
+            config['mya']['global']
+        ).data()
 
     # Now use the config dictionary and element list to create a list of
     # ced.Node objects, each initialized with a data sampler object that they
@@ -34,22 +54,22 @@ try:
     for element in elements:
         # Create a new sampler instance for each node we're about to create
         sampler = Sampler(
-            configDictionary['mya']['begin'],
-            configDictionary['mya']['end'],
-            configDictionary['mya']['interval'],
+            config['mya']['begin'],
+            config['mya']['end'],
+            config['mya']['interval'],
         )
         # We will match the type of the element to the types specified in the
         # config file to determine whether to instantiate as ReadBack or SetPoint nodes
         # TODO account for overlapping config settings
-        for type_name, fields in configDictionary['nodes']['setpoints'].items():
+        for type_name, fields in config['nodes']['setpoints'].items():
             if tree.is_a(type_name, element['type']):
-                nodeList.append(SetPointNode(element,fields, sampler))
-        for type_name, fields in configDictionary['nodes']['readbacks'].items():
+                node_list.append(SetPointNode(element, fields, sampler))
+        for type_name, fields in config['nodes']['readbacks'].items():
             if tree.is_a(type_name, element['type']):
-                nodeList.append(ReadBackNode(element,fields, sampler))
+                node_list.append(ReadBackNode(element, fields, sampler))
 
     # Print some data from each node
-    for node in  nodeList:
+    for node in  node_list:
         print(node.pv_data_at('2021-10-01T00:00:00'))
 
     exit(0)
