@@ -157,7 +157,7 @@ class Node:
         # If data not already retrieved, do that first
         if not self.data:
             self.sampler.pv_list = self.pv_list()
-            self.data = self.sampler.data()['data']
+            self.data = self.sampler.data()
         # And then give it to the user
         return self.data
 

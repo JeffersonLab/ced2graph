@@ -28,6 +28,7 @@ class Sampler:
             interval = '1h'
         if pv_list is None:
             pv_list = []
+        print(pv_list)
         self.pv_list = pv_list
         self.begin_date = pandas.to_datetime(begin_date)
         self.end_date = pandas.to_datetime(end_date)
@@ -80,7 +81,7 @@ class Sampler:
             raise RuntimeError("Mya web server returned an error status code")
 
 
-        return response.json()
+        return response.json()['data']
 
 
 
