@@ -1,20 +1,16 @@
-import json
-import requests
-from datetime import datetime, timedelta
-import pandas
-
-
 
 # Module of classes for interacting with CED Web API to fetch data.
 
-# The base URL for accessing CED
+import json
+import requests
+import pandas
 import mya
 
-# The base URL for making CED calls.
-# Can be changed to query the LED, UED, etc.
+# The module-wide base URL for CED web API.
+# It can be changed to instead query the LED, UED, etc. alternatives
 url = "https://ced.acc.jlab.org/"
 
-# The minimal properties to fetch.
+# The core properties to fetch.
 #   EPICSName: necessary to construct EPICS PVNames for many elements
 #   S: necessary to calculate distances between elements
 properties = ['S', 'EPICSName']
@@ -22,13 +18,14 @@ properties = ['S', 'EPICSName']
 class Inventory:
     """Class to query the CED Web API and retrieve a list of elements by zone and type"""
 
-    # The base URL for the API
+    # The path to retrieve an inventory of elements
     url = url + '/inventory'
 
     # Instantiate the object
-    #   zone is the CED zone name to query
-    #   types is one or more CED Type names to retrieve
-    #   properties is the property names to be retrieved default: ['S','EPICSName']
+    #   zone is the CED zone name to query (Ex: Injector)
+    #   types is one or more CED Type names to retrieve (Ex: ['Dipole','BPM']
+    #   extra_properties is a list of property names to be retrieved
+    #   in addition to the baseline default of ['S','EPICSName']
     def __init__(self, zone: str, types: list, extra_properties: list = None):
         if extra_properties:
             # Combine base properties with extra_properties, removing duplicates
