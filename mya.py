@@ -92,3 +92,17 @@ class Sampler:
 
 
 
+# Utility function for extracting a value from a list containing key:value dictionaries,
+# such as the myaweb server returns for the PV values.
+# Expected data structure example:
+#       [
+#           {key1: value},
+#           {key2: value},
+#       ]
+#
+def get_pv_value(data: list, name):
+    for value in data:
+        pv_name = list(value.keys())[0]
+        if pv_name == name:
+            return value[pv_name]
+    return None
