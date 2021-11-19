@@ -10,8 +10,14 @@ import pandas
 # The base URL for accessing CED
 import mya
 
+# The base URL for making CED calls.
+# Can be changed to query the LED, UED, etc.
 url = "https://ced.acc.jlab.org/"
 
+# The minimal properties to fetch.
+#   EPICSName: necessary to construct EPICS PVNames for many elements
+#   S: necessary to calculate distances between elements
+properties = ['S', 'EPICSName']
 
 class Inventory:
     """Class to query the CED Web API and retrieve a list of elements by zone and type"""
@@ -23,12 +29,16 @@ class Inventory:
     #   zone is the CED zone name to query
     #   types is one or more CED Type names to retrieve
     #   properties is the property names to be retrieved default: ['S','EPICSName']
-    def __init__(self, zone: str, types: list, properties: list = None):
-        if properties is None:
-            properties = ['S', 'EPICSName']
+    def __init__(self, zone: str, types: list, extra_properties: list = None):
+        if extra_properties:
+            # Combine base properties with extra_properties, removing duplicates
+            self.properties = list(set(properties + extra_properties))
+        else:
+            self.properties = properties
+
         self.zone = zone
         self.types = types
-        self.properties = properties
+
 
     # Return a dictionary containing the query parameters to be used when making API call.
     def queryParams(self) -> dict:
@@ -141,10 +151,9 @@ class Node:
         self.data = []
 
     # Get the name used to construct EPICS PVs.
-
-    # The CED convention is to use the EPICSName property if it exists, otherwise
-    # to use the element name.
     def epics_name(self):
+        # The CED convention is to use the EPICSName property if it exists, otherwise
+        # to use the element name.
         if self.element['properties'] and self.element['properties']['EPICSName']:
             return self.element['properties']['EPICSName']
         else:
