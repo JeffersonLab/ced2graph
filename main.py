@@ -69,7 +69,7 @@ try:
 
     # Print some data from each node
     for node in  node_list:
-        print(node.pv_data_at('2021-10-01T00:00:00'))
+        print(node.pv_data_at_datetime('2021-10-01T00:00:00'))
 
     exit(0)
 

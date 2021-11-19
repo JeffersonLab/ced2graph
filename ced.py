@@ -176,12 +176,15 @@ class Node:
         # And then give it to the user
         return self.data
 
-    # Retrieve the pv values for a specific timestamp
-    def pv_data_at(self, desired_date):
+    # Retrieve the pv values for a given date and time
+    # Note that this method has a problem in that the MyaWeb server sends back string dates
+    # which means that during DST "fall back" the 01:00 timestamp is ambiguous.
+    def pv_data_at_datetime(self, desired_date):
         for item in self.pv_data():
             if pandas.to_datetime(item['date']) == pandas.to_datetime(desired_date):
                 return item['values']
         return None
+
 
 # Nodes that represent setpoints
 class SetPointNode(Node): pass

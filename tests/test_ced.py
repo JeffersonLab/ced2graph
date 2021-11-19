@@ -33,7 +33,7 @@ def test_pv_data_at():
     node = Node(element, ['.BDL','.S'], sampler)
     node.data = data
 
-    assert node.pv_data_at('2021-10-01 07:00') == [{"MQD0R05.BDL": "1133.00"}, {"MQD0R05.S": "3.49325"}]
+    assert node.pv_data_at_datetime('2021-10-01 07:00') == [{"MQD0R05.BDL": "1133.00"}, {"MQD0R05.S": "3.49325"}]
 
 
 # Verify the inventory constructor properly incorporates extra_properties parameter
