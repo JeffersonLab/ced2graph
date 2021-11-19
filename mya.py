@@ -1,14 +1,17 @@
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pandas
 import json
 import requests
+from dateutil.tz import gettz
 
 # Module of classes for interacting with Mya Web API to fetch data.
 
 # The base URL for accessing Mya Web
 url = "https://myaweb.acc.jlab.org/"
 
+# The archiver lives in the America/New_York timezone
+tz = gettz('America/New_York')
 
 class Sampler:
     """Class to query the Mya Web API and retrieve values for a list of PVs"""
@@ -42,7 +45,11 @@ class Sampler:
     # Get the number of interval-size steps between the specified begin and end dates
     @staticmethod
     def steps_between(begin_date, end_date, interval):
-        time_difference = abs(pandas.to_datetime(end_date) - pandas.to_datetime(begin_date))
+        # To account for days without 24 hours we must create timezone
+        # aware timestamps from the specified dates
+        begin_datetime = pandas.Timestamp(pandas.to_datetime(begin_date), tzinfo=tz)
+        end_datetime = pandas.Timestamp(pandas.to_datetime(end_date), tzinfo=tz)
+        time_difference = abs( end_datetime - begin_datetime)
         time_differences_of_interval_size = time_difference / pandas.to_timedelta(interval)
         return math.floor(time_differences_of_interval_size)
 
