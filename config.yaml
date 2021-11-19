@@ -22,12 +22,14 @@ mya:
   interval: "1h"
   filters:
     - "IBC0R08CRCUR1 > 0.1"
+  # Make sure any PVs mentioned in filters are also included in the global list
   global:
     - ISD0I011G
     - BOOMHLAMODE
     - BOOMHLBMODE
     - BOOMHLCMODE
     - BOOMHLDMODE
+    - IBC0R08CRCUR1
     - IBC1H04CRCUR2
     - IBC2C24CRCUR3
     - IBC3H00CRCUR4
