@@ -67,9 +67,18 @@ try:
             if tree.is_a(type_name, element['type']):
                 node_list.append(ReadBackNode(element, fields, sampler))
 
-    # Print some data from each node
-    for node in  node_list:
-        print(node.pv_data_at_datetime('2021-10-01T00:00:00'))
+    # Now filter the nodeList based on global values
+    # For the moment we're using hard-coded conditions, but eventually the goal is to
+    # do some sort of eval on the filters specified in the yaml config file
+    i = 0
+    valid_indexes = []
+    for data in global_data:
+        for value in data['values']:
+            current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+            if current_filter_value and  float(current_filter_value) > 0:
+                print(data['date']+' '+current_filter_value)
+                # TODO accumulate the corresponding node data
+        i += 1
 
     exit(0)
 
@@ -79,3 +88,6 @@ except json.JSONDecodeError:
 except RuntimeError as err:
     print("Excaption: ", err)
     exit(1)
+
+
+
