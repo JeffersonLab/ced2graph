@@ -38,7 +38,6 @@ try:
     tree = TypeTree()
 
     # Retrieve and store the global PV list
-    print(config['mya']['global'])
     global_data = Sampler(
             config['mya']['begin'],
             config['mya']['end'],
