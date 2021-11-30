@@ -58,3 +58,25 @@ test_mya.py .                                                            [100%]
 ============================== 4 passed in 0.53s ===============================
 ```
 
+
+## Developer Notes
+During development it is nice (and faster) to be able to work offline without constantly fetching data 
+from the CED and archiver.  To do so, follow these steps.
+
+### Save data to JSON files
+While in an environment with access to the CED and Mya web servers:
+
+```python
+# Save the node_list to a file
+f = open("node_list.json", "w")
+json.dump(node_list, f, cls=node.ListEncoder)    
+f.close()
+```
+
+And then to read the nodes back in:
+
+```python
+# The config.yaml should probably match the one used when the node_list was generated!
+# The list of ced types should already be available in the tests directory.
+node_list = node.List.from_json('node_list.json','tests/type-tree.json','config.yaml')
+```
