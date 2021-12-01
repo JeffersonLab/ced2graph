@@ -19,6 +19,11 @@ class Sampler:
     # The base URL for the API
     url = url + 'mySampler/data'
 
+    # The mya deployment to use.
+    # Most recent data in ops
+    # older data in history
+    deployment = "history"
+
     # Instantiate the object
     #
     #  begin_date is the begin date 'yyyy-mm-dd hh:mm:ss'
@@ -32,6 +37,7 @@ class Sampler:
         if pv_list is None:
             pv_list = []
         self.pv_list = pv_list
+        self._data = None
         self.begin_date = pandas.to_datetime(begin_date)
         self.end_date = pandas.to_datetime(end_date)
         self.interval = interval
@@ -72,24 +78,37 @@ class Sampler:
     #
     # Throws if server response is not a "success" status code.
     #
-    def data(self) -> dict:
-        # Throw an error if no channels have been set
-        if not self.pv_list:
-            raise RuntimeError("No channels to fetch")
+    def data(self) -> list:
+        # Fetch the pv_data if it hasn't already been retrieved.
+        if not self._data:
+            # Must have a list of pvs to fetch
+            if not self.pv_list:
+                raise RuntimeError("No channels to fetch")
+            
+            # Set verify to False because of jlab MITM interference
+            response = requests.get(self.url, self.queryParams(), verify=False)
 
-        # Set verify to False because of jlab MITM interference
-        response = requests.get(self.url, self.queryParams(), verify=False)
+            # Example Request URL:
+            #  https://myaweb.acc.jlab.org/mySampler/data?b=2021-11-10&s=1h&n=2&m=ops&channels=MQB0L09.BDL+MQB0L10.BDL
+            # print(response.url)       # For debugging -- what URL actually used?
 
-        # Example Request URL:
-        #  https://myaweb.acc.jlab.org/mySampler/data?b=2021-11-10&s=1h&n=2&m=ops&channels=MQB0L09.BDL+MQB0L10.BDL
-        # print(response.url)       # For debugging -- what URL actually used?
+            if response.status_code != requests.codes.ok:
+                print(response.url)       # Useful for debugging -- what URL actually used?
+                raise RuntimeError("Mya web server returned an error status code")
+            
+            # Save the data as an object property 
+            self._data = response.json()['data']
+        
+        return self._data
 
-        if response.status_code != requests.codes.ok:
-            raise RuntimeError("Mya web server returned an error status code")
-
-
-        return response.json()['data']
-
+    # Set the local data copy.
+    # This might be done usefully during testing in order to use data from a file rather than
+    # fetching it from the archiver which may not be available in the test environment.
+    #@data.setter
+    def set_data(self, val):
+        if not isinstance(val, list):
+             raise TypeError("Expected: list")
+        self._data = val
 
 
 # Utility function for extracting a value from a list containing key:value dictionaries,
