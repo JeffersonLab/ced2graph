@@ -106,7 +106,7 @@ try:
         config['mya']['end'],
         config['mya']['interval'],
         config['mya']['global']
-    ).data
+    ).data()
 
     # Now filter the nodeList based on global values
     # For the moment we're using hard-coded conditions, but eventually the goal is to
