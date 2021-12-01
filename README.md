@@ -30,18 +30,18 @@ optional arguments:
 
 ```
 It's a work in progress, so the output is probably just some scratch data at the moment:
-
+Which may or may not look anything like the example below.
 ```
-[52] theo@devl77 > python3 main.py
-[{'MQW1I03.BDL': '3'}, {'MQW1I03.S': '0.221386'}]
-[{'MQW1I04.BDL': '0'}, {'MQW1I04.S': '-0'}]
-[{'MQW1I05.BDL': '-8'}, {'MQW1I05.S': '-0.590362'}]
-[{'MQW1I06.BDL': '-3'}, {'MQW1I06.S': '-0.221386'}]
-[{'MQS0I07.BDL': '0'}, {'MQS0I07.S': '3.85376e-09'}]
-[{'R027PMES': '3.6'}, {'R027GMES': '5.256'}]
-[{'R028PMES': '60.2'}, {'R028GMES': '5.279'}]
-[{'MQS0L01.BDL': '-4'}, {'MQS0L01.S': '-0.296516'}]
-[{'MQJ0L01.BDL': '1.19332e-06'}, {'MQJ0L01.S': '-0.0498252'}]
+0       IPM2I00 BPM     .0497759993081372,0,0
+1       MBH2I00H        Corrector       .0497759993081372,-5.3075,-29.7506
+2       MBH2I00V        Corrector       .0497759993081372,59.538,418.104
+3       IPM2I00A        BPM     .415027999915358,0,0
+4       MBH2I00AH       Corrector       .415027999915358,0.303,1.69843
+5       MBH2I00AV       Corrector       .415027999915358,-1.647,-11.566
+6       MFX2I01 Solenoid        .645896000693683,151,1975.78
+7       MBH2I01H        Corrector       .712462000972506,-10.5,-58.8565
+8       MBH2I01V        Corrector       .712462000972506,20.1,141.152
+
 ...
 ```
 
