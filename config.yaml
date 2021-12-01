@@ -1,24 +1,41 @@
 ---
 # Specify the parameters that will be used to query CED
+#  zone: The name of a CED zone
+#  types: A list of types to query. Can simply use BeamElem or LineElem and rely on CED inheritance
+#  properties: a list of properties to fetch in addition to default EPICSName and S which are hard-coded.
+#              must be applicable to all retrieved types.
+#  expressions: a list of CED property expressions.  For example S >= 6.65657 to skip over elements in the
+#               injector zone in front of MFA0I03.
 ced:
   zone: "Injector"
-  types: ["Quad", "CryoCavity"]
+  types: ["LineElem"]
+  properties: []
+  expressions:
+    - S >= 6.65657
 
 # Classify CED element types as setpoints and readbacks as well
 # as specifying which EPICS records are desired for each type.
 nodes:
   setpoints:
+    Corrector: [".BDL", ".S"]
+    Dipole: [".BDL", ".S"]
     Quad: [".BDL", ".S"]
-    CryoCavity: ['PMES','GMES']
+    Solenoid: [".BDL", ".S"]
+    CryoCavity: ['PSET','GSET']  # PSUM doesn't work for R027PSUM
   readbacks:
+    # BeamLossMonitor: [".Lc"]  # Doesn't work
     BPM: [".XPOS", ".YPOS"]
+    # Inconsistent EPICSName
+    # IBC0L02 : IBC0L02Current
+    # SBC0R08: has no EPICSName
+    # BCM: ["Current"]                   # EPICSName is actually full-blown IBC0L02Current
 
 # Specify the date range for which data should be retrieved from the archiver
 # as well as the desired interval within the date range at which graph data
 # should be generated.
 mya:
-  begin: "2021-10-01"
-  end: "2021-10-02"
+  begin: "2021-11-01"
+  end: "2021-11-02"
   interval: "1h"
   filters:
     - "IBC0R08CRCUR1 > 0.1"
