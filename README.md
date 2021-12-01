@@ -10,8 +10,24 @@ cd ~
 git clone https://github.com/JeffersonLab/ced2gnn.git
 # Specify a version of python3 in pubtools that has necessary modules
 setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
-# Run the script
-python3 main.py
+
+# Run the script with -h or --help to see available arguments
+python3 main.py --help
+
+usage: main.py [-h] [-c --config CONFIG_FILE] [-t --tree TREE_FILE] [--read-nodes READ_NODES_FILE] [--save-nodes SAVE_NODES_FILE]
+
+Command Line Options
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c --config CONFIG_FILE
+                        Name of a yaml formatted config file
+  -t --tree TREE_FILE   Name of a json file containing ced type hierarchy
+  --read-nodes READ_NODES_FILE
+                        Name of a json file containing node data
+  --save-nodes SAVE_NODES_FILE
+                        Name of a file for saving json-formatted node data
+
 ```
 It's a work in progress, so the output is probably just some scratch data at the moment:
 
