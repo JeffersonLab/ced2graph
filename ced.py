@@ -4,6 +4,8 @@
 import json
 import requests
 import pandas
+
+import ced
 import mya
 
 # The module-wide base URL for CED web API.
@@ -136,31 +138,40 @@ class TypeTree:
         return found, lineage
 
 
-class Node:
+class Node(json.JSONEncoder):
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
 
     # Instantiate the object
     def __init__(self, element: dict, epics_fields: list, sampler: mya.Sampler):
         self.element = element
         self.epics_fields = epics_fields
+        self.epics_fields.sort()
         self.sampler = sampler
         self.sampler.pv_list = self.pv_list()
         self.data = []
+        self.node_id = None
+        self.type_name = None
+
 
     # Get the name used to construct EPICS PVs.
     def epics_name(self):
         # The CED convention is to use the EPICSName property if it exists, otherwise
         # to use the element name.
-        if self.element['properties'] and self.element['properties']['EPICSName']:
+        if 'properties' in self.element and 'EPICSName' in self.element['properties']:
             return self.element['properties']['EPICSName']
         else:
             return self.element['name']
+
+    # The node's name
+    def name(self):
+        return self.element['name']
 
     # The list of PV names from which node attributes should be constructed
     def pv_list(self):
        pv_list = []
        for field in self.epics_fields:
            pv_list.append(f'{self.epics_name()}{field}')
+       pv_list.sort()
        return pv_list
 
     # Retrieve PV values using the available data sampler
@@ -182,10 +193,54 @@ class Node:
                 return item['values']
         return None
 
+    # Retrieve the pv values for the specified index position in the data array
+    def pv_data_at_index(self, index):
+       data = self.pv_data()
+       return data[index]['values']
+
+    # Define the string representation of the Node
+    #   tab-delimited node_id, node_name, node_type, ced_attributes
+    #   where ced_attributes is comma-delimited
+    def __str__(self):
+        return f"{self.node_id}\t{self.name()}\t{self.type_name}\t{','.join(self.attribute_values(2))}"
+
+    # Return a sorted list of the CED properties usable as attributes.
+    # In practice it is all properties requested except EPICSName which is excluded
+    def ced_attribute_names(self):
+        attribute_names = []
+        for attribute in filter(lambda x: x != 'EPICSName', self.element['properties']):
+            attribute_names.append(attribute)
+        attribute_names.sort()
+        return attribute_names
+
+    # Return a sorted list of the CED properties usable as attributes.
+    # In practice it is all properties requested except EPICSName which is excluded
+    def ced_attribute_values(self):
+        attribute_values = []
+        for attribute_name in self.ced_attribute_names():
+                attribute_values.append(self.element['properties'][attribute_name])
+        return attribute_values
+
+    def epics_attribute_values(self, index):
+        attribute_values = []
+        for field in self.epics_fields:
+            for value in self.pv_data_at_index(index):
+                pv_name = list(value.keys())[0]
+                if pv_name == f'{self.epics_name()}{field}':
+                    attribute_values.append(value[pv_name])
+        return attribute_values
+
+    def attribute_values(self, index):
+        return self.ced_attribute_values() + self.epics_attribute_values(index)
+
+    def attribute_names(self):
+        return self.ced_attribute_names() + self.epics_fields
+
+
+
 
 # Nodes that represent setpoints
-class SetPointNode(Node): pass
+class SetPointNode(Node):pass
 
 # Nodes that represent readbacks
-class ReadBackNode(Node): pass
-
+class ReadBackNode(Node):pass
