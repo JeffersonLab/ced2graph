@@ -5,8 +5,8 @@ import yaml
 from mya import Sampler
 from ced import *
 
-class List(list):
-    """A list extension for handling lists of Node objects"""
+class List():
+    """Methods for making and working with lists of ced.Node (and subclasses thereof) objects"""
 
     # Return a list of nodes read from json files
     #  nodes_file - name of file containing json-encoded ced.Node objects
@@ -27,20 +27,21 @@ class List(list):
             node_data = nodefile.read()
         elements_info = json.loads(node_data)   # parses file into dict
 
-        node_list = List()
+        # Make vanilla list of nodes first
+        nodes = list()
         node_id = 0
         for item in elements_info:
             node = List.make_node(item['element'], tree, config)
             if (node):
-                print(item['sampler'])
-                node.sampler.data = item['sampler']['data']
-                print(node)
-                break
+                # By setting the node's data below, we preclude the need
+                # for a call to mya to load it later.
+                node.sampler.set_data(item['sampler']['data'])
+                # Assign id values based on order of encounter                
                 node.node_id = node_id
-                node_list.append(node)
-                node_id += 1        
-        
-        return node_list
+                nodes.append(node)
+                node_id += 1
+
+        return nodes
 
 
     # Make a ced.SetPointNode or ced.ReadBackNode from the provided element
@@ -48,7 +49,7 @@ class List(list):
     #  tree - dictionary containing ced hierarchy
     #  config - dictionary containing info for classifying nodes as setpoints or readbacks 
     @staticmethod
-    def make_node(element: dict, tree: dict, config: dict):        
+    def make_node(element: dict, tree: TypeTree, config: dict):
         # Initialize node as None which is what we'll return if the element does not match
         # a type specified in the config.  This could well happen if the element data came
         # a broad CED query like "BeamElem", but the config file only indicates interest
@@ -77,3 +78,27 @@ class List(list):
                 break
 
         return node        
+
+
+class ListEncoder(json.JSONEncoder):
+    """Helper class for exporting json-encoded node lists""" 
+
+    # Override of the parent method from JSONEncoder to return an encodable data structure for
+    # _node_list and for the ced and mya classes that it contains
+    def default(self, obj):
+        if isinstance(obj, mya.Sampler):
+            struct = obj.__dict__
+            struct['data'] = obj.data()
+            return struct
+        if isinstance(obj, ced.Node):
+            return obj.__dict__
+        if isinstance(obj, ced.SetPointNode):
+            return obj.__dict__
+        if isinstance(obj, ced.ReadBackNode):
+            return obj.__dict__
+        if isinstance(obj, pandas.Timestamp):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
