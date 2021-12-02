@@ -8,9 +8,9 @@
 #  5)   - TBD Output nodes in HBG file format
 #  6)   - TBD Build edges and output in HBF format
 
-from node import *
-from ced import *
-from mya import Sampler
+from modules.node import *
+from modules.ced import *
+from modules.mya import Sampler
 import argparse
 import os
 import sys

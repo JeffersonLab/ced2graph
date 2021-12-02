@@ -1,6 +1,6 @@
 # File containing some tests of the mya module.
 
-from mya import Sampler
+from modules.mya import Sampler
 
 # Test that Sampler correctly computes number of steps in a date range
 # including those that span DST changeovers.

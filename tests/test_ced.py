@@ -1,7 +1,7 @@
 # File containing some tests of the ced module.
 
-from ced import *
-from mya import Sampler
+from modules.ced import *
+from modules.mya import Sampler
 import json
 
 # Test ability to identify whether an element type is a sub-type of another

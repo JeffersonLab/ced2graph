@@ -1,7 +1,6 @@
 import math
 from datetime import datetime, timedelta, timezone
 import pandas
-import json
 import requests
 from dateutil.tz import gettz
 

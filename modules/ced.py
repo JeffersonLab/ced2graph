@@ -5,8 +5,7 @@ import json
 import requests
 import pandas
 
-import ced
-import mya
+from modules import mya
 
 # The module-wide base URL for CED web API.
 # It can be changed to instead query the LED, UED, etc. alternatives
