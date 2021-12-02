@@ -21,6 +21,14 @@ import sys
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+# The file names that will be used when saving the data fetched from
+# CED and MYA as json and when reading that data back in lieu of
+# accessing those services.  The primary purpose of these files
+# is for development/testing/debugging
+tree_file = 'tree.json'
+nodes_file = 'nodes.json'
+globals_file = 'global.json'
+
 # the list of nodes that will be used to output graph data
 node_list = []
 
@@ -33,6 +41,7 @@ global_data = []
 tree = TypeTree()
 
 
+
 # Define the program's command line arguments and build a parser to process them
 def make_cli_parser():
     parser = argparse.ArgumentParser(description='Command Line Options')
@@ -41,12 +50,11 @@ def make_cli_parser():
     parser.add_argument("-d", type=str, dest='output_dir', default=".",
                         help="Directory where generated graph file hierarchy will be written")
     parser.add_argument("-o", action='store_true', help="Overwrite existing files")
-    parser.add_argument("-tree", type=str, dest='tree_file',
-                        help="Name of a json file containing ced type hierarchy")
-    parser.add_argument("--read-nodes", type=str, dest='read_nodes_file',
-                        help = "Name of a json file containing node data")
-    parser.add_argument("--save-nodes", type=str, dest='save_nodes_file',
-                        help = "Name of a file for saving json-formatted node data")
+    parser.add_argument("--read-json", action='store_true',
+                        help = f"Read data from {tree_file}, {nodes_file}, and {globals_file} instead of CED and Mya")
+    parser.add_argument("--save-json", action='store_true',
+                        help = f"Save fetched data in {tree_file}, {nodes_file}, and {globals_file}")
+
     return parser
 
 
@@ -64,18 +72,15 @@ try:
     config = yaml.load(stream, Loader=yaml.CLoader)
 
     # See if the type tree data should be read from file rather than retrieved from CED
-    if args.tree_file:
-        with open(args.tree_file, 'r') as treefile:
-            data = treefile.read()
-        tree = TypeTree()
+    if args.read_json:
+        with open(tree_file, 'r') as tree_file_handle:
+            data = tree_file_handle.read()
         tree.tree = json.loads(data)  # prepopulate the data so no need to lazy-load later
 
     # See if the user wants to load nodes data from file rather than hitting archiver
-    if args.read_nodes_file:
-        # Read nodes data from specified file
-        node_list = List.from_json(args.read_nodes_file,'tests/type-tree.json',args.config_file)
-    else:
-        # Use CED and MYA to build nodes list
+    if args.read_json:
+        node_list = List.from_json(nodes_file,tree_file,args.config_file)
+    else:  # Use CED and MYA to build nodes list
 
         # Begin by fetching the desired CED elements
         inventory = Inventory(config['ced']['zone'], config['ced']['types'], config['ced']['properties'])
@@ -101,23 +106,37 @@ try:
     for item in node_list:
         print(item)
 
-    # Save the node list to a file for later use?
-    if args.save_nodes_file:
-        # Save the node_list to a file
-        f = open(args.save_nodes_file, "w")
+    # Once again load from file or service
+    if args.read_json:
+        with open(globals_file, 'r') as globals_file_handle:
+            data = globals_file_handle.read()
+        global_data = json.loads(data)
+    else:
+        # Retrieve the global PV list
+        global_data = Sampler(
+            config['mya']['begin'],
+            config['mya']['end'],
+            config['mya']['interval'],
+            config['mya']['global']
+        ).data()
+
+
+    # Save the tree, nodes, and global data list to a file for later use?
+    if args.save_json:
+        f = open(nodes_file, "w")
         json.dump(node_list, f, cls=ListEncoder)
         f.close()
 
-    # stop here for now
+        f = open(globals_file, "w")
+        json.dump(global_data, f)
+        f.close()
+
+        f = open(tree_file, "w")
+        json.dump(tree.tree, f)
+        f.close()
+
     exit(0)
 
-    # Retrieve the global PV list
-    global_data = Sampler(
-        config['mya']['begin'],
-        config['mya']['end'],
-        config['mya']['interval'],
-        config['mya']['global']
-    ).data()
 
     # Now filter the nodeList based on global values
     # For the moment we're using hard-coded conditions, but eventually the goal is to
