@@ -14,19 +14,17 @@ setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
 # Run the script with -h or --help to see available arguments
 python3 main.py --help
 
-usage: main.py [-h] [-c --config CONFIG_FILE] [-t --tree TREE_FILE] [--read-nodes READ_NODES_FILE] [--save-nodes SAVE_NODES_FILE]
+usage: main.py [-h] [-c CONFIG_FILE] [-d OUTPUT_DIR] [-o] [--read-json] [--save-json]
 
 Command Line Options
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -c --config CONFIG_FILE
-                        Name of a yaml formatted config file
-  -t --tree TREE_FILE   Name of a json file containing ced type hierarchy
-  --read-nodes READ_NODES_FILE
-                        Name of a json file containing node data
-  --save-nodes SAVE_NODES_FILE
-                        Name of a file for saving json-formatted node data
+  -h, --help      show this help message and exit
+  -c CONFIG_FILE  Name of a yaml formatted config file
+  -d OUTPUT_DIR   Directory where generated graph file hierarchy will be written
+  -o              Overwrite existing files
+  --read-json     Read data from tree.json, nodes.json, and global.json instead of CED and Mya
+  --save-json     Save fetched data in tree.json, nodes.json, and global.json
 
 ```
 It's a work in progress, so the output is probably just some scratch data at the moment:
@@ -79,20 +77,15 @@ test_mya.py .                                                            [100%]
 During development it is nice (and faster) to be able to work offline without constantly fetching data 
 from the CED and archiver.  To do so, follow these steps.
 
-### Save data to JSON files
-While in an environment with access to the CED and Mya web servers:
-
-```python
-# Save the node_list to a file
-f = open("node_list.json", "w")
-json.dump(node_list, f, cls=node.ListEncoder)    
-f.close()
+While connected to a network with access to ced and mya web servers:
+```
+python3 main.py --save-json
 ```
 
-And then to read the nodes back in:
-
-```python
-# The config.yaml should probably match the one used when the node_list was generated!
-# The list of ced types should already be available in the tests directory.
-node_list = node.List.from_json('node_list.json','tests/type-tree.json','config.yaml')
+Thereafter, to use the saved data, simply run
 ```
+python3 main.py --read-json
+```
+
+Note that if the config changes after the --save-json execution, it's possible that it will become 
+incompatible with the saved files and generate errors or unexpected results when --read-json is used.
