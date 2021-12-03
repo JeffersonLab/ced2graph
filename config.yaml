@@ -21,10 +21,10 @@ nodes:
     Dipole: [".BDL", ".S"]
     Quad: [".BDL", ".S"]
     Solenoid: [".BDL", ".S"]
-    CryoCavity: ['PSET','GSET']  # PSUM doesn't work for R027PSUM
+    CryoCavity: ['PSET','GSET','XPSET8']  # Note XPSET8 requires special handling (belongs zone, not cavity)
   readbacks:
     # BeamLossMonitor: [".Lc"]  # Doesn't work
-    BPM: [".XPOS", ".YPOS"]
+    BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
     # Inconsistent EPICSName
     # IBC0L02 : IBC0L02Current
     # SBC0R08: has no EPICSName
