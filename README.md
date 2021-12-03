@@ -30,16 +30,17 @@ optional arguments:
 It's a work in progress, so the output is probably just some scratch data at the moment:
 Which may or may not look anything like the example below.
 ```
-0       IPM2I00 BPM     .0497759993081372,0,0
-1       MBH2I00H        Corrector       .0497759993081372,-5.3075,-29.7506
-2       MBH2I00V        Corrector       .0497759993081372,59.538,418.104
-3       IPM2I00A        BPM     .415027999915358,0,0
-4       MBH2I00AH       Corrector       .415027999915358,0.303,1.69843
-5       MBH2I00AV       Corrector       .415027999915358,-1.647,-11.566
-6       MFX2I01 Solenoid        .645896000693683,151,1975.78
-7       MBH2I01H        Corrector       .712462000972506,-10.5,-58.8565
-8       MBH2I01V        Corrector       .712462000972506,20.1,141.152
-
+2021-11-01T11:00:00      0      MFA0I03 Solenoid         6.6565725      243.994 1394.25
+2021-11-01T11:00:00      1      MBH0I03H        Corrector        6.8629475      -16.5   -92.4888
+2021-11-01T11:00:00      2      MBH0I03V        Corrector        6.8629475      10      70.2247
+2021-11-01T11:00:00      3      MFD0I04 Solenoid         7.3768604      60.619  0.747
+2021-11-01T11:00:00      4      MFD0I04A        Solenoid         7.5483104      60.619  0.747
+2021-11-01T11:00:00      5      MBH0I04H        Corrector        7.9520233      -19     -106.502
+2021-11-01T11:00:00      6      MBH0I04V        Corrector        7.9520233      2.2     15.4494
+2021-11-01T11:00:00      7      MFA0I05 Solenoid         8.2250733      271.998 1554.27
+2021-11-01T11:00:00      8      IPM0I05 BPM      8.453410847612 62.144  -2.66561        -1.81257
+2021-11-01T11:00:00      9      MBH0I05H        Corrector        8.454089347612 3.6     20.1794
+2021-11-01T11:00:00      10     MBH0I05V        Corrector        8.454099347612 15.8    110.955
 ...
 ```
 
