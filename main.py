@@ -10,6 +10,7 @@
 
 from modules.node import *
 from modules.ced import *
+import modules.hgb as hgb
 from modules.mya import Sampler
 import argparse
 import os
@@ -125,7 +126,6 @@ try:
             config['mya']['global']
         ).data()
 
-
     # At this point we've got all the data necessary to start writing out data sets
     i = 0
     valid_indexes = []
@@ -138,10 +138,10 @@ try:
         # do some sort of eval on the filters specified in the yaml config file
         current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
         if current_filter_value and  float(current_filter_value) > 0:
-            for item in node_list:
-                print(data['date'], "\t", item, "\t", '\t'.join(item.attribute_values(i)))
+            hgb.write_node_dat(data['date'], node_list, i)
         i += 1
 
+    hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
     if args.save_json:
@@ -156,7 +156,6 @@ try:
         f = open(tree_file, "w")
         json.dump(tree.tree, f, indent=4)
         f.close()
-
 
     exit(0)
 
