@@ -169,9 +169,22 @@ class Node(json.JSONEncoder):
     def pv_list(self):
        pv_list = []
        for field in self.epics_fields:
-           pv_list.append(f'{self.epics_name()}{field}')
+           pv_list.append(self.pv_name(self.epics_name(),field))
        pv_list.sort()
        return pv_list
+
+    # Return a PV name formed from the given base epics name field
+    # Handle special cases such as XPSET8
+    def pv_name(self, epics_name, field):
+        if field == 'XPSET8':
+            # belongs to zone, so remove final char that designates cavity
+            return f"{epics_name[:-1]}{field}"
+        elif field == "":
+            # An empty field means the naked EPICSNAme should be treated as a PVName
+            return epics_name
+        else:
+            return f'{epics_name}{field}'
+
 
     # Retrieve PV values using the available data sampler
     # TODO stash the data keyed by timestamp for most efficient retrieval
@@ -201,7 +214,7 @@ class Node(json.JSONEncoder):
     #   tab-delimited node_id, node_name, node_type, ced_attributes
     #   where ced_attributes is comma-delimited
     def __str__(self):
-        return f"{self.node_id}\t{self.name()}\t{self.type_name}\t{','.join(self.attribute_values(2))}"
+        return f"{self.node_id}\t{self.name()}\t{self.type_name}\t{','.join(self.attribute_values(0))}"
 
     # Return a sorted list of the CED properties usable as attributes.
     # In practice it is all properties requested except EPICSName which is excluded
@@ -225,7 +238,7 @@ class Node(json.JSONEncoder):
         for field in self.epics_fields:
             for value in self.pv_data_at_index(index):
                 pv_name = list(value.keys())[0]
-                if pv_name == f'{self.epics_name()}{field}':
+                if pv_name == self.pv_name(self.epics_name(),field):
                     attribute_values.append(value[pv_name])
         return attribute_values
 
