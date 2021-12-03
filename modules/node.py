@@ -16,7 +16,8 @@ class Node():
         self.epics_fields.sort()
         self.sampler = sampler
         self.sampler.pv_list = self.pv_list()
-        self.data = []
+        self.data = []      # Stores array of timestampled data sets from mya
+        self.links = []     # Stores links to downstream nodes to use when building graph edges
         self.node_id = None
         self.type_name = None
 
@@ -83,7 +84,7 @@ class Node():
     #   tab-delimited node_id, node_name, node_type, ced_attributes
     #   where ced_attributes is comma-delimited
     def __str__(self):
-        return f"{self.node_id}\t{self.name()}\t{self.type_name}\t{','.join(self.attribute_values(0))}"
+        return f"{self.node_id}\t{self.name()}\t{self.type_name}"
 
     # Return a sorted list of the CED properties usable as attributes.
     # In practice it is all properties requested except EPICSName which is excluded
@@ -102,6 +103,7 @@ class Node():
                 attribute_values.append(self.element['properties'][attribute_name])
         return attribute_values
 
+    # Return epics-based node attributes for the specified array index
     def epics_attribute_values(self, index):
         attribute_values = []
         for field in self.epics_fields:
@@ -111,6 +113,9 @@ class Node():
                     attribute_values.append(value[pv_name])
         return attribute_values
 
+    # Return the node's attributes
+    # The attributes include ced attributes which are single-valued and the
+    # epics data attributes which come from an array of values at the specified index.
     def attribute_values(self, index):
         return self.ced_attribute_values() + self.epics_attribute_values(index)
 
