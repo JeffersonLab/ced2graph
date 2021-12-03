@@ -5,6 +5,9 @@ from modules.mya import Sampler
 import json
 
 # Test ability to identify whether an element type is a sub-type of another
+from modules.node import Node
+
+
 def test_is_a():
     # We load hierarchy expected from CED web server from a json file instead
     # and then make our assertions based on it.

@@ -3,8 +3,127 @@
 import yaml
 import json
 import pandas
-import modules.mya as mya
-import modules.ced as ced
+from modules import ced
+from modules import mya
+
+class Node():
+    """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
+
+    # Instantiate the object
+    def __init__(self, element: dict, epics_fields: list, sampler: mya.Sampler):
+        self.element = element
+        self.epics_fields = epics_fields
+        self.epics_fields.sort()
+        self.sampler = sampler
+        self.sampler.pv_list = self.pv_list()
+        self.data = []
+        self.node_id = None
+        self.type_name = None
+
+
+    # Get the name used to construct EPICS PVs.
+    def epics_name(self):
+        # The CED convention is to use the EPICSName property if it exists, otherwise
+        # to use the element name.
+        if 'properties' in self.element and 'EPICSName' in self.element['properties']:
+            return self.element['properties']['EPICSName']
+        else:
+            return self.element['name']
+
+    # The node's name
+    def name(self):
+        return self.element['name']
+
+    # The list of PV names from which node attributes should be constructed
+    def pv_list(self):
+       pv_list = []
+       for field in self.epics_fields:
+           pv_list.append(self.pv_name(self.epics_name(),field))
+       pv_list.sort()
+       return pv_list
+
+    # Return a PV name formed from the given base epics name field
+    # Handle special cases such as XPSET8
+    def pv_name(self, epics_name, field):
+        if field == 'XPSET8':
+            # belongs to zone, so remove final char that designates cavity
+            return f"{epics_name[:-1]}{field}"
+        elif field == "":
+            # An empty field means the naked EPICSNAme should be treated as a PVName
+            return epics_name
+        else:
+            return f'{epics_name}{field}'
+
+
+    # Retrieve PV values using the available data sampler
+    # TODO stash the data keyed by timestamp for most efficient retrieval
+    def pv_data(self):
+        # If data not already retrieved, do that first
+        if not self.data:
+            self.sampler.pv_list = self.pv_list()
+            self.data = self.sampler.data()
+        # And then give it to the user
+        return self.data
+
+    # Retrieve the pv values for a given date and time
+    # Note that this method has a problem in that the MyaWeb server sends back string dates
+    # which means that during DST "fall back" the 01:00 timestamp is ambiguous.
+    def pv_data_at_datetime(self, desired_date):
+        for item in self.pv_data():
+            if pandas.to_datetime(item['date']) == pandas.to_datetime(desired_date):
+                return item['values']
+        return None
+
+    # Retrieve the pv values for the specified index position in the data array
+    def pv_data_at_index(self, index):
+       data = self.pv_data()
+       return data[index]['values']
+
+    # Define the string representation of the Node
+    #   tab-delimited node_id, node_name, node_type, ced_attributes
+    #   where ced_attributes is comma-delimited
+    def __str__(self):
+        return f"{self.node_id}\t{self.name()}\t{self.type_name}\t{','.join(self.attribute_values(0))}"
+
+    # Return a sorted list of the CED properties usable as attributes.
+    # In practice it is all properties requested except EPICSName which is excluded
+    def ced_attribute_names(self):
+        attribute_names = []
+        for attribute in filter(lambda x: x != 'EPICSName', self.element['properties']):
+            attribute_names.append(attribute)
+        attribute_names.sort()
+        return attribute_names
+
+    # Return a sorted list of the CED properties usable as attributes.
+    # In practice it is all properties requested except EPICSName which is excluded
+    def ced_attribute_values(self):
+        attribute_values = []
+        for attribute_name in self.ced_attribute_names():
+                attribute_values.append(self.element['properties'][attribute_name])
+        return attribute_values
+
+    def epics_attribute_values(self, index):
+        attribute_values = []
+        for field in self.epics_fields:
+            for value in self.pv_data_at_index(index):
+                pv_name = list(value.keys())[0]
+                if pv_name == self.pv_name(self.epics_name(),field):
+                    attribute_values.append(value[pv_name])
+        return attribute_values
+
+    def attribute_values(self, index):
+        return self.ced_attribute_values() + self.epics_attribute_values(index)
+
+    def attribute_names(self):
+        return self.ced_attribute_names() + self.epics_fields
+
+
+# Nodes that represent setpoints
+class SetPointNode(Node):pass
+
+# Nodes that represent readbacks
+class ReadBackNode(Node):pass
+
 
 class List():
     """Methods for making and working with lists of ced.Node (and subclasses thereof) objects"""
@@ -69,12 +188,12 @@ class List():
         # Important: we will only assign the fields of the first matched type.
         for type_name, fields in config['nodes']['setpoints'].items():
             if not node and tree.is_a(type_name, element['type']):
-                node = ced.SetPointNode(element, fields, sampler)
+                node = SetPointNode(element, fields, sampler)
                 node.type_name = type_name      # Assign type name that matched
                 break
         for type_name, fields in config['nodes']['readbacks'].items():
             if not node and tree.is_a(type_name, element['type']):
-                node = ced.ReadBackNode(element, fields, sampler)
+                node = ReadBackNode(element, fields, sampler)
                 node.type_name = type_name      # Assign type name that matched
                 break
 
@@ -92,15 +211,13 @@ class ListEncoder(json.JSONEncoder):
             struct['data'] = obj.data()
             del struct['_data']
             return struct
-        if isinstance(obj, ced.Node):
+        if isinstance(obj, Node):
             return obj.__dict__
-        if isinstance(obj, ced.SetPointNode):
+        if isinstance(obj, SetPointNode):
             return obj.__dict__
-        if isinstance(obj, ced.ReadBackNode):
+        if isinstance(obj, ReadBackNode):
             return obj.__dict__
         if isinstance(obj, pandas.Timestamp):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
-
-
