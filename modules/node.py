@@ -90,6 +90,7 @@ class ListEncoder(json.JSONEncoder):
         if isinstance(obj, mya.Sampler):
             struct = obj.__dict__
             struct['data'] = obj.data()
+            del struct['_data']
             return struct
         if isinstance(obj, ced.Node):
             return obj.__dict__
