@@ -102,9 +102,9 @@ try:
                 node_list.append(node)
                 node_id += 1
 
-    # For debugging
-    for item in node_list:
-        print(item)
+    # For debugging print the first data set
+    # for item in node_list:
+    #     print(item, "\t", '\t'.join(item.attribute_values(0)))
 
     # Once again load from file or service
     if args.read_json:
@@ -135,23 +135,23 @@ try:
         json.dump(tree.tree, f, indent=4)
         f.close()
 
-    exit(0)
-
-
-    # Now filter the nodeList based on global values
-    # For the moment we're using hard-coded conditions, but eventually the goal is to
-    # do some sort of eval on the filters specified in the yaml config file
+    # At this point we've got all the data necessary to start writing out data sets
     i = 0
     valid_indexes = []
+    # The global data was sampled identically to the node data, so when we find a row we want
+    # to keep while looping through it, we know the nodes will have data at the corresponding
+    # row index.
     for data in global_data:
-        for value in data['values']:
-            current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-            if current_filter_value and  float(current_filter_value) > 0:
-                print(data['date']+' '+current_filter_value)
-                # TODO accumulate the corresponding node data
+        # Filter the nodeList by only outputting rows that meet our criteria
+        # For the moment we're using hard-coded conditions, but eventually the goal is to
+        # do some sort of eval on the filters specified in the yaml config file
+        current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+        if current_filter_value and  float(current_filter_value) > 0:
+            for item in node_list:
+                print(data['date'], "\t", item, "\t", '\t'.join(item.attribute_values(i)))
         i += 1
-   
-    print(node_list)
+
+    exit(0)
 
 except json.JSONDecodeError:
     print("Oops!  Invalid JSON response. Check request parameters and try again.")
