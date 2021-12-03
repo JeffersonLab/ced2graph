@@ -23,8 +23,10 @@ class Inventory:
     #   zone is the CED zone name to query (Ex: Injector)
     #   types is one or more CED Type names to retrieve (Ex: ['Dipole','BPM']
     #   extra_properties is a list of property names to be retrieved
-    #   in addition to the baseline default of ['S','EPICSName']
-    def __init__(self, zone: str, types: list, extra_properties: list = None):
+    #                     in addition to the baseline default of ['S','EPICSName']
+    #   expressions is a list of CED property filter expressions (like command line -Ex)
+    #                      for example ['S > 0.5']
+    def __init__(self, zone: str, types: list, extra_properties: list = None, expressions: list = None):
         if extra_properties:
             # Combine base properties with extra_properties, removing duplicates
             self.properties = list(set(properties + extra_properties))
@@ -33,11 +35,11 @@ class Inventory:
 
         self.zone = zone
         self.types = types
-
+        self.expressions = expressions
 
     # Return a dictionary containing the query parameters to be used when making API call.
     def queryParams(self) -> dict:
-        return {
+        query =  {
             'p': self.properties,
             'z': self.zone,
             't': self.types,
@@ -45,6 +47,9 @@ class Inventory:
             's': 'S',
             'out': 'json'
         }
+        if self.expressions:
+            query['Ex'] = " ".join(self.expressions)
+        return query
 
     # Query CED Web API and return the resulting array of elements.
     # Throws if server response cannot be parsed as json.

@@ -34,8 +34,8 @@ nodes:
 # as well as the desired interval within the date range at which graph data
 # should be generated.
 mya:
-  begin: "2021-11-01"
-  end: "2021-11-02"
+  begin: "2021-11-01 10:00"
+  end: "2021-11-01 12:00"
   interval: "1h"
   filters:
     - "IBC0R08CRCUR1 > 0.1"

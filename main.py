@@ -83,7 +83,12 @@ try:
     else:  # Use CED and MYA to build nodes list
 
         # Begin by fetching the desired CED elements
-        inventory = Inventory(config['ced']['zone'], config['ced']['types'], config['ced']['properties'])
+        inventory = Inventory(
+            config['ced']['zone'],
+            config['ced']['types'],
+            config['ced']['properties'],
+            config['ced']['expressions']
+        )
         elements = inventory.elements()
 
         # It's important to preserve the order of the elements in the nodeList.
@@ -121,20 +126,6 @@ try:
         ).data()
 
 
-    # Save the tree, nodes, and global data list to a file for later use?
-    if args.save_json:
-        f = open(nodes_file, "w")
-        json.dump(node_list, f, cls=ListEncoder, indent=4)
-        f.close()
-
-        f = open(globals_file, "w")
-        json.dump(global_data, f, indent=4)
-        f.close()
-
-        f = open(tree_file, "w")
-        json.dump(tree.tree, f, indent=4)
-        f.close()
-
     # At this point we've got all the data necessary to start writing out data sets
     i = 0
     valid_indexes = []
@@ -150,6 +141,22 @@ try:
             for item in node_list:
                 print(data['date'], "\t", item, "\t", '\t'.join(item.attribute_values(i)))
         i += 1
+
+
+    # Save the tree, nodes, and global data list to a file for later use?
+    if args.save_json:
+        f = open(nodes_file, "w")
+        json.dump(node_list, f, cls=ListEncoder, indent=4)
+        f.close()
+
+        f = open(globals_file, "w")
+        json.dump(global_data, f, indent=4)
+        f.close()
+
+        f = open(tree_file, "w")
+        json.dump(tree.tree, f, indent=4)
+        f.close()
+
 
     exit(0)
 
