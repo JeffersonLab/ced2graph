@@ -124,15 +124,15 @@ try:
     # Save the tree, nodes, and global data list to a file for later use?
     if args.save_json:
         f = open(nodes_file, "w")
-        json.dump(node_list, f, cls=ListEncoder)
+        json.dump(node_list, f, cls=ListEncoder, indent=4)
         f.close()
 
         f = open(globals_file, "w")
-        json.dump(global_data, f)
+        json.dump(global_data, f, indent=4)
         f.close()
 
         f = open(tree_file, "w")
-        json.dump(tree.tree, f)
+        json.dump(tree.tree, f, indent=4)
         f.close()
 
     exit(0)
