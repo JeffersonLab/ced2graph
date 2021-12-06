@@ -103,7 +103,7 @@ try:
             # If no node was created, it means that there was not type match.  This could happen if
             # the CED query was something broad like "BeamElem", but the config file only indicates the
             # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
-            if node:
+            if item:
                 # Assign id values based on order of encounter
                 item.node_id = node_id
                 node_list.append(item)
