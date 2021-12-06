@@ -98,15 +98,15 @@ try:
         # order in the list beginning at 0.
         node_id = 0
         for element in elements:
-            node = node.List.make_node(element, tree, config)
+            item = node.List.make_node(element, tree, config)
 
             # If no node was created, it means that there was not type match.  This could happen if
             # the CED query was something broad like "BeamElem", but the config file only indicates the
             # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
             if node:
                 # Assign id values based on order of encounter
-                node.node_id = node_id
-                node_list.append(node)
+                item.node_id = node_id
+                node_list.append(item)
                 node_id += 1
 
     # Link downstream nodes to each ReadbackNode.
