@@ -212,9 +212,13 @@ class ListEncoder(json.JSONEncoder):
     # _node_list and for the ced and mya classes that it contains
     def default(self, obj):
         if isinstance(obj, mya.Sampler):
-            struct = obj.__dict__
-            struct['data'] = obj.data()
-            del struct['_data']
+            struct = {
+                'interval'   : obj.interval,
+                'pv_list'    : obj.pv_list,
+                'data'       : obj._data,
+                'begin_date' : obj.begin_date,   
+                'end_date'   : obj.end_date
+            }
             return struct
         if isinstance(obj, Node):
             return obj.__dict__
