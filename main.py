@@ -101,13 +101,15 @@ try:
         # We are going to assign each node a node_id property that corresponds to its
         # order in the list beginning at 0.
         node_id = 0
-        for element in elements:
+        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = 'Complete', length = 50):
             item = node.List.make_node(element, tree, config)
 
             # If no node was created, it means that there was not type match.  This could happen if
             # the CED query was something broad like "BeamElem", but the config file only indicates the
             # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
             if item:
+                # Load the data now so that we can give user a progressbar
+                item.pv_data()
                 # Assign id values based on order of encounter
                 item.node_id = node_id
                 node_list.append(item)
@@ -155,7 +157,7 @@ try:
     # to keep while looping through it, we know the nodes will have data at the corresponding
     # row index.
     # for data in global_data:
-    for data in progressBar(global_data, prefix = 'Progress:', suffix = 'Complete', length = 50):
+    for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = 'Complete', length = 50):
         # Filter the nodeList by only outputting rows that meet our criteria
         # For the moment we're using hard-coded conditions, but eventually the goal is to
         # do some sort of eval on the filters specified in the yaml config file
