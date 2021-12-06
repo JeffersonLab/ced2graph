@@ -125,17 +125,11 @@ try:
         if len(working_list) < 1:
             break
 
-    print("SetPoint Nodes with downstream elements up to and including next SetPoint")
-    for item in node_list:
-        if (isinstance(item, node.SetPointNode)):
-            print(item.name(),': ', ",".join(map(lambda x:x.name(),item.links)))
-
-    exit(0)
-
-    # For debugging print the first data set
+    # print("SetPoint Nodes with downstream elements up to and including next SetPoint")
     # for item in node_list:
-    #     print(item, "\t", '\t'.join(item.attribute_values(0)))
-
+    #     if (isinstance(item, node.SetPointNode)):
+    #         print(item.name(),': ', ",".join(map(lambda x:x.name(),item.links)))
+ 
     # Once again load from file or service
     if args.read_json:
         with open(globals_file, 'r') as globals_file_handle:
@@ -162,10 +156,15 @@ try:
         # do some sort of eval on the filters specified in the yaml config file
         current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
         if current_filter_value and  float(current_filter_value) > 0:
-            hgb.write_node_dat(data['date'], node_list, i)
+            directory = hgb.path_from_date(args.output_dir, data['date'])
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            hgb.write_node_dat(directory, node_list, i)
+            hgb.write_link_dat(directory, node_list)
+            hgb.write_label_dat(directory, node_list)
         i += 1
 
-    hgb.write_label_dat('foo', node_list)
+    #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
     if args.save_json:
