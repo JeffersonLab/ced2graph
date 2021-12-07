@@ -87,13 +87,20 @@ test_mya.py .                                                            [100%]
 ```
 
 ## TODO
- * Evaluate filter expression from config file rather than hard-code IBC0R08 > 0
+ * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
  * Add extra 01X hour if necessary during DST/EST transition
  * Write out meta.dat files
  * Convert type to type_id in node.dat, label.dat?
+   * Is it necessary to use an integer for type instead of string?  
  * Make Edge links to nth readback node for n > 1
  * Test against longer date ranges
+   * 2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global
+   * Probably need to break large archiver requests into (month-sized?) chunks  
  * Decide on overwrite/preserve behavior on writing output files
+   * Preserve or clobber by default
+ * Figure out how to deal with trickier elements (BCM, BLM, NDX, etc.)
+   * Ad-hoc element addition (user supplies an "S")
+   * Merge multiple inventories? 
 
 
 ## Developer Notes
