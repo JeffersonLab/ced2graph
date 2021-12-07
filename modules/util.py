@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 # General purpose helper code
 
 # Define a progressbar
 # This function has been shamelessly borrowed from the forum posting cited below -- many thanks to its author.
 # @see https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
-def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 80, fill = '#', printEnd = "\r"):
     """
     Call in a loop to create terminal progress bar
     @params:

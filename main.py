@@ -101,7 +101,7 @@ try:
         # We are going to assign each node a node_id property that corresponds to its
         # order in the list beginning at 0.
         node_id = 0
-        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = 'Complete', length = 50):
+        for element in progressBar(elements, prefix = 'Fetch Data:', suffix = '', length = 50):
             item = node.List.make_node(element, tree, config)
 
             # If no node was created, it means that there was not type match.  This could happen if
@@ -157,7 +157,7 @@ try:
     # to keep while looping through it, we know the nodes will have data at the corresponding
     # row index.
     # for data in global_data:
-    for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = 'Complete', length = 50):
+    for data in progressBar(global_data, prefix = 'Write Files:', suffix = '', length = 50):
         # Filter the nodeList by only outputting rows that meet our criteria
         # For the moment we're using hard-coded conditions, but eventually the goal is to
         # do some sort of eval on the filters specified in the yaml config file
@@ -174,17 +174,21 @@ try:
     #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
+    indent = 0
     if args.save_json:
         f = open(nodes_file, "w")
-        json.dump(node_list, f, cls=node.ListEncoder, indent=4)
+        print("[",file=f)
+        for item in progressBar(node_list, prefix = 'Write Json:', suffix = '', length = 50):
+            json.dump(item, f, cls=node.ListEncoder, indent=indent)
+        print("]",file=f)
         f.close()
 
         f = open(globals_file, "w")
-        json.dump(global_data, f, indent=4)
+        json.dump(global_data, f, indent=indent)
         f.close()
 
         f = open(tree_file, "w")
-        json.dump(tree.tree, f, indent=4)
+        json.dump(tree.tree, f, indent=indent)
         f.close()
 
     exit(0)
