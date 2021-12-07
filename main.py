@@ -174,17 +174,21 @@ try:
     #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
+    indent = 0
     if args.save_json:
         f = open(nodes_file, "w")
-        json.dump(node_list, f, cls=node.ListEncoder, indent=4)
+        print("[",file=f)
+        for item in progressBar(node_list, prefix = 'Write Json:', suffix = '', length = 50):
+            json.dump(item, f, cls=node.ListEncoder, indent=indent)
+        print("]",file=f)
         f.close()
 
         f = open(globals_file, "w")
-        json.dump(global_data, f, indent=4)
+        json.dump(global_data, f, indent=indent)
         f.close()
 
         f = open(tree_file, "w")
-        json.dump(tree.tree, f, indent=4)
+        json.dump(tree.tree, f, indent=indent)
         f.close()
 
     exit(0)
