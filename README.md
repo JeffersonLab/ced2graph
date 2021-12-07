@@ -36,6 +36,27 @@ Fetch Data: |##################################################| 100.0%
 Write Files: |##################################################| 100.0%
 ```
 
+## Output
+Data is written to a date and time-based hiearchy of files anchored as illustrated below:
+
+```
+2021
+`-- 11
+    |-- 01
+    |   |-- 03
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+    |   |-- 04
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+    |   |-- 05
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+
+```
 
 ## Tests
 To run the test suite:
@@ -64,6 +85,15 @@ test_mya.py .                                                            [100%]
 
 ============================== 4 passed in 0.53s ===============================
 ```
+
+## TODO
+ * Evaluate filter expression from config file rather than hard-code IBC0R08 > 0
+ * Add extra 01X hour if necessary during DST/EST transition
+ * Write out meta.dat files
+ * Convert type to type_id in node.dat, label.dat?
+ * Make Edge links to nth readback node for n > 1
+ * Test against longer date ranges
+ * Decide on overwrite/preserve behavior on writing output files
 
 
 ## Developer Notes
