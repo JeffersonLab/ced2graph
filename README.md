@@ -30,20 +30,20 @@ optional arguments:
 Example:
 
 ```
-theo@devl77 > python3 main.py
-setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
+% PATH /usr/csite/pubtools/python/3.7/bin:$PATH
+% python3 main.py
 Fetch Data: |##################################################| 100.0%
 Write Files: |##################################################| 100.0%
 ```
 
-## Output
+## File Output
 Data is written to a date and time-based hiearchy of files anchored as illustrated below:
 
 ```
-2021
-`-- 11
-    |-- 01
-    |   |-- 03
+2021 # Year
+`-- 11  # Month
+    |-- 01  # Day
+    |   |-- 03  # Hour - Note Missing 01 and 02 hours were excluded by filter (IBC0R08CRCUR1 > 0)
     |   |   |-- label.dat
     |   |   |-- link.dat
     |   |   `-- node.dat
