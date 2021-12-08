@@ -41,9 +41,17 @@ def write_link_dat(path, node_list):
                 print(item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
     f.close()            
 
+# Write out a meta.dat file at the specified path
+# The file contains summary data such as the number of each type of node
+def write_meta_dat(path, node_list):
+    file_name = os.path.join(path, 'meta.dat')
+    f = open(file_name, 'w')
+    print('Total Nodes:', "\t", len(node_list), file=f)
+    for type_name, count in node.List.type_count(node_list).items():
+        print(f"Node Type {type_name}:", "\t", count, file=f)
+    f.close()
 
 # Return a path tree of Base/Year/Month/Day/Hour using the correct path separator for the current OS
 def path_from_date(base_path, target_date):
     date = pandas.to_datetime(target_date)
-    return os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"), date.strftime("%H"))
-
+    return os.path.join(base_path, date.strftime("%Y"), date.strftime("%d"), date.strftime("%m"), date.strftime("%H"))

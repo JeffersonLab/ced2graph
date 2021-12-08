@@ -4,9 +4,9 @@
 #  2) fetches CED elements defined in config file
 #  3) fetches Mya data for CED elements as specified in config file
 #  4) fetches global Mya data
-#  5) - TBD for each interval specified in config file that passes filters:
-#  5)   - TBD Output nodes in HBG file format
-#  6)   - TBD Build edges and output in HBF format
+#  5) - for each interval specified in config file that passes filters:
+#  5)   - Output nodes in HBG file format
+#  6)   - Build edges and output in HBG format
 
 import yaml
 import argparse
@@ -52,7 +52,6 @@ def make_cli_parser():
                         help="Name of a yaml formatted config file")
     parser.add_argument("-d", type=str, dest='output_dir', default=".",
                         help="Directory where generated graph file hierarchy will be written")
-    parser.add_argument("-o", action='store_true', help="Overwrite existing files")
     parser.add_argument("--read-json", action='store_true',
                         help = f"Read data from {tree_file}, {nodes_file}, and {globals_file} instead of CED and Mya")
     parser.add_argument("--save-json", action='store_true',
@@ -83,6 +82,20 @@ try:
             data = tree_file_handle.read()
         tree.tree = json.loads(data)  # prepopulate the data so no need to lazy-load later
 
+    # Global data from file or service
+    if args.read_json:
+        with open(globals_file, 'r') as globals_file_handle:
+            data = globals_file_handle.read()
+        global_data = json.loads(data)
+    else:
+        # Retrieve the global PV list
+        global_data = mya.Sampler(
+            config['mya']['begin'],
+            config['mya']['end'],
+            config['mya']['interval'],
+            config['mya']['global']
+        ).data()
+
     # See if the user wants to load nodes data from file rather than hitting archiver
     if args.read_json:
         node_list = node.List.from_json(nodes_file,tree_file,args.config_file)
@@ -101,7 +114,7 @@ try:
         # We are going to assign each node a node_id property that corresponds to its
         # order in the list beginning at 0.
         node_id = 0
-        for element in progressBar(elements, prefix = 'Fetch Data:', suffix = '', length = 50):
+        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
             item = node.List.make_node(element, tree, config)
 
             # If no node was created, it means that there was not type match.  This could happen if
@@ -131,25 +144,6 @@ try:
         if len(working_list) < 1:
             break
 
-    # print("SetPoint Nodes with downstream elements up to and including next SetPoint")
-    # for item in node_list:
-    #     if (isinstance(item, node.SetPointNode)):
-    #         print(item.name(),': ', ",".join(map(lambda x:x.name(),item.links)))
- 
-    # Once again load from file or service
-    if args.read_json:
-        with open(globals_file, 'r') as globals_file_handle:
-            data = globals_file_handle.read()
-        global_data = json.loads(data)
-    else:
-        # Retrieve the global PV list
-        global_data = mya.Sampler(
-            config['mya']['begin'],
-            config['mya']['end'],
-            config['mya']['interval'],
-            config['mya']['global']
-        ).data()
-
     # At this point we've got all the data necessary to start writing out data sets
     i = 0
     valid_indexes = []
@@ -157,7 +151,7 @@ try:
     # to keep while looping through it, we know the nodes will have data at the corresponding
     # row index.
     # for data in global_data:
-    for data in progressBar(global_data, prefix = 'Write Files:', suffix = '', length = 50):
+    for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
         # Filter the nodeList by only outputting rows that meet our criteria
         # For the moment we're using hard-coded conditions, but eventually the goal is to
         # do some sort of eval on the filters specified in the yaml config file
@@ -166,6 +160,7 @@ try:
             directory = hgb.path_from_date(args.output_dir, data['date'])
             if not os.path.exists(directory):
                 os.makedirs(directory)
+            hgb.write_meta_dat(directory, node_list)
             hgb.write_node_dat(directory, node_list, i)
             hgb.write_link_dat(directory, node_list)
             hgb.write_label_dat(directory, node_list)
@@ -174,12 +169,15 @@ try:
     #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
-    indent = 0
+    indent = 2
     if args.save_json:
         f = open(nodes_file, "w")
         print("[",file=f)
-        for item in progressBar(node_list, prefix = 'Write Json:', suffix = '', length = 50):
+        i = 0
+        for index, item in enumerate(progressBar(node_list, prefix = 'Write Json:', suffix = '', length = 60)):
             json.dump(item, f, cls=node.ListEncoder, indent=indent)
+            if index < len(node_list) - 1:
+                print(",\n", file=f)
         print("]",file=f)
         f.close()
 
@@ -193,7 +191,8 @@ try:
 
     exit(0)
 
-except json.JSONDecodeError:
+except json.JSONDecodeError as err:
+    print(err)
     print("Oops!  Invalid JSON response. Check request parameters and try again.")
     exit(1)
 except RuntimeError as err:

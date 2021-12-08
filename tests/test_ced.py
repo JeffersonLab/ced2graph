@@ -12,7 +12,7 @@ def test_is_a():
     # We load hierarchy expected from CED web server from a json file instead
     # and then make our assertions based on it.
     # read file
-    with open('type-tree.json', 'r') as treefile:
+    with open('tree.json', 'r') as treefile:
         data = treefile.read()
     tree = TypeTree()
     tree.tree = json.loads(data)   # parses file into dict

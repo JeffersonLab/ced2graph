@@ -16,7 +16,7 @@ class Node():
         self.epics_fields.sort()
         self.sampler = sampler
         self.sampler.pv_list = self.pv_list()
-        self.data = []      # Stores array of timestampled data sets from mya
+        self.data = []      # Stores array of timestamped data sets from mya
         self.links = []     # Stores links to downstream nodes to use when building graph edges
         self.node_id = None
         self.type_name = None
@@ -168,6 +168,29 @@ class List():
 
         return nodes
 
+    # Returns the list of nodes that remain after applying filter logic
+    # TODO use dynamic rather than hard-coded filter logic
+    # TODO investigate using @yield
+    @staticmethod
+    def filter(node_list, global_data):
+        filtered = []
+        for i,data in enumerate(global_data):
+            current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+            if current_filter_value and float(current_filter_value) > 0:
+                filtered.append(node_list[i])
+        return filtered
+
+    # Returns a dictionary with information about how many intances of each type
+    # of node were encountered in node_list
+    @staticmethod
+    def type_count(node_list) -> dict:
+        type_dict = {}
+        for item in node_list:
+            if item.type_name in type_dict:
+                type_dict[item.type_name] += 1
+            else:
+                type_dict[item.type_name] = 1
+        return type_dict
 
     # Make a ced.SetPointNode or ced.ReadBackNode from the provided element
     #  element - dictionary containing ced element information
@@ -212,20 +235,20 @@ class ListEncoder(json.JSONEncoder):
     # _node_list and for the ced and mya classes that it contains
     def default(self, obj):
         if isinstance(obj, mya.Sampler):
-            struct = {
+            return {
                 'interval'   : obj.interval,
                 'pv_list'    : obj.pv_list,
                 'data'       : obj._data,
                 'begin_date' : obj.begin_date,   
                 'end_date'   : obj.end_date
             }
-            return struct
         if isinstance(obj, Node):
-            return obj.__dict__
-        if isinstance(obj, SetPointNode):
-            return obj.__dict__
-        if isinstance(obj, ReadBackNode):
-            return obj.__dict__
+            return {
+                'element': obj.element,
+                'type_name' : obj.type_name,
+                'epics_fields' : obj.epics_fields,
+                'sampler' : obj.sampler,
+            }
         if isinstance(obj, pandas.Timestamp):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         # Let the base class default method raise the TypeError

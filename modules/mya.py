@@ -23,14 +23,19 @@ class Sampler:
     # older data in history
     deployment = "history"
 
+    # Limit the number of data points (num pvs * steps) to be fetched at each server request.
+    # Reduce it if server timeouts are encountered.
+    # This number must be larger than the number of PVs to be fetched.
+    throttle = 10000
+
     # Instantiate the object
     #
     #  begin_date is the begin date 'yyyy-mm-dd hh:mm:ss'
     #  end_date is the end date 'yyyy-mm-dd hh:mm:ss'
-    #  interval is the time inteval at which to sample data points (default: '1h')
+    #  interval is the time interval at which to sample data points (default: '1h')
     #  pv_list is the list of PVs for which values will be fetched (default: empty list)
     #
-    def __init__(self, begin_date: str, end_date: str, interval: int = None, pv_list: list = None):
+    def __init__(self, begin_date: str, end_date: str, interval: str = None, pv_list: list = None):
         if interval is None:
             interval = '1h'
         if pv_list is None:
@@ -44,7 +49,7 @@ class Sampler:
             raise RuntimeError("End date must be after Begin date")
 
     # Get the number of interval-size steps between our begin and end dates
-    def number_of_steps(self):
+    def total_steps(self):
         return self.steps_between(self.begin_date, self.end_date, self.interval)
 
     # Get the number of interval-size steps between the specified begin and end dates
@@ -58,12 +63,19 @@ class Sampler:
         time_differences_of_interval_size = time_difference / pandas.to_timedelta(interval)
         return math.floor(time_differences_of_interval_size)
 
+    # Returns the lesser of max allowed steps or number of steps remaining
+    def steps_per_chunk(self, begin_date):
+        max_steps = math.floor(self.throttle / len(self.pv_list))
+        remaining_steps = self.steps_between(begin_date, self.end_date, self.interval)
+        return remaining_steps if remaining_steps < max_steps else max_steps
+
+
     # Return a dictionary containing the query parameters to be used when making API call.
     def queryParams(self) -> dict:
         return {
             'b': datetime.strftime(self.begin_date, '%Y-%m-%d %X'),
             's': self.interval,
-            'n': self.number_of_steps(),
+            'n': self.total_steps(),
             'm': 'ops',
             'channels': " ".join(self.pv_list)
         }
@@ -83,20 +95,19 @@ class Sampler:
             # Must have a list of pvs to fetch
             if not self.pv_list:
                 raise RuntimeError("No channels to fetch")
-            
-            # Set verify to False because of jlab MITM interference
-            response = requests.get(self.url, self.queryParams(), verify=False)
 
-            # Example Request URL:
-            #  https://myaweb.acc.jlab.org/mySampler/data?b=2021-11-10&s=1h&n=2&m=ops&channels=MQB0L09.BDL+MQB0L10.BDL
-            # print(response.url)       # For debugging -- what URL actually used?
+            # If the throttle limit is less than the size of the pv list the fetch we're about to do
+            # would enter an infinite loop, so we'll raise an error here instead
+            if len(self.pv_list) > self.throttle:
+                raise RuntimeError("PV list is too large for mya.throttle limit")
 
-            if response.status_code != requests.codes.ok:
-                print(response.url)       # Useful for debugging -- what URL actually used?
-                raise RuntimeError("Mya web server returned an error status code")
-            
-            # Save the data as an object property 
-            self._data = response.json()['data']
+            # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.
+            date = self.begin_date
+            self._data = []
+            while date < self.end_date:
+                steps = self.steps_per_chunk(date)
+                self._data.extend(self.get_data_chunk(date, steps))
+                date = date + pandas.to_timedelta(self.interval) * steps
         
         return self._data
 
@@ -109,6 +120,27 @@ class Sampler:
              raise TypeError("Expected: list")
         self._data = val
 
+    # Return a steps sized chunk of data commencing at begin_date
+    def get_data_chunk(self, begin_date: datetime, steps: int):
+        # The queryParams method returns by default parameters to fetch the entire data set
+        # so here we override the necessary keys so that we can fetch desired subset
+        params = self.queryParams()
+        params['b'] = datetime.strftime(begin_date, '%Y-%m-%d %X')
+        params['n'] = steps
+
+        # Set verify to False because of jlab MITM interference
+        response = requests.get(self.url, params, verify=False)
+
+        # Example Request URL:
+        #  https://myaweb.acc.jlab.org/mySampler/data?b=2021-11-10&s=1h&n=2&m=ops&channels=MQB0L09.BDL+MQB0L10.BDL
+        # print(response.url)       # For debugging -- what URL actually used?
+
+        if response.status_code != requests.codes.ok:
+            print(response.url)  # Useful for debugging -- what URL actually used?
+            raise RuntimeError("Mya web server returned an error status code")
+
+        # Save the data as an object property
+        return response.json()['data']
 
 # Utility function for extracting a value from a list containing key:value dictionaries,
 # such as the myaweb server returns for the PV values.
