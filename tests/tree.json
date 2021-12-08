@@ -1,0 +1,292 @@
+{
+"Elem": {
+"CryoModule": "CryoModule",
+"IOCards": {
+"BLM_CAMAC": "BLM_CAMAC",
+"DiffuserCard": "DiffuserCard",
+"DigitalInput": "DigitalInput",
+"FSDNode": {
+"FSD_24VOLT": "FSD_24VOLT",
+"FSD_ADC": "FSD_ADC",
+"FSD_BLM": "FSD_BLM",
+"FSD_ELEC": "FSD_ELEC",
+"FSD_FIBER": {
+"FSD_MASTER": "FSD_MASTER"
+},
+"FSD_ION": "FSD_ION",
+"FSD_NORMAL": "FSD_NORMAL",
+"FSD_VME": "FSD_VME"
+},
+"HVCard": {
+"HVCard12Ch": "HVCard12Ch",
+"HVCard24Ch": "HVCard24Ch",
+"HVCard6Ch": "HVCard6Ch"
+},
+"NDXCard": {
+"NDX_Controller": "NDX_Controller",
+"NDX_Electrometer": "NDX_Electrometer"
+},
+"ODHCard": "ODHCard",
+"RelayOutput": "RelayOutput"
+},
+"LCWValves": {
+"LCWReturnValve": "LCWReturnValve",
+"LCWSupplyValve": "LCWSupplyValve"
+},
+"LineElem": {
+"BeamElem": {
+"BeamStopper": "BeamStopper",
+"Collimator": "Collimator",
+"CryoCavity": "CryoCavity",
+"Detector": "Detector",
+"Diagnostic": {
+"Accelerometer": "Accelerometer",
+"Actuated": {
+"2KWDump": "2KWDump",
+"Aperture": "Aperture",
+"FaradayCup": "FaradayCup",
+"Mirror": "Mirror",
+"Puck": "Puck",
+"Stage": "Stage",
+"Viewer": {
+"OTR": "OTR",
+"Standard": "Standard",
+"YAG": "YAG"
+}
+},
+"BCM": "BCM",
+"BPM": {
+"4ChBPM": "4ChBPM",
+"ButtonBPM": "ButtonBPM",
+"CAVBPM": "CAVBPM",
+"DRBPM": "DRBPM",
+"DUMPBPM": "DUMPBPM",
+"SEEBPM": "SEEBPM",
+"g2pBPM": "g2pBPM",
+"nABPM": "nABPM"
+},
+"BrockCavity": "BrockCavity",
+"BunchLengthMonitor": "BunchLengthMonitor",
+"Harp": {
+"AccStyle": "AccStyle",
+"ArcScanner": "ArcScanner",
+"HallB-PMT": "HallB-PMT",
+"SuperHarp": "SuperHarp"
+},
+"HighPowerDump": "HighPowerDump",
+"LowPowerDump": "LowPowerDump",
+"SLM": "SLM",
+"TargetLadder": "TargetLadder",
+"VideoOnly": "VideoOnly",
+"YaoCavity": "YaoCavity"
+},
+"Diffuser": "Diffuser",
+"Goniometer": "Goniometer",
+"Magnet": {
+"Corrector": {
+"HCorrector": "HCorrector",
+"NPCorrector": "NPCorrector",
+"VCorrector": "VCorrector"
+},
+"DiagKicker": {
+"HDiagKicker": "HDiagKicker",
+"VDiagKicker": "VDiagKicker"
+},
+"Dipole": {
+"BA": "BA",
+"BE": "BE",
+"BJ": "BJ",
+"BP": "BP",
+"BQ": "BQ",
+"BW": "BW",
+"BX": "BX",
+"BY": "BY",
+"BZ": "BZ",
+"CP": "CP",
+"CV": "CV",
+"CW": "CW",
+"CX": "CX",
+"JA": "JA",
+"JC": "JC",
+"JD": "JD",
+"JF": "JF",
+"JG": "JG",
+"JH": "JH",
+"JI": "JI",
+"MC": "MC",
+"TG": "TG",
+"XA": "XA",
+"XB": "XB",
+"XC": "XC",
+"XD": "XD",
+"XE": "XE",
+"XF": "XF",
+"XG": "XG",
+"XH": "XH",
+"XI": "XI",
+"XJ": "XJ",
+"XK": "XK",
+"XL": "XL",
+"XM": "XM",
+"XN": "XN",
+"XO": "XO",
+"XP": "XP",
+"XQ": "XQ",
+"XR": "XR",
+"XS": "XS",
+"XT": "XT",
+"XU": "XU",
+"XV": "XV",
+"XW": "XW",
+"XX": "XX",
+"XY": "XY",
+"XZ": "XZ",
+"YB": "YB",
+"YR": "YR",
+"ZA": "ZA",
+"ZB": "ZB"
+},
+"EarthFieldCoil": "EarthFieldCoil",
+"PairSpecMagnet": "PairSpecMagnet",
+"PermanentMagnet": "PermanentMagnet",
+"Quad": {
+"QA": "QA",
+"QB": "QB",
+"QC": "QC",
+"QD": "QD",
+"QE": "QE",
+"QF": "QF",
+"QJ": "QJ",
+"QK": "QK",
+"QL": "QL",
+"QM": "QM",
+"QN": "QN",
+"QP": "QP",
+"QR": "QR",
+"QS": "QS",
+"QU": "QU",
+"QW": "QW",
+"ST": "ST"
+},
+"Sextupole": "Sextupole",
+"Solenoid": "Solenoid",
+"SweepMagnet": "SweepMagnet",
+"ThinSepta": "ThinSepta",
+"WienFilter": "WienFilter"
+},
+"Mark": "Mark",
+"MatchMarker": "MatchMarker",
+"Radiator": "Radiator",
+"Target": "Target",
+"WarmCavity": {
+"Buncher": "Buncher",
+"Capture": "Capture",
+"Chopper": "Chopper",
+"PreBuncher": "PreBuncher",
+"RFSeparator": "RFSeparator"
+}
+},
+"BeamLossMonitor": "BeamLossMonitor",
+"BeamProfiler": "BeamProfiler",
+"HaloMonitor": "HaloMonitor",
+"IonChamber": {
+"ICDiffuser": "ICDiffuser",
+"ICRadCon": "ICRadCon"
+},
+"PairSpecConverter": "PairSpecConverter",
+"PairSpectrometer": "PairSpectrometer",
+"Polarimeter": "Polarimeter",
+"Vacuum": {
+"ThinWindow": "ThinWindow",
+"VacuumGauge": {
+"ColdCathode": "ColdCathode",
+"PiraniGauge": "PiraniGauge",
+"QuattroGauge": "QuattroGauge",
+"ThermocoupleGauge": "ThermocoupleGauge"
+},
+"VacuumPump": {
+"DPPump": "DPPump",
+"IonPump": "IonPump",
+"NEGPump": "NEGPump",
+"NexTorr": "NexTorr",
+"TurboPump": "TurboPump",
+"UHVPump": "UHVPump"
+},
+"VacuumValve": {
+"BeamlineValve": "BeamlineValve",
+"FastValve": "FastValve",
+"ManualValve": "ManualValve",
+"RoughingValve": "RoughingValve"
+}
+}
+},
+"Meter": {
+"GasMeter": "GasMeter",
+"PowerMeter": "PowerMeter",
+"WaterMeter": "WaterMeter"
+},
+"NetElem": {
+"IOC": {
+"DHCPioc": "DHCPioc",
+"ExternIOC": "ExternIOC",
+"PC104": "PC104",
+"SoftIOC": {
+"PIOC": "PIOC"
+},
+"VME": "VME"
+},
+"Xport": "Xport"
+},
+"NeutronDetector": "NeutronDetector",
+"PLC": {
+"ODHPLC": "ODHPLC"
+},
+"PowerSupply": {
+"BoxPS": "BoxPS",
+"CAEN": "CAEN",
+"IonChamberHV": "IonChamberHV",
+"SRCCPS": "SRCCPS",
+"Shunt": "Shunt"
+},
+"RacksAndCrates": {
+"BPMCrates": {
+"4ChMuxCrate": "4ChMuxCrate",
+"SEECrate": "SEECrate",
+"SEEMultiPassCrate": "SEEMultiPassCrate",
+"SEEMuxCrate": "SEEMuxCrate"
+},
+"CAMACCrate": "CAMACCrate",
+"EquipmentRack": "EquipmentRack",
+"FCC2_0": "FCC2_0",
+"FCC3_0": "FCC3_0",
+"MagnetRacks": {
+"SeptaRack": "SeptaRack",
+"ShuntRack": "ShuntRack",
+"TrimRack": {
+"SCE410": "SCE410"
+}
+},
+"VMECrate": "VMECrate"
+},
+"SafetyElem": {
+"BELS": "BELS",
+"FSDElement": {
+"Gun": "Gun",
+"Hall": "Hall",
+"Watchdog": "Watchdog"
+},
+"ODH": {
+"ODH_CHL": "ODH_CHL",
+"ODH_D": "ODH_D"
+}
+},
+"Switch": {
+"LightSwitch": "LightSwitch",
+"PowerSwitch": "PowerSwitch"
+}
+},
+"Resource": {
+"Building": "Building",
+"Data": "Data"
+}
+}

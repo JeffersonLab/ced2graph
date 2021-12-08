@@ -1,0 +1,202 @@
+[
+{
+"date": "2021-11-01T00:00:00",
+"values": [
+{
+"ISD0I011G": "16"
+},
+{
+"BOOMHLAMODE": "1"
+},
+{
+"BOOMHLBMODE": "1"
+},
+{
+"BOOMHLCMODE": "1"
+},
+{
+"BOOMHLDMODE": "1"
+},
+{
+"IBC0R08CRCUR1": "0"
+},
+{
+"IBC1H04CRCUR2": "0"
+},
+{
+"IBC2C24CRCUR3": "0"
+},
+{
+"IBC3H00CRCUR4": "0"
+},
+{
+"IBCAD00CRCUR6": "0"
+},
+{
+"IGL1I00BEAMODE": "0"
+},
+{
+"IGL1I00HALLAMODE": "0"
+},
+{
+"IGL1I00HALLBMODE": "0"
+},
+{
+"IGL1I00HALLCMODE": "0"
+},
+{
+"IGL1I00HALLDMODE": "0"
+}
+]
+},
+{
+"date": "2021-11-01T01:00:00",
+"values": [
+{
+"ISD0I011G": "4"
+},
+{
+"BOOMHLAMODE": "1"
+},
+{
+"BOOMHLBMODE": "1"
+},
+{
+"BOOMHLCMODE": "1"
+},
+{
+"BOOMHLDMODE": "1"
+},
+{
+"IBC0R08CRCUR1": "0"
+},
+{
+"IBC1H04CRCUR2": "0"
+},
+{
+"IBC2C24CRCUR3": "0"
+},
+{
+"IBC3H00CRCUR4": "0"
+},
+{
+"IBCAD00CRCUR6": "0"
+},
+{
+"IGL1I00BEAMODE": "0"
+},
+{
+"IGL1I00HALLAMODE": "0"
+},
+{
+"IGL1I00HALLBMODE": "0"
+},
+{
+"IGL1I00HALLCMODE": "0"
+},
+{
+"IGL1I00HALLDMODE": "0"
+}
+]
+},
+{
+"date": "2021-11-01T02:00:00",
+"values": [
+{
+"ISD0I011G": "4"
+},
+{
+"BOOMHLAMODE": "1"
+},
+{
+"BOOMHLBMODE": "1"
+},
+{
+"BOOMHLCMODE": "1"
+},
+{
+"BOOMHLDMODE": "1"
+},
+{
+"IBC0R08CRCUR1": "0"
+},
+{
+"IBC1H04CRCUR2": "0"
+},
+{
+"IBC2C24CRCUR3": "0"
+},
+{
+"IBC3H00CRCUR4": "0"
+},
+{
+"IBCAD00CRCUR6": "0"
+},
+{
+"IGL1I00BEAMODE": "0"
+},
+{
+"IGL1I00HALLAMODE": "0"
+},
+{
+"IGL1I00HALLBMODE": "0"
+},
+{
+"IGL1I00HALLCMODE": "0"
+},
+{
+"IGL1I00HALLDMODE": "0"
+}
+]
+},
+{
+"date": "2021-11-01T03:00:00",
+"values": [
+{
+"ISD0I011G": "0"
+},
+{
+"BOOMHLAMODE": "3"
+},
+{
+"BOOMHLBMODE": "4"
+},
+{
+"BOOMHLCMODE": "4"
+},
+{
+"BOOMHLDMODE": "4"
+},
+{
+"IBC0R08CRCUR1": "43.62"
+},
+{
+"IBC1H04CRCUR2": "0"
+},
+{
+"IBC2C24CRCUR3": "132"
+},
+{
+"IBC3H00CRCUR4": "42.87"
+},
+{
+"IBCAD00CRCUR6": "199.5"
+},
+{
+"IGL1I00BEAMODE": "3"
+},
+{
+"IGL1I00HALLAMODE": "0"
+},
+{
+"IGL1I00HALLBMODE": "3"
+},
+{
+"IGL1I00HALLCMODE": "3"
+},
+{
+"IGL1I00HALLDMODE": "3"
+}
+]
+}
+]
