@@ -27,23 +27,36 @@ optional arguments:
   --save-json     Save fetched data in tree.json, nodes.json, and global.json
 
 ```
-It's a work in progress, so the output is probably just some scratch data at the moment:
-Which may or may not look anything like the example below.
+Example:
+
 ```
-2021-11-01T11:00:00      0      MFA0I03 Solenoid         6.6565725      243.994 1394.25
-2021-11-01T11:00:00      1      MBH0I03H        Corrector        6.8629475      -16.5   -92.4888
-2021-11-01T11:00:00      2      MBH0I03V        Corrector        6.8629475      10      70.2247
-2021-11-01T11:00:00      3      MFD0I04 Solenoid         7.3768604      60.619  0.747
-2021-11-01T11:00:00      4      MFD0I04A        Solenoid         7.5483104      60.619  0.747
-2021-11-01T11:00:00      5      MBH0I04H        Corrector        7.9520233      -19     -106.502
-2021-11-01T11:00:00      6      MBH0I04V        Corrector        7.9520233      2.2     15.4494
-2021-11-01T11:00:00      7      MFA0I05 Solenoid         8.2250733      271.998 1554.27
-2021-11-01T11:00:00      8      IPM0I05 BPM      8.453410847612 62.144  -2.66561        -1.81257
-2021-11-01T11:00:00      9      MBH0I05H        Corrector        8.454089347612 3.6     20.1794
-2021-11-01T11:00:00      10     MBH0I05V        Corrector        8.454099347612 15.8    110.955
-...
+% PATH /usr/csite/pubtools/python/3.7/bin:$PATH
+% python3 main.py
+Fetch Data: |##################################################| 100.0%
+Write Files: |##################################################| 100.0%
 ```
 
+## File Output
+Data is written to a date and time-based hiearchy of files anchored as illustrated below:
+
+```
+2021 # Year
+`-- 11  # Month
+    |-- 01  # Day
+    |   |-- 03  # Hour - Note Missing 01 and 02 hours were excluded by filter (IBC0R08CRCUR1 > 0)
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+    |   |-- 04
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+    |   |-- 05
+    |   |   |-- label.dat
+    |   |   |-- link.dat
+    |   |   `-- node.dat
+
+```
 
 ## Tests
 To run the test suite:
@@ -72,6 +85,22 @@ test_mya.py .                                                            [100%]
 
 ============================== 4 passed in 0.53s ===============================
 ```
+
+## TODO
+ * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
+ * Add extra 01X hour if necessary during DST/EST transition
+ * Write out meta.dat files
+ * Convert type to type_id in node.dat, label.dat?
+   * Is it necessary to use an integer for type instead of string?  
+ * Make Edge links to nth readback node for n > 1
+ * Test against longer date ranges
+   * 2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global
+   * Probably need to break large archiver requests into (month-sized?) chunks  
+ * Decide on overwrite/preserve behavior on writing output files
+   * Preserve or clobber by default
+ * Figure out how to deal with trickier elements (BCM, BLM, NDX, etc.)
+   * Ad-hoc element addition (user supplies an "S")
+   * Merge multiple inventories? 
 
 
 ## Developer Notes
