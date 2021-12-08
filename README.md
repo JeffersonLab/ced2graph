@@ -22,7 +22,6 @@ optional arguments:
   -h, --help      show this help message and exit
   -c CONFIG_FILE  Name of a yaml formatted config file
   -d OUTPUT_DIR   Directory where generated graph file hierarchy will be written
-  -o              Overwrite existing files
   --read-json     Read data from tree.json, nodes.json, and global.json instead of CED and Mya
   --save-json     Save fetched data in tree.json, nodes.json, and global.json
 
@@ -89,13 +88,14 @@ test_mya.py .                                                            [100%]
 ## TODO
  * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
  * Add extra 01X hour if necessary during DST/EST transition
- * Write out meta.dat files
+ * ~~Write out meta.dat files~~
  * Convert type to type_id in node.dat, label.dat?
    * Is it necessary to use an integer for type instead of string?  
  * Make Edge links to nth readback node for n > 1
+ *   
  * Test against longer date ranges
-   * 2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global
-   * Probably need to break large archiver requests into (month-sized?) chunks  
+   * ~~2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global~~
+   * ~~Probably need to break large archiver requests into (month-sized?) chunks~~  
  * Decide on overwrite/preserve behavior on writing output files
    * Preserve or clobber by default
  * Figure out how to deal with trickier elements (BCM, BLM, NDX, etc.)
