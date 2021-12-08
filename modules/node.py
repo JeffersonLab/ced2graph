@@ -16,7 +16,7 @@ class Node():
         self.epics_fields.sort()
         self.sampler = sampler
         self.sampler.pv_list = self.pv_list()
-        self.data = []      # Stores array of timestampled data sets from mya
+        self.data = []      # Stores array of timestamped data sets from mya
         self.links = []     # Stores links to downstream nodes to use when building graph edges
         self.node_id = None
         self.type_name = None
@@ -212,20 +212,19 @@ class ListEncoder(json.JSONEncoder):
     # _node_list and for the ced and mya classes that it contains
     def default(self, obj):
         if isinstance(obj, mya.Sampler):
-            struct = {
+            return {
                 'interval'   : obj.interval,
                 'pv_list'    : obj.pv_list,
                 'data'       : obj._data,
                 'begin_date' : obj.begin_date,   
                 'end_date'   : obj.end_date
             }
-            return struct
         if isinstance(obj, Node):
-            return obj.__dict__
-        if isinstance(obj, SetPointNode):
-            return obj.__dict__
-        if isinstance(obj, ReadBackNode):
-            return obj.__dict__
+            return {
+                'element': obj.element,
+                'epics_fields' : obj.epics_fields,
+                'sampler' : obj.sampler,
+            }
         if isinstance(obj, pandas.Timestamp):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         # Let the base class default method raise the TypeError
