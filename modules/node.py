@@ -168,6 +168,29 @@ class List():
 
         return nodes
 
+    # Returns the list of nodes that remain after applying filter logic
+    # TODO use dynamic rather than hard-coded filter logic
+    # TODO investigate using @yield
+    @staticmethod
+    def filter(node_list, global_data):
+        filtered = []
+        for i,data in enumerate(global_data):
+            current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+            if current_filter_value and float(current_filter_value) > 0:
+                filtered.append(node_list[i])
+        return filtered
+
+    # Returns a dictionary with information about how many intances of each type
+    # of node were encountered in node_list
+    @staticmethod
+    def type_count(node_list) -> dict:
+        type_dict = {}
+        for item in node_list:
+            if item.type_name in type_dict:
+                type_dict[item.type_name] += 1
+            else:
+                type_dict[item.type_name] = 1
+        return type_dict
 
     # Make a ced.SetPointNode or ced.ReadBackNode from the provided element
     #  element - dictionary containing ced element information
@@ -222,6 +245,7 @@ class ListEncoder(json.JSONEncoder):
         if isinstance(obj, Node):
             return {
                 'element': obj.element,
+                'type_name' : obj.type_name,
                 'epics_fields' : obj.epics_fields,
                 'sampler' : obj.sampler,
             }

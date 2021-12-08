@@ -160,6 +160,7 @@ try:
             directory = hgb.path_from_date(args.output_dir, data['date'])
             if not os.path.exists(directory):
                 os.makedirs(directory)
+            hgb.write_meta_dat(directory, node_list)
             hgb.write_node_dat(directory, node_list, i)
             hgb.write_link_dat(directory, node_list)
             hgb.write_label_dat(directory, node_list)
