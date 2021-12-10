@@ -1,11 +1,17 @@
 ---
-# Specify the parameters that will be used to query CED
+##################################################################################################################
+# CED
+#
+# Here you specify the parameters for gathering data from the CEBAF Element Database (CED)
+#
 #  zone: The name of a CED zone
 #  types: A list of types to query. Can simply use BeamElem or LineElem and rely on CED inheritance
 #  properties: a list of properties to fetch in addition to default EPICSName and S which are hard-coded.
 #              must be applicable to all retrieved types.
-#  expressions: a list of CED property expressions.  For example S >= 6.65657 to skip over elements in the
-#               injector zone in front of MFA0I03.
+#  expressions: a list of CED property expressions.
+#       Example: S >= 6.65657  # skip over elements in the front of the MFA0I03 S Value
+#       Example: '!isSRF'      # Only retrieve elements whose is isSRF property is false or null
+#
 ced:
   zone: "Injector"
   types: ["LineElem"]
@@ -13,8 +19,16 @@ ced:
   expressions:
     - S >= 6.65657
 
-# Classify CED element types as setpoints and readbacks as well
-# as specifying which EPICS records are desired for each type.
+##################################################################################################################
+# Nodes
+#
+# Here you specify information about the nodes that will be generated from the CED data.
+#
+# setpoints:  List CED types whose elements are to be considered setpoints
+# readgacks:  List CED types whose elements are to be considered readbacks
+# filters:    A filter expression governing whether data for a given interval is valid (i.e. was the beam on?)
+#
+
 nodes:
   setpoints:
     Corrector: [".BDL", ".S"]
@@ -23,23 +37,30 @@ nodes:
     Solenoid: [".BDL", ".S"]
     CryoCavity: ['PSET','GSET','XPSET8']  # Note XPSET8 requires special handling (belongs zone, not cavity)
   readbacks:
-    # BeamLossMonitor: [".Lc"]  # Doesn't work
+    BeamLossMonitor: ["Lc"]
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
-    # Inconsistent EPICSName
-    # IBC0L02 : IBC0L02Current
-    # SBC0R08: has no EPICSName
-    # BCM: ["Current"]                   # EPICSName is actually full-blown IBC0L02Current
+    IonPump: [""]               # The "" is the vacuum readback
+    # BCM: ["Current"]          # Need to deal w/IBC0L02,SBC0R08 EPICSName discrepancy
 
-# Specify the date range for which data should be retrieved from the archiver
-# as well as the desired interval within the date range at which graph data
-# should be generated.
-mya:
-  begin: "2021-11-01 10:00"
-  end: "2021-11-01 12:00"
-  interval: "1h"
+  # Filter expression may use EPICS Macro variable syntax to reference PVs mentioned in the mya.global
+  # secion of this config file
   filters:
-    - "IBC0R08CRCUR1 > 0.1"
-  # Make sure any PVs mentioned in filters are also included in the global list
+    - "${IBC0R08CRCUR1} > 0.1"
+
+
+##################################################################################################################
+# Mya
+#
+# Here you specify information that will govern fetching of data from the mya archiver.
+#
+# begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
+# end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
+# interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
+# global: A list of global signal names to be fetched at each time interval.
+mya:
+  begin: "2021-12-06"
+  end: "2021-12-07"
+  interval: "1h"
   global:
     - ISD0I011G
     - BOOMHLAMODE
@@ -56,9 +77,20 @@ mya:
     - IGL1I00HALLBMODE
     - IGL1I00HALLCMODE
     - IGL1I00HALLDMODE
-# Parameters for defining edges.
+
+##################################################################################################################
+# Mya
+#
+# Here you specify information that will govern construction of edge features
+#
+#  connectivity: each readback node will be connected to to the intervening setpoint and readback nodes up until the nth
+#                readback node, where n = edges.connectivity.
+#  directed:  true if edges are considered unidirectional
+#  weighted : if true, edges will be weighted using 1/(S[2]-S[1])
+
 edges:
   connectivity: 2
-  weighted: true
-  directed: false
+  directed: true      # Probably stays true since the beam is directional
+  weighted: false
+
 
