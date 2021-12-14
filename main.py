@@ -133,21 +133,8 @@ try:
             except mya.MyaException as err:
                 print(err)
 
-    # Link downstream nodes to each ReadbackNode.
-    # Begin with a copy of the original list whose elements we can pop fron the front
-    working_list = node_list.copy()
-    current_node = working_list.pop(0)
-    # The while loop below fills the links list of every SetPoint node with references
-    # to all the ensuing nodes up to and including the next SetPoint Node.
-    while current_node:
-        next_node = working_list.pop(0)
-        if isinstance(current_node, node.SetPointNode):
-            #print(f"append {next_node.name()} to {current_node.name()}")
-            current_node.links.append(next_node)
-        if isinstance(next_node, node.SetPointNode):
-            current_node = next_node
-        if len(working_list) < 1:
-            break
+    # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
+    node.List.populate_links(node_list)
 
     # At this point we've got all the data necessary to start writing out data sets
     i = 0

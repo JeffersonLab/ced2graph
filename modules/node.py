@@ -122,6 +122,21 @@ class Node():
     def attribute_names(self):
         return self.ced_attribute_names() + self.epics_fields
 
+    # Return a list of ReadBack and SetPoint nodes up to the specified number of SetpointNodes distance away.
+    def extended_links(self, distance: int) -> list:
+        # The links property stores the list of ReadBack and SetPoint nodes up to and including the next
+        # SetPointNode, so we just have to append that terminal SetPointNode's links to our own, and those
+        # that belong to it, and so on up to the desired distance.
+        links = self.links.copy()
+        extensions = 1
+        while extensions < distance:
+            if links:
+                links.extend(links[-1].links)
+                extensions += 1
+            else:
+                break
+
+        return links
 
 # Nodes that represent setpoints
 class SetPointNode(Node):pass
@@ -227,6 +242,29 @@ class List():
 
         return node        
 
+    # Link downstream nodes to each ReadbackNode within node_list.
+    # The connectivity built here is just up to and including the next ReadBackNode.
+    # Later when writing out edge files, the connectivity can be extended by simply
+    # appending the links of terminal ReadBackNode elements to those of the initial
+    # ReadbackNode to any desired extent.
+    @staticmethod
+    def populate_links(node_list):
+        # Begin with a copy of the original list whose elements we can pop fron the front
+        working_list = node_list.copy()
+        current_node = working_list.pop(0)
+        current_node.links = []
+        # The while loop below fills the links list of every SetPoint node with references
+        # to all the ensuing nodes up to and including the next SetPoint Node.
+        while current_node:
+            next_node = working_list.pop(0)
+            if isinstance(current_node, SetPointNode):
+                # print(f"append {next_node.name()} to {current_node.name()}")
+                current_node.links.append(next_node)
+            if isinstance(next_node, SetPointNode):
+                current_node = next_node
+                current_node.links = []
+            if len(working_list) < 1:
+                break
 
 class ListEncoder(json.JSONEncoder):
     """Helper class for exporting json-encoded node lists""" 
