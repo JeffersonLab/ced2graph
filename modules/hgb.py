@@ -31,13 +31,13 @@ def write_node_dat(path, node_list, index):
 # Write out a link.dat file at the specified path using data from the specified array index
 # Per https://www.biendata.xyz/hgb/#/about:
 #   link.dat: The information of edges. Each line has (node_id_source, node_id_target, edge_type_id, edge_weight).
-# TODO Use appropriate type and weight
-def write_link_dat(path, node_list):
+# TODO implement node weighting
+def write_link_dat(path, node_list, distance = 1):
     file_name = os.path.join(path, 'link.dat')
     f = open(file_name, 'w')
     for item in node_list:
         if (isinstance(item, node.SetPointNode)):
-            for target in item.links:
+            for target in item.extended_links(distance):
                 print(item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
     f.close()            
 
@@ -54,4 +54,4 @@ def write_meta_dat(path, node_list):
 # Return a path tree of Base/Year/Month/Day/Hour using the correct path separator for the current OS
 def path_from_date(base_path, target_date):
     date = pandas.to_datetime(target_date)
-    return os.path.join(base_path, date.strftime("%Y"), date.strftime("%d"), date.strftime("%m"), date.strftime("%H"))
+    return os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"), date.strftime("%H"))
