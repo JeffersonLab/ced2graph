@@ -5,15 +5,16 @@ import os
 import pandas
 import modules.node as node
 
-# Write out a label.dat file at the specified path
+# Write out an info.dat file at the specified path
 # Per https://www.biendata.xyz/hgb/#/about:
 #   label.dat: The information of node labels. Each line has (node_id, node_type_id, node_label).
 #   For multi-label setting, node_labels are split by comma.
-def write_label_dat(path, node_list):
-    file_name = os.path.join(path, 'label.dat')
+def write_info_dat(path, node_list):
+    file_name = os.path.join(path, 'info.dat')
     f = open(file_name, 'w')
-    for item in node_list:
-        print(item.node_id, "\t", item.type_name, ','.join(item.attribute_names()), file=f)
+    print("\t".join(['TYPE', 'NAME', 'LABELS']), file=f)
+    for key, item in node.List.type_map(node_list).items():
+        print(item['id'], "\t", key, ','.join(item['labels']), file=f)
     f.close()    
 
 
@@ -22,10 +23,12 @@ def write_label_dat(path, node_list):
 #   node.dat:The information of nodes. Each line has (node_id, node_name, node_type_id, node_feature).
 #   Node features are vectors split by comma.
 def write_node_dat(path, node_list, index):
+    type_map = node.List.type_map(node_list)
     file_name = os.path.join(path, 'node.dat')
     f = open(file_name, 'w')
+    print("\t".join(['NODE','NAME','TYPE','VALUES']), file=f)
     for item in node_list:
-        print(item, "\t", ','.join(item.attribute_values(index)), file=f)
+        print(item, "\t", type_map[item.type_name]['id'], "\t", ','.join(item.attribute_values(index)), file=f)
     f.close()    
 
 # Write out a link.dat file at the specified path using data from the specified array index
@@ -35,20 +38,23 @@ def write_node_dat(path, node_list, index):
 def write_link_dat(path, node_list, distance = 1):
     file_name = os.path.join(path, 'link.dat')
     f = open(file_name, 'w')
+    i = 0
+    print("\t".join(['LINK', 'START', 'END', 'EDGE-TYPE', 'WEIGHT']), file=f)
     for item in node_list:
         if (isinstance(item, node.SetPointNode)):
             for target in item.extended_links(distance):
-                print(item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
+                print(i, '\t', item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
     f.close()            
 
 # Write out a meta.dat file at the specified path
 # The file contains summary data such as the number of each type of node
 def write_meta_dat(path, node_list):
+    type_map = node.List.type_map(node_list)
     file_name = os.path.join(path, 'meta.dat')
     f = open(file_name, 'w')
     print('Total Nodes:', "\t", len(node_list), file=f)
-    for type_name, count in node.List.type_count(node_list).items():
-        print(f"Node Type {type_name}:", "\t", count, file=f)
+    for type_name, data in type_map.items():
+        print(f"Node_Type_{data['id']}:", "\t", data['count'], file=f)
     f.close()
 
 # Return a path tree of Base/Year/Month/Day/Hour using the correct path separator for the current OS
