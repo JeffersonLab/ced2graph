@@ -65,7 +65,6 @@ class Node():
             if self.name() == 'IBC0R08':
                 return 'IBC0R08CRCUR1'
             if re.match(r'^VIP0L04(A|20|30|40|50|B)$',self.name()):
-                print(f"re match {self.name()}")
                 return f'{epics_name}LOG'
             # An empty field means the naked EPICSNAme should be treated as a PVName
             return epics_name
