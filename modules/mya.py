@@ -12,6 +12,10 @@ url = "https://myaweb.acc.jlab.org/"
 # The archiver lives in the America/New_York timezone
 tz = gettz('America/New_York')
 
+# Custom exception class for errors encountered interacting with myaweb
+class MyaException(RuntimeError): pass
+
+
 class Sampler:
     """Class to query the Mya Web API and retrieve values for a list of PVs"""
 
@@ -24,7 +28,6 @@ class Sampler:
     deployment = "history"
 
     # Limit the number of data points (num pvs * steps) to be fetched at each server request.
-    # Reduce it if server timeouts are encountered.
     # This number must be larger than the number of PVs to be fetched.
     throttle = 10000
 
@@ -48,7 +51,7 @@ class Sampler:
         if begin_date >= end_date:
             raise RuntimeError("End date must be after Begin date")
 
-    # Get the number of interval-size steps between our begin and end dates
+    # Get the number of interval-size steps between t begin and end dates
     def total_steps(self):
         return self.steps_between(self.begin_date, self.end_date, self.interval)
 
@@ -105,6 +108,7 @@ class Sampler:
             date = self.begin_date
             self._data = []
             while date < self.end_date:
+                #print(date)
                 steps = self.steps_per_chunk(date)
                 self._data.extend(self.get_data_chunk(date, steps))
                 date = date + pandas.to_timedelta(self.interval) * steps
@@ -137,7 +141,11 @@ class Sampler:
 
         if response.status_code != requests.codes.ok:
             print(response.url)  # Useful for debugging -- what URL actually used?
-            raise RuntimeError("Mya web server returned an error status code")
+            if 'error' in response.json():
+                message = response.json()['error']
+            else:
+                message = f'Mya web server returned error status code {response.status_code}'
+            raise MyaException(message)
 
         # Save the data as an object property
         return response.json()['data']

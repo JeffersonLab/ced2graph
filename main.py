@@ -76,11 +76,14 @@ try:
     stream = open(args.config_file, 'r')
     config = yaml.load(stream, Loader=yaml.CLoader)
 
+    # Configure the default_attributes of the node module
+    node.default_attributes = config['nodes']['default_attributes']
+
     # See if the type tree data should be read from file rather than retrieved from CED
     if args.read_json:
         with open(tree_file, 'r') as tree_file_handle:
             data = tree_file_handle.read()
-        tree.tree = json.loads(data)  # prepopulate the data so no need to lazy-load later
+        tree.tree = json.loads(data)  # pre-populate the data so no need to lazy-load later
 
     # Global data from file or service
     if args.read_json:
@@ -115,34 +118,26 @@ try:
         # order in the list beginning at 0.
         node_id = 0
         for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
-            item = node.List.make_node(element, tree, config)
+            # Wrap node creating in a try-catch block so that we can simply log problematic nodes
+            # without killing the entire effort.
+            try:
+                item = node.List.make_node(element, tree, config)
 
-            # If no node was created, it means that there was not type match.  This could happen if
-            # the CED query was something broad like "BeamElem", but the config file only indicates the
-            # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
-            if item:
-                # Load the data now so that we can give user a progressbar
-                item.pv_data()
-                # Assign id values based on order of encounter
-                item.node_id = node_id
-                node_list.append(item)
-                node_id += 1
+                # If no node was created, it means that there was not type match.  This could happen if
+                # the CED query was something broad like "BeamElem", but the config file only indicates the
+                # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
+                if item:
+                    # Load the data now so that we can give user a progressbar
+                    item.pv_data()
+                    # Assign id values based on order of encounter
+                    item.node_id = node_id
+                    node_list.append(item)
+                    node_id += 1
+            except mya.MyaException as err:
+                print(err)
 
-    # Link downstream nodes to each ReadbackNode.
-    # Begin with a copy of the original list whose elements we can pop fron the front
-    working_list = node_list.copy()
-    current_node = working_list.pop(0)
-    # The while loop below fills the links list of every SetPoint node with references
-    # to all the ensuing nodes up to and including the next SetPoint Node.
-    while current_node:
-        next_node = working_list.pop(0)
-        if isinstance(current_node, node.SetPointNode):
-            #print(f"append {next_node.name()} to {current_node.name()}")
-            current_node.links.append(next_node)
-        if isinstance(next_node, node.SetPointNode):
-            current_node = next_node
-        if len(working_list) < 1:
-            break
+    # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
+    node.List.populate_links(node_list)
 
     # At this point we've got all the data necessary to start writing out data sets
     i = 0
@@ -150,23 +145,23 @@ try:
     # The global data was sampled identically to the node data, so when we find a row we want
     # to keep while looping through it, we know the nodes will have data at the corresponding
     # row index.
-    # for data in global_data:
-    for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
+    for data in global_data:
+    #for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
         # Filter the nodeList by only outputting rows that meet our criteria
         # For the moment we're using hard-coded conditions, but eventually the goal is to
         # do some sort of eval on the filters specified in the yaml config file
         current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-        if current_filter_value and  float(current_filter_value) > 0:
+        if current_filter_value \
+                and current_filter_value != '<undefined>' \
+                and float(current_filter_value) > 0:
             directory = hgb.path_from_date(args.output_dir, data['date'])
             if not os.path.exists(directory):
                 os.makedirs(directory)
             hgb.write_meta_dat(directory, node_list)
             hgb.write_node_dat(directory, node_list, i)
-            hgb.write_link_dat(directory, node_list)
-            hgb.write_label_dat(directory, node_list)
+            hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
+            hgb.write_info_dat(directory, node_list)
         i += 1
-
-    #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
     indent = 2

@@ -45,14 +45,17 @@ Data is written to a date and time-based hiearchy of files anchored as illustrat
     |   |-- 03  # Hour - Note Missing 01 and 02 hours were excluded by filter (IBC0R08CRCUR1 > 0)
     |   |   |-- label.dat
     |   |   |-- link.dat
+    |   |   |-- meta.dat    
     |   |   `-- node.dat
     |   |-- 04
     |   |   |-- label.dat
     |   |   |-- link.dat
+    |   |   |-- meta.dat    
     |   |   `-- node.dat
     |   |-- 05
     |   |   |-- label.dat
     |   |   |-- link.dat
+    |   |   |-- meta.dat    
     |   |   `-- node.dat
 
 ```
@@ -89,19 +92,14 @@ test_mya.py .                                                            [100%]
  * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
  * Add extra 01X hour if necessary during DST/EST transition
  * ~~Write out meta.dat files~~
- * Convert type to type_id in node.dat, label.dat?
-   * Is it necessary to use an integer for type instead of string?  
- * Make Edge links to nth readback node for n > 1
- *   
+ * ~~Convert type to type_id in node.dat, info.dat~~
+ * ~~Make Edge links to nth readback node for n > 1~~
+ * Progress bar during global data fetch (a long pause for large data sets)  
  * Test against longer date ranges
    * ~~2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global~~
    * ~~Probably need to break large archiver requests into (month-sized?) chunks~~  
- * Decide on overwrite/preserve behavior on writing output files
-   * Preserve or clobber by default
- * Figure out how to deal with trickier elements (BCM, BLM, NDX, etc.)
-   * Ad-hoc element addition (user supplies an "S")
-   * Merge multiple inventories? 
-
+ * Use a timestamp directory name instead of . by default
+ 
 
 ## Developer Notes
 During development it is nice (and faster) to be able to work offline without constantly fetching data 

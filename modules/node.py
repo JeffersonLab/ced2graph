@@ -1,10 +1,19 @@
 # Module of classes for generating graph nodes
 
 import yaml
+import re
 import json
 import pandas
 from modules import ced
 from modules import mya
+
+# A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
+# EPICSName.  The defaults below should be updated at runtime with config file data.
+default_attributes = {
+    'BCM': 'Current',
+    'BPM': 'WireSum',
+    'IonPump': 'Vacuum',
+}
 
 class Node():
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
@@ -44,12 +53,20 @@ class Node():
        return pv_list
 
     # Return a PV name formed from the given base epics name field
-    # Handle special cases such as XPSET8
+    # Handle special cases such as XPSET8, BCMs, certain IonPumps
     def pv_name(self, epics_name, field):
         if field == 'XPSET8':
             # belongs to zone, so remove final char that designates cavity
             return f"{epics_name[:-1]}{field}"
         elif field == "":
+            # BCMs are case-by-case inconsistent
+            if self.name() == 'IBC0L02':
+                return 'IBC0L02Current'
+            if self.name() == 'IBC0R08':
+                return 'IBC0R08CRCUR1'
+            if re.match(r'^VIP0L04(A|20|30|40|50|B)$',self.name()):
+                print(f"re match {self.name()}")
+                return f'{epics_name}LOG'
             # An empty field means the naked EPICSNAme should be treated as a PVName
             return epics_name
         else:
@@ -84,7 +101,7 @@ class Node():
     #   tab-delimited node_id, node_name, node_type, ced_attributes
     #   where ced_attributes is comma-delimited
     def __str__(self):
-        return f"{self.node_id}\t{self.name()}\t{self.type_name}"
+        return f"{self.node_id}\t{self.name()}"
 
     # Return a sorted list of the CED properties usable as attributes.
     # In practice it is all properties requested except EPICSName which is excluded
@@ -120,8 +137,32 @@ class Node():
         return self.ced_attribute_values() + self.epics_attribute_values(index)
 
     def attribute_names(self):
-        return self.ced_attribute_names() + self.epics_fields
+        attribute_names = self.ced_attribute_names()
+        for field in self.epics_fields:
+            if (field != ""):
+                attribute_names.append(field)
+            elif self.type_name in default_attributes:
+                attribute_names.append(default_attributes[self.type_name])
+            else:
+                raise RuntimeError(f'No default attribute name for {self.type_name}')
+        return attribute_names
 
+    # Return a list of ReadBack and SetPoint nodes up to the specified number of SetpointNodes distance away
+    def extended_links(self, distance: int) -> list:
+        # The links property stores the list of ReadBack and SetPoint nodes up to and including the next
+        # SetPointNode, so we just have to append that terminal SetPointNode's links to our own, and those
+        # that belong to it, and so on up to the desired distance.
+        links = self.links.copy()
+        extensions = 1
+        while extensions < distance:
+            if links:
+                # Add links of final Node in current links
+                links.extend(links[-1].links)
+                extensions += 1
+            else:
+                break
+
+        return links
 
 # Nodes that represent setpoints
 class SetPointNode(Node):pass
@@ -180,7 +221,7 @@ class List():
                 filtered.append(node_list[i])
         return filtered
 
-    # Returns a dictionary with information about how many intances of each type
+    # Returns a dictionary with information about how many instances of each type
     # of node were encountered in node_list
     @staticmethod
     def type_count(node_list) -> dict:
@@ -191,6 +232,26 @@ class List():
             else:
                 type_dict[item.type_name] = 1
         return type_dict
+
+    # Builds and returns a dictionary of info about the each types in node_list.
+    # Dictionary is keyed by type_name and has the fields "id" and "labels".
+    # The id value gets assigned to each type in the order it is encountered.
+    @staticmethod
+    def type_map(node_list) -> dict:
+        type_map = {}
+        i=0
+        for item in node_list:
+            if item.type_name not in type_map:
+                type_map[item.type_name] = {
+                    'id' : i,
+                    'labels' : item.attribute_names(),
+                    'count' : 1
+                }
+                i += 1
+            else:
+                type_map[item.type_name]['count'] += 1
+
+        return type_map
 
     # Make a ced.SetPointNode or ced.ReadBackNode from the provided element
     #  element - dictionary containing ced element information
@@ -227,6 +288,29 @@ class List():
 
         return node        
 
+    # Link downstream nodes to each ReadbackNode within node_list.
+    # The connectivity built here is just up to and including the next ReadBackNode.
+    # Later when writing out edge files, the connectivity can be extended by simply
+    # appending the links of terminal ReadBackNode elements to those of the initial
+    # ReadbackNode to any desired extent.
+    @staticmethod
+    def populate_links(node_list):
+        # Begin with a copy of the original list whose elements we can pop fron the front
+        working_list = node_list.copy()
+        current_node = working_list.pop(0)
+        current_node.links = []
+        # The while loop below fills the links list of every SetPoint node with references
+        # to all the ensuing nodes up to and including the next SetPoint Node.
+        while current_node:
+            next_node = working_list.pop(0)
+            if isinstance(current_node, SetPointNode):
+                # print(f"append {next_node.name()} to {current_node.name()}")
+                current_node.links.append(next_node)
+            if isinstance(next_node, SetPointNode):
+                current_node = next_node
+                current_node.links = []
+            if len(working_list) < 1:
+                break
 
 class ListEncoder(json.JSONEncoder):
     """Helper class for exporting json-encoded node lists""" 
