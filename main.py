@@ -156,7 +156,7 @@ try:
                 os.makedirs(directory)
             hgb.write_meta_dat(directory, node_list)
             hgb.write_node_dat(directory, node_list, i)
-            hgb.write_link_dat(directory, node_list)
+            hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
             hgb.write_label_dat(directory, node_list)
         i += 1
 
