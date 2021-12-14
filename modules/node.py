@@ -84,7 +84,7 @@ class Node():
     #   tab-delimited node_id, node_name, node_type, ced_attributes
     #   where ced_attributes is comma-delimited
     def __str__(self):
-        return f"{self.node_id}\t{self.name()}\t{self.type_name}"
+        return f"{self.node_id}\t{self.name()}"
 
     # Return a sorted list of the CED properties usable as attributes.
     # In practice it is all properties requested except EPICSName which is excluded
@@ -131,6 +131,7 @@ class Node():
         extensions = 1
         while extensions < distance:
             if links:
+                # Add links of final Node in current links
                 links.extend(links[-1].links)
                 extensions += 1
             else:
@@ -195,7 +196,7 @@ class List():
                 filtered.append(node_list[i])
         return filtered
 
-    # Returns a dictionary with information about how many intances of each type
+    # Returns a dictionary with information about how many instances of each type
     # of node were encountered in node_list
     @staticmethod
     def type_count(node_list) -> dict:
@@ -206,6 +207,26 @@ class List():
             else:
                 type_dict[item.type_name] = 1
         return type_dict
+
+    # Builds and returns a dictionary of info about the each types in node_list.
+    # Dictionary is keyed by type_name and has the fields "id" and "labels".
+    # The id value gets assigned to each type in the order it is encountered.
+    @staticmethod
+    def type_map(node_list) -> dict:
+        type_map = {}
+        i=0
+        for item in node_list:
+            if item.type_name not in type_map:
+                type_map[item.type_name] = {
+                    'id' : i,
+                    'labels' : item.attribute_names(),
+                    'count' : 1
+                }
+                i += 1
+            else:
+                type_map[item.type_name]['count'] += 1
+
+        return type_map
 
     # Make a ced.SetPointNode or ced.ReadBackNode from the provided element
     #  element - dictionary containing ced element information
