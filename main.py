@@ -157,10 +157,8 @@ try:
             hgb.write_meta_dat(directory, node_list)
             hgb.write_node_dat(directory, node_list, i)
             hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
-            hgb.write_label_dat(directory, node_list)
+            hgb.write_info_dat(directory, node_list)
         i += 1
-
-    #hgb.write_label_dat('foo', node_list)
 
     # Save the tree, nodes, and global data list to a file for later use?
     indent = 2
