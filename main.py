@@ -76,6 +76,9 @@ try:
     stream = open(args.config_file, 'r')
     config = yaml.load(stream, Loader=yaml.CLoader)
 
+    # Configure the default_attributes of the node module
+    node.default_attributes = config['nodes']['default_attributes']
+
     # See if the type tree data should be read from file rather than retrieved from CED
     if args.read_json:
         with open(tree_file, 'r') as tree_file_handle:

@@ -40,7 +40,13 @@ nodes:
     BeamLossMonitor: ["Lc"]
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
     IonPump: [""]               # The "" is the vacuum readback
-    # BCM: ["Current"]          # Need to deal w/IBC0L02,SBC0R08 EPICSName discrepancy
+    BCM: [""]                   # node module must handle special cases
+
+  # Specify a label to be used for each type above using "" as a field name.
+  default_attributes:
+    BCM: Current
+    BPM: WireSum
+    IonPump: Vacuum
 
   # Filter expression may use EPICS Macro variable syntax to reference PVs mentioned in the mya.global
   # secion of this config file
@@ -58,8 +64,8 @@ nodes:
 # interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
 # global: A list of global signal names to be fetched at each time interval.
 mya:
-  begin: "2021-12-06"
-  end: "2021-12-07"
+  begin: "2021-11-01"
+  end: "2021-11-02"
   interval: "1h"
   global:
     - ISD0I011G

@@ -1,10 +1,19 @@
 # Module of classes for generating graph nodes
 
 import yaml
+import re
 import json
 import pandas
 from modules import ced
 from modules import mya
+
+# A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
+# EPICSName.  The defaults below should be updated at runtime with config file data.
+default_attributes = {
+    'BCM': 'Current',
+    'BPM': 'WireSum',
+    'IonPump': 'Vacuum',
+}
 
 class Node():
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
@@ -44,12 +53,20 @@ class Node():
        return pv_list
 
     # Return a PV name formed from the given base epics name field
-    # Handle special cases such as XPSET8
+    # Handle special cases such as XPSET8, BCMs, certain IonPumps
     def pv_name(self, epics_name, field):
         if field == 'XPSET8':
             # belongs to zone, so remove final char that designates cavity
             return f"{epics_name[:-1]}{field}"
         elif field == "":
+            # BCMs are case-by-case inconsistent
+            if self.name() == 'IBC0L02':
+                return 'IBC0L02Current'
+            if self.name() == 'IBC0R08':
+                return 'IBC0R08CRCUR1'
+            if re.match(r'^VIP0L04(A|20|30|40|50|B)$',self.name()):
+                print(f"re match {self.name()}")
+                return f'{epics_name}LOG'
             # An empty field means the naked EPICSNAme should be treated as a PVName
             return epics_name
         else:
@@ -120,9 +137,17 @@ class Node():
         return self.ced_attribute_values() + self.epics_attribute_values(index)
 
     def attribute_names(self):
-        return self.ced_attribute_names() + self.epics_fields
+        attribute_names = self.ced_attribute_names()
+        for field in self.epics_fields:
+            if (field != ""):
+                attribute_names.append(field)
+            elif self.type_name in default_attributes:
+                attribute_names.append(default_attributes[self.type_name])
+            else:
+                raise RuntimeError(f'No default attribute name for {self.type_name}')
+        return attribute_names
 
-    # Return a list of ReadBack and SetPoint nodes up to the specified number of SetpointNodes distance away.
+    # Return a list of ReadBack and SetPoint nodes up to the specified number of SetpointNodes distance away
     def extended_links(self, distance: int) -> list:
         # The links property stores the list of ReadBack and SetPoint nodes up to and including the next
         # SetPointNode, so we just have to append that terminal SetPointNode's links to our own, and those
