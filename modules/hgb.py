@@ -38,13 +38,12 @@ def write_node_dat(path, node_list, index):
 def write_link_dat(path, node_list, distance = 1):
     file_name = os.path.join(path, 'link.dat')
     f = open(file_name, 'w')
-    i = 0
-    print("\t".join(['LINK', 'START', 'END', 'EDGE-TYPE', 'WEIGHT']), file=f)
+    print("\t".join(['START', 'END', 'LINK_TYPE', 'LINK_WEIGHT']), file=f)
     for item in node_list:
         if (isinstance(item, node.SetPointNode)):
             for target in item.extended_links(distance):
-                print(i, '\t', item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
-                i += 1
+                # Hard-code type and weight for now
+                print(item.node_id, '\t', target.node_id, '\t','0\t1', file=f)
     f.close()
 
 # Write out a meta.dat file at the specified path
