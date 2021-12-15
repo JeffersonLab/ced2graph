@@ -36,29 +36,43 @@ Write Files: |##################################################| 100.0%
 ```
 
 ## File Output
+
+### Directory Structure
 Data is written to a date and time-based hiearchy of files anchored as illustrated below:
 
 ```
 2021 # Year
-`-- 11  # Month
-    |-- 01  # Day
-    |   |-- 03  # Hour - Note Missing 01 and 02 hours were excluded by filter (IBC0R08CRCUR1 > 0)
-    |   |   |-- label.dat
-    |   |   |-- link.dat
-    |   |   |-- meta.dat    
-    |   |   `-- node.dat
-    |   |-- 04
-    |   |   |-- label.dat
-    |   |   |-- link.dat
-    |   |   |-- meta.dat    
-    |   |   `-- node.dat
-    |   |-- 05
-    |   |   |-- label.dat
-    |   |   |-- link.dat
-    |   |   |-- meta.dat    
-    |   |   `-- node.dat
+|-- 01 # Day
+|   |-- 03 # Hour  - Note Missing 01 and 03 hours were excluded by filter (IBC0R08CRCUR1 > 0)
+|   |   |-- 02
+|   |   |   |-- info.dat
+|   |   |   |-- link.dat
+|   |   |   |-- meta.dat
+|   |   |   `-- node.dat
+|   |   |-- 04
+|   |   |   |-- info.dat
+|   |   |   |-- link.dat
+|   |   |   |-- meta.dat
+|   |   |   `-- node.dat
 
 ```
+### Output Files
+Within each output directory is a data set consisting of four files.
+
+#### node.dat
+
+
+#### link.dat
+
+
+#### info.dat
+
+
+
+#### meta.dat
+
+
+
 
 ## Tests
 To run the test suite:
