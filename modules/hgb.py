@@ -44,7 +44,8 @@ def write_link_dat(path, node_list, distance = 1):
         if (isinstance(item, node.SetPointNode)):
             for target in item.extended_links(distance):
                 print(i, '\t', item.node_id, '\t', target.node_id, '\t','0\t1', file=f)  # Hard-code type and weight for now
-    f.close()            
+                i += 1
+    f.close()
 
 # Write out a meta.dat file at the specified path
 # The file contains summary data such as the number of each type of node
