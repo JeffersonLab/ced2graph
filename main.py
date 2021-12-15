@@ -44,6 +44,12 @@ global_data = []
 tree = TypeTree()
 
 
+# Until capability exists to eval an expression from the config file, 
+# this function will contain the necessary logic to decide if a given hour's
+# data should be included in the output data set.
+#   value is the value being tested.
+def filter_passes(value) -> bool:
+    return value and value != '<undefined>' and float(value) > 0.1
 
 # Define the program's command line arguments and build a parser to process them
 def make_cli_parser():
@@ -151,9 +157,7 @@ try:
         # For the moment we're using hard-coded conditions, but eventually the goal is to
         # do some sort of eval on the filters specified in the yaml config file
         current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-        if current_filter_value \
-                and current_filter_value != '<undefined>' \
-                and float(current_filter_value) > 0:
+        if filter_passes(current_filter_value):
             directory = hgb.path_from_date(args.output_dir, data['date'])
             if not os.path.exists(directory):
                 os.makedirs(directory)
