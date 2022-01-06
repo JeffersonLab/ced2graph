@@ -64,8 +64,8 @@ nodes:
 # interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
 # global: A list of global signal names to be fetched at each time interval.
 mya:
-  begin: "2021-11-01"
-  end: "2021-11-02"
+  begin: "2021-01-01"
+  end: "2021-12-15"
   interval: "1h"
   global:
     - ISD0I011G
