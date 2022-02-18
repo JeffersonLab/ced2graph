@@ -48,7 +48,7 @@ class Sampler:
         self.begin_date = pandas.to_datetime(begin_date)
         self.end_date = pandas.to_datetime(end_date)
         self.interval = interval
-        if begin_date >= end_date:
+        if begin_date > end_date:
             raise RuntimeError("End date must be after Begin date")
 
     # Get the number of interval-size steps between t begin and end dates
@@ -58,6 +58,11 @@ class Sampler:
     # Get the number of interval-size steps between the specified begin and end dates
     @staticmethod
     def steps_between(begin_date, end_date, interval):
+        # When the user has specified points in time rather than ranges,
+        # begin and end will be the same and we can simply and quickly return 1
+        if begin_date == end_date:
+            return 1
+
         # To account for days without 24 hours we must create timezone
         # aware timestamps from the specified dates
         begin_datetime = pandas.Timestamp(pandas.to_datetime(begin_date), tzinfo=tz)
@@ -70,7 +75,7 @@ class Sampler:
     def steps_per_chunk(self, begin_date):
         max_steps = math.floor(self.throttle / len(self.pv_list))
         remaining_steps = self.steps_between(begin_date, self.end_date, self.interval)
-        return remaining_steps if remaining_steps < max_steps else max_steps
+        return remaining_steps if remaining_steps <= max_steps else max_steps
 
 
     # Return a dictionary containing the query parameters to be used when making API call.
@@ -107,7 +112,7 @@ class Sampler:
             # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.
             date = self.begin_date
             self._data = []
-            while date < self.end_date:
+            while date <= self.end_date:
                 #print(date)
                 steps = self.steps_per_chunk(date)
                 self._data.extend(self.get_data_chunk(date, steps))

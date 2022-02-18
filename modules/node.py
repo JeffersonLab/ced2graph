@@ -4,8 +4,10 @@ import yaml
 import re
 import json
 import pandas
+import os
 from modules import ced
 from modules import mya
+import modules.hgb as hgb
 
 # A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
 # EPICSName.  The defaults below should be updated at runtime with config file data.
@@ -208,17 +210,14 @@ class List():
 
         return nodes
 
-    # Returns the list of nodes that remain after applying filter logic
-    # TODO use dynamic rather than hard-coded filter logic
-    # TODO investigate using @yield
+
+    # Until capability exists to eval an expression from the config file,
+    # this function will contain the necessary logic to decide if a given hour's
+    # data should be included in the output data set.
+    #   value is the value being tested.
     @staticmethod
-    def filter(node_list, global_data):
-        filtered = []
-        for i,data in enumerate(global_data):
-            current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-            if current_filter_value and float(current_filter_value) > 0:
-                filtered.append(node_list[i])
-        return filtered
+    def filter_passes(value) -> bool:
+        return value and value != '<undefined>' and float(value) > 0.1
 
     # Returns a dictionary with information about how many instances of each type
     # of node were encountered in node_list
@@ -257,7 +256,7 @@ class List():
     #  tree - dictionary containing ced hierarchy
     #  config - dictionary containing info for classifying nodes as setpoints or readbacks 
     @staticmethod
-    def make_node(element: dict, tree: ced.TypeTree, config: dict):
+    def make_node(element: dict, tree: ced.TypeTree, config: dict, dates: dict):
         # Initialize node as None which is what we'll return if the element does not match
         # a type specified in the config.  This could well happen if the element data came
         # a broad CED query like "BeamElem", but the config file only indicates interest
@@ -266,9 +265,9 @@ class List():
 
         # Give the node a Sampler instance that it could use to retrieve data
         sampler = mya.Sampler(
-            config['mya']['dates']['begin'],
-            config['mya']['dates']['end'],
-            config['mya']['dates']['interval'],
+            dates['begin'],
+            dates['end'],
+            dates['interval'],
         )
 
         # Attempt to match the type of the element to the types specified in the
@@ -310,6 +309,39 @@ class List():
                 current_node.links = []
             if len(working_list) < 1:
                 break
+
+    # Write out
+    @staticmethod
+    def write_data_sets(global_data: list, node_list: list, config: dict, output_dir):
+        i = 0
+        # print('boo',global_data)
+        valid_indexes = []
+        # We expect that the global data was sampled at the same intervals as the node data,
+        # so when we find a row we want to keep while looping through the global data, we will
+        # have nodes data for the same time period at the at the identical array index.
+        for data in global_data:
+            # print('writing', data['date'])
+            # for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
+            # Filter the nodeList by only outputting rows that meet our criteria
+            # For the moment we're using hard-coded conditions, but eventually the goal is to
+            # do some sort of eval on the filters specified in the yaml config file
+            #current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+            current_filter_value = mya.get_pv_value(data['values'], 'IBC0L02Current')
+            if List.filter_passes(current_filter_value):
+                directory = hgb.path_from_date(output_dir, data['date'],
+                                               minutes=config['output']['minutes'],
+                                               seconds=config['output']['seconds'])
+                # print("to", directory)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                hgb.write_meta_dat(directory, node_list)
+                hgb.write_node_dat(directory, node_list, i)
+                hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
+                hgb.write_info_dat(directory, node_list)
+            else:
+                print(data['date'],'IBC0L02Current filter:', current_filter_value)
+            i += 1
+
 
 class ListEncoder(json.JSONEncoder):
     """Helper class for exporting json-encoded node lists""" 

@@ -81,16 +81,17 @@ nodes:
 #   A list of global signal names to be fetched at each time interval.
 
 mya:
-  dates:
-    begin: "2021-12-01"
-    end: "2021-12-15"
-    interval: "4h"
+  dates: tests/timestamps.csv
+#    begin: "2021-12-01"
+#    end: "2021-12-15"
+#    interval: "4h"
   global:
     - ISD0I011G
     - BOOMHLAMODE
     - BOOMHLBMODE
     - BOOMHLCMODE
     - BOOMHLDMODE
+    - IBC0L02Current
     - IBC0R08CRCUR1
     - IBC1H04CRCUR2
     - IBC2C24CRCUR3
@@ -103,7 +104,7 @@ mya:
     - IGL1I00HALLDMODE
 
 ##################################################################################################################
-# Mya
+# Edges
 #
 # Here you specify information that will govern construction of edge features
 #
@@ -117,4 +118,17 @@ edges:
   directed: true      # Probably stays true since the beam is directional
   weighted: false
 
+
+##################################################################################################################
+# Output
+#
+# Here you specify options that will govern output and its directory structure
+#
+# minutes:  if true then two digit minutes subdirectories will be created beneath hour
+# seconds:  if true, then two digit seconds subdirectories will be created beneath minutes
+#           Note: if seconds is true, then minutes will automatically also be regarded as true
+#
+output:
+  minutes: true
+  seconds: true
 

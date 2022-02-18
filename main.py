@@ -13,9 +13,10 @@ import argparse
 import os
 import sys
 from modules.ced import *
-import modules.hgb as hgb
+
 import modules.mya as mya
 import modules.node as node
+import modules.util as util
 from modules.util import progressBar
 
 
@@ -44,15 +45,8 @@ global_data = []
 tree = TypeTree()
 
 
-# Until capability exists to eval an expression from the config file, 
-# this function will contain the necessary logic to decide if a given hour's
-# data should be included in the output data set.
-#   value is the value being tested.
-def filter_passes(value) -> bool:
-    return value and value != '<undefined>' and float(value) > 0.1
-
 # Define the program's command line arguments and build a parser to process them
-def make_cli_parser():
+def make_cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='Command Line Options')
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
@@ -64,6 +58,19 @@ def make_cli_parser():
                         help = f"Save fetched data in {tree_file}, {nodes_file}, and {globals_file}")
 
     return parser
+
+
+
+# Return the set of date ranges for which data will be extracted from mya
+def date_ranges(config: dict) -> list:
+    if  isinstance(config['mya']['dates'], list):
+        return config['mya']['dates']
+    if  isinstance(config['mya']['dates'], dict):
+        return [config['mya']['dates']]
+    if  isinstance(config['mya']['dates'], str):
+        print("reading dates from file", config['mya']['dates'])
+        return util.date_ranges_from_file(config['mya']['dates'])
+    return []
 
 
 
@@ -85,91 +92,84 @@ try:
     # Configure the default_attributes of the node module
     node.default_attributes = config['nodes']['default_attributes']
 
-    # See if the type tree data should be read from file rather than retrieved from CED
+    # Are we reading saved data instead of going out to CED and MYA?
     if args.read_json:
+        # Read the type tree file
         with open(tree_file, 'r') as tree_file_handle:
             data = tree_file_handle.read()
         tree.tree = json.loads(data)  # pre-populate the data so no need to lazy-load later
-
-    # Global data from file or service
-    if args.read_json:
+        # Read the global data
         with open(globals_file, 'r') as globals_file_handle:
             data = globals_file_handle.read()
         global_data = json.loads(data)
+        # And finally the node list
+        node_list = node.List.from_json(nodes_file, tree_file, args.config_file)
     else:
-        # Retrieve the global PV list
-        global_data = mya.Sampler(
-            config['mya']['dates']['begin'],
-            config['mya']['dates']['end'],
-            config['mya']['dates']['interval'],
-            config['mya']['global']
-        ).data()
+        for dates in date_ranges(config):
+            print("doing ", dates['begin'])
+            # Retrieve the global PV list
+            global_data = mya.Sampler(
+                dates['begin'],
+                dates['end'],
+                dates['interval'],
+                config['mya']['global']
+            ).data()
+            # Use CED and MYA to build nodes list
+            # Begin by fetching the desired CED elements
+            inventory = Inventory(
+                config['ced']['zone'],
+                config['ced']['types'],
+                config['ced']['properties'],
+                config['ced']['expressions']
+            )
+            elements = inventory.elements()
 
-    # See if the user wants to load nodes data from file rather than hitting archiver
-    if args.read_json:
-        node_list = node.List.from_json(nodes_file,tree_file,args.config_file)
-    else:  # Use CED and MYA to build nodes list
+            # It's important to preserve the order of the elements in the nodeList.
+            # We are going to assign each node a node_id property that corresponds to its
+            # order in the list beginning at 0.
+            node_id = 0
+            for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
+                # Wrap node creating in a try-catch block so that we can simply log problematic nodes
+                # without killing the entire effort.
+                try:
+                    item = node.List.make_node(element, tree, config, dates)
 
-        # Begin by fetching the desired CED elements
-        inventory = Inventory(
-            config['ced']['zone'],
-            config['ced']['types'],
-            config['ced']['properties'],
-            config['ced']['expressions']
-        )
-        elements = inventory.elements()
+                    # If no node was created, it means that there was not type match.  This could happen if
+                    # the CED query was something broad like "BeamElem", but the config file only indicates the
+                    # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
+                    if item:
+                        # Load the data now so that we can give user a progressbar
+                        item.pv_data()
+                        # Assign id values based on order of encounter
+                        item.node_id = node_id
+                        node_list.append(item)
+                        node_id += 1
+                except mya.MyaException as err:
+                    print(err)
+            # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
+            node.List.populate_links(node_list)
 
-        # It's important to preserve the order of the elements in the nodeList.
-        # We are going to assign each node a node_id property that corresponds to its
-        # order in the list beginning at 0.
-        node_id = 0
-        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
-            # Wrap node creating in a try-catch block so that we can simply log problematic nodes
-            # without killing the entire effort.
-            try:
-                item = node.List.make_node(element, tree, config)
+            # At this point we've got all the data necessary to start writing out data sets
+            node.List.write_data_sets(global_data, node_list, config, args.output_dir)
+            print("done ", dates['begin'])
 
-                # If no node was created, it means that there was not type match.  This could happen if
-                # the CED query was something broad like "BeamElem", but the config file only indicates the
-                # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
-                if item:
-                    # Load the data now so that we can give user a progressbar
-                    item.pv_data()
-                    # Assign id values based on order of encounter
-                    item.node_id = node_id
-                    node_list.append(item)
-                    node_id += 1
-            except mya.MyaException as err:
-                print(err)
+    # Throw an exception if we have an empty node_list at this point to guard against having been provided
+    # empty date ranges
+    if len(node_list) < 1:
+        raise RuntimeError("Empty node list.  Did you provide valid dates?")
 
     # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
     node.List.populate_links(node_list)
 
     # At this point we've got all the data necessary to start writing out data sets
-    i = 0
-    valid_indexes = []
-    # The global data was sampled identically to the node data, so when we find a row we want
-    # to keep while looping through it, we know the nodes will have data at the corresponding
-    # row index.
-    for data in global_data:
-    #for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
-        # Filter the nodeList by only outputting rows that meet our criteria
-        # For the moment we're using hard-coded conditions, but eventually the goal is to
-        # do some sort of eval on the filters specified in the yaml config file
-        current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-        if filter_passes(current_filter_value):
-            directory = hgb.path_from_date(args.output_dir, data['date'])
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            hgb.write_meta_dat(directory, node_list)
-            hgb.write_node_dat(directory, node_list, i)
-            hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
-            hgb.write_info_dat(directory, node_list)
-        i += 1
+    node.List.write_data_sets(global_data, node_list,config, args.output_dir)
 
     # Save the tree, nodes, and global data list to a file for later use?
     indent = 2
     if args.save_json:
+        # Todo reorganize code so that we can save the raw data of multi-daterange data sets
+        if len(date_ranges(config)) > 1:
+            raise RuntimeError("Saving data for more than one date range is currently not supported.")
         f = open(nodes_file, "w")
         print("[",file=f)
         i = 0
