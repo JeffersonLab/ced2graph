@@ -58,6 +58,17 @@ def write_meta_dat(path, node_list):
     f.close()
 
 # Return a path tree of Base/Year/Month/Day/Hour using the correct path separator for the current OS
-def path_from_date(base_path, target_date):
+# If requested, the path can also include minutes and seconds subdirectories.
+def path_from_date(base_path, target_date, minutes = False, seconds = False):
     date = pandas.to_datetime(target_date)
-    return os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"), date.strftime("%H"))
+    path = os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"), date.strftime("%H"))
+    if minutes or seconds:
+        path = os.path.join(path, date.strftime("%M"))
+    if seconds:
+        path = os.path.join(path, date.strftime("%S"))
+    return path
+    # return os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"),
+    #                     date.strftime("%H"), date.strftime("%M"), date.strftime("%S"))
+    #
+    # return os.path.join(base_path, date.strftime("%Y"), date.strftime("%m"), date.strftime("%d"),
+    #                     date.strftime("%H"), date.strftime("%M"), date.strftime("%S"))
