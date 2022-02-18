@@ -99,9 +99,9 @@ try:
     else:
         # Retrieve the global PV list
         global_data = mya.Sampler(
-            config['mya']['begin'],
-            config['mya']['end'],
-            config['mya']['interval'],
+            config['mya']['dates']['begin'],
+            config['mya']['dates']['end'],
+            config['mya']['dates']['interval'],
             config['mya']['global']
         ).data()
 

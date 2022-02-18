@@ -266,9 +266,9 @@ class List():
 
         # Give the node a Sampler instance that it could use to retrieve data
         sampler = mya.Sampler(
-            config['mya']['begin'],
-            config['mya']['end'],
-            config['mya']['interval'],
+            config['mya']['dates']['begin'],
+            config['mya']['dates']['end'],
+            config['mya']['dates']['interval'],
         )
 
         # Attempt to match the type of the element to the types specified in the

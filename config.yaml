@@ -59,14 +59,32 @@ nodes:
 #
 # Here you specify information that will govern fetching of data from the mya archiver.
 #
-# begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
-# end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
-# interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
-# global: A list of global signal names to be fetched at each time interval.
+# dates:
+#   begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
+#   end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
+#   interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
+#   Example -
+#     begin: "2021-01-01"
+#     end: "2021-12-15"
+#     interval: "1h"
+#
+#   -- OR --
+#
+# dates: "filename"
+#   where filename contains either singe timestamp per line or a comma-separated begin,end,interval triplet per line
+#   Example -
+#     2021-01-01, 2021-02-01, 1h
+#     2022-01-01, 2022-01-15, 1h
+#     ...
+#
+# global:
+#   A list of global signal names to be fetched at each time interval.
+
 mya:
-  begin: "2021-01-01"
-  end: "2021-12-15"
-  interval: "1h"
+  dates:
+    begin: "2021-12-01"
+    end: "2021-12-15"
+    interval: "4h"
   global:
     - ISD0I011G
     - BOOMHLAMODE

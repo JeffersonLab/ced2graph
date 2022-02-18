@@ -6,7 +6,7 @@ import requests
 
 # The module-wide base URL for CED web API.
 # It can be changed to instead query the LED, UED, etc. alternatives
-url = "https://ced.acc.jlab.org/"
+url = "https://ced.acc.jlab.org"
 
 # The core properties to fetch.
 #   EPICSName: necessary to construct EPICS PVNames for many elements
@@ -64,6 +64,7 @@ class Inventory:
                 raise RuntimeError(data_dictionary['message'])
 
         except json.JSONDecodeError:
+            print(response.url);
             print("Oops!  Invalid JSON response. Check request parameters and try again.")
             raise   # rethrow the error
 
