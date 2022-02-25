@@ -198,7 +198,7 @@ class List():
         nodes = list()
         node_id = 0
         for item in elements_info:
-            node = List.make_node(item['element'], tree, config)
+            node = List.make_node(item['element'], tree, config, mya.date_ranges(config))
             if (node):
                 # By setting the node's data below, we preclude the need
                 # for a call to mya to load it later.
@@ -256,7 +256,7 @@ class List():
     #  tree - dictionary containing ced hierarchy
     #  config - dictionary containing info for classifying nodes as setpoints or readbacks 
     @staticmethod
-    def make_node(element: dict, tree: ced.TypeTree, config: dict, dates: dict):
+    def make_node(element: dict, tree: ced.TypeTree, config: dict, dates: list):
         # Initialize node as None which is what we'll return if the element does not match
         # a type specified in the config.  This could well happen if the element data came
         # a broad CED query like "BeamElem", but the config file only indicates interest
@@ -264,11 +264,7 @@ class List():
         node = None
 
         # Give the node a Sampler instance that it could use to retrieve data
-        sampler = mya.Sampler(
-            dates['begin'],
-            dates['end'],
-            dates['interval'],
-        )
+        sampler = mya.Sampler(dates)
 
         # Attempt to match the type of the element to the types specified in the
         # config to determine whether to instantiate as ReadBack or SetPoint node variety
@@ -351,11 +347,9 @@ class ListEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, mya.Sampler):
             return {
-                'interval'   : obj.interval,
+                'dates'   : obj.dates,
                 'pv_list'    : obj.pv_list,
                 'data'       : obj._data,
-                'begin_date' : obj.begin_date,   
-                'end_date'   : obj.end_date
             }
         if isinstance(obj, Node):
             return {

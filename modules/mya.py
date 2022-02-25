@@ -2,7 +2,10 @@ import math
 from datetime import datetime, timedelta, timezone
 import pandas
 import requests
+import os
+import csv
 from dateutil.tz import gettz
+from types import SimpleNamespace
 
 # Module of classes for interacting with Mya Web API to fetch data.
 
@@ -14,6 +17,46 @@ tz = gettz('America/New_York')
 
 # Custom exception class for errors encountered interacting with myaweb
 class MyaException(RuntimeError): pass
+
+# Custom exception class for errors related to date spans
+class DateSpanException(RuntimeError): pass
+
+# Obtain a list of date ranges from a file that contains either a single
+# timestamp or comma-separated begin, end, interval triplet per line.
+def date_ranges_from_file(file):
+    # verify the file is readable
+    if not os.access(file, os.R_OK):
+        raise RuntimeError("Unable to read dates from file ", file)
+
+    dates = []
+    with open(file, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            # Single timestamp per line
+            if len(row) == 1:
+                dates.append({'begin': row[0].strip(), 'end': row[0].strip(), 'interval': '1s'})
+            # Date range per line
+            if len(row) == 3:
+                dates.append({'begin': row[0].strip(), 'end': row[1].strip(), 'interval': row[2].strip()})
+    return dates
+
+
+# Return the a list of date ranges from the various different
+# options whereby dates ranges can be specified in the configuration
+# dictionary
+def date_ranges(config: dict) -> list:
+    # A list of date ranges right in the config file.
+    if  isinstance(config['mya']['dates'], list):
+        return config['mya']['dates']
+    # Single date range in the config file that we
+    # just wrap as a single item list
+    if  isinstance(config['mya']['dates'], dict):
+        return [config['mya']['dates']]
+    # Dates or date ranges from a file.
+    if  isinstance(config['mya']['dates'], str):
+        return date_ranges_from_file(config['mya']['dates'])
+    return []
+
 
 
 class Sampler:
@@ -31,29 +74,42 @@ class Sampler:
     # This number must be larger than the number of PVs to be fetched.
     throttle = 10000
 
+    # List of date range objects
+    dates = []
+
     # Instantiate the object
     #
-    #  begin_date is the begin date 'yyyy-mm-dd hh:mm:ss'
-    #  end_date is the end date 'yyyy-mm-dd hh:mm:ss'
-    #  interval is the time interval at which to sample data points (default: '1h')
+    #  dates: a list of date range objects with the fields
+    #  {
+    #    begin_date is the begin date 'yyyy-mm-dd hh:mm:ss'
+    #    end_date is the end date 'yyyy-mm-dd hh:mm:ss'
+    #    interval is the time interval at which to sample data points (default: '1h')
+    #  }
     #  pv_list is the list of PVs for which values will be fetched (default: empty list)
     #
-    def __init__(self, begin_date: str, end_date: str, interval: str = None, pv_list: list = None):
-        if interval is None:
-            interval = '1h'
+    def __init__(self, dates: list, pv_list: list = None):
+        self.dates = dates
         if pv_list is None:
             pv_list = []
         self.pv_list = pv_list
         self._data = None
-        self.begin_date = pandas.to_datetime(begin_date)
-        self.end_date = pandas.to_datetime(end_date)
-        self.interval = interval
-        if begin_date > end_date:
-            raise RuntimeError("End date must be after Begin date")
+        # self.begin_date = pandas.to_datetime(begin_date)
+        # self.end_date = pandas.to_datetime(end_date)
+        # self.interval = interval
+        # if begin_date > end_date:
+        #     raise RuntimeError("End date must be after Begin date")
 
-    # Get the number of interval-size steps between t begin and end dates
-    def total_steps(self):
-        return self.steps_between(self.begin_date, self.end_date, self.interval)
+    # Raise a DateException if span is not valid otherwise return true.
+    def assert_span_is_valid(self, span):
+        if not span.begin_date and span.end_date and span.interval:
+            raise DateSpanException("Date ranges must include begin, end, and interval fields")
+        if span.begin_date > span.end_date:
+            raise DateSpanException("End date must be after Begin date")
+        return True
+
+    # Get the number of interval-size steps between begin and end dates of the span
+    def total_steps(self, span):
+        return self.steps_between(span.begin_date, span.end_date, span.interval)
 
     # Get the number of interval-size steps between the specified begin and end dates
     @staticmethod
@@ -72,18 +128,18 @@ class Sampler:
         return math.floor(time_differences_of_interval_size)
 
     # Returns the lesser of max allowed steps or number of steps remaining
-    def steps_per_chunk(self, begin_date):
+    def steps_per_chunk(self, begin_date, end_date, interval):
         max_steps = math.floor(self.throttle / len(self.pv_list))
-        remaining_steps = self.steps_between(begin_date, self.end_date, self.interval)
+        remaining_steps = self.steps_between(begin_date, end_date, interval)
         return remaining_steps if remaining_steps <= max_steps else max_steps
 
 
     # Return a dictionary containing the query parameters to be used when making API call.
-    def queryParams(self) -> dict:
+    def queryParams(self, span) -> dict:
         return {
-            'b': datetime.strftime(self.begin_date, '%Y-%m-%d %X'),
-            's': self.interval,
-            'n': self.total_steps(),
+            'b': datetime.strftime(span.begin_date, '%Y-%m-%d %X'),
+            's': span.interval,
+            'n': self.total_steps(span),
             'm': 'ops',
             'channels': " ".join(self.pv_list)
         }
@@ -100,6 +156,7 @@ class Sampler:
     def data(self) -> list:
         # Fetch the pv_data if it hasn't already been retrieved.
         if not self._data:
+
             # Must have a list of pvs to fetch
             if not self.pv_list:
                 raise RuntimeError("No channels to fetch")
@@ -110,15 +167,25 @@ class Sampler:
                 raise RuntimeError("PV list is too large for mya.throttle limit")
 
             # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.
-            date = self.begin_date
             self._data = []
-            while date <= self.end_date:
-                #print(date)
-                steps = self.steps_per_chunk(date)
-                self._data.extend(self.get_data_chunk(date, steps))
-                date = date + pandas.to_timedelta(self.interval) * steps
+            for date_range in self.dates:
+                span = self.date_span(date_range)
+                current_date = span.begin_date
+                while current_date <= span.end_date:
+                    steps = self.steps_per_chunk(current_date, span.end_date, span.interval)
+                    self._data.extend(self.get_data_chunk(current_date, steps, span))
+                    current_date = current_date + pandas.to_timedelta(span.interval) * steps
         
         return self._data
+
+    # Make a SimpleNamespace object that contains begin_date, end_date, interval
+    # from a dictionary containing begin, end, interval where begin_date and end_date
+    # are datetime objects constructed from the begin and end strings.
+    def date_span(self, date_range: dict):
+        span = SimpleNamespace(**date_range)
+        span.begin_date = pandas.to_datetime(span.begin)
+        span.end_date = pandas.to_datetime(span.end)
+        return span
 
     # Set the local data copy.
     # This might be done usefully during testing in order to use data from a file rather than
@@ -130,10 +197,10 @@ class Sampler:
         self._data = val
 
     # Return a steps sized chunk of data commencing at begin_date
-    def get_data_chunk(self, begin_date: datetime, steps: int):
+    def get_data_chunk(self, begin_date: datetime, steps: int, span):
         # The queryParams method returns by default parameters to fetch the entire data set
         # so here we override the necessary keys so that we can fetch desired subset
-        params = self.queryParams()
+        params = self.queryParams(span)
         params['b'] = datetime.strftime(begin_date, '%Y-%m-%d %X')
         params['n'] = steps
 

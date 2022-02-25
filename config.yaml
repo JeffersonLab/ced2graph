@@ -82,7 +82,8 @@ nodes:
 
 mya:
   dates: tests/timestamps.csv
-#    begin: "2021-12-01"
+#  dates:
+#    begin: "2021-12-10"
 #    end: "2021-12-15"
 #    interval: "4h"
   global:

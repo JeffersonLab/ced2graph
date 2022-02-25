@@ -60,22 +60,6 @@ def make_cli_parser() -> argparse.ArgumentParser:
     return parser
 
 
-
-# Return the set of date ranges for which data will be extracted from mya
-def date_ranges(config: dict) -> list:
-    if  isinstance(config['mya']['dates'], list):
-        return config['mya']['dates']
-    if  isinstance(config['mya']['dates'], dict):
-        return [config['mya']['dates']]
-    if  isinstance(config['mya']['dates'], str):
-        print("reading dates from file", config['mya']['dates'])
-        return util.date_ranges_from_file(config['mya']['dates'])
-    return []
-
-
-
-
-
 try:
     # Access the command line arguments
     args = make_cli_parser().parse_args()
@@ -105,53 +89,47 @@ try:
         # And finally the node list
         node_list = node.List.from_json(nodes_file, tree_file, args.config_file)
     else:
-        for dates in date_ranges(config):
-            print("doing ", dates['begin'])
-            # Retrieve the global PV list
-            global_data = mya.Sampler(
-                dates['begin'],
-                dates['end'],
-                dates['interval'],
-                config['mya']['global']
-            ).data()
-            # Use CED and MYA to build nodes list
-            # Begin by fetching the desired CED elements
-            inventory = Inventory(
-                config['ced']['zone'],
-                config['ced']['types'],
-                config['ced']['properties'],
-                config['ced']['expressions']
-            )
-            elements = inventory.elements()
+        dates = mya.date_ranges(config)
+        # Retrieve the global PV list
+        global_data = mya.Sampler(dates, config['mya']['global']).data()
 
-            # It's important to preserve the order of the elements in the nodeList.
-            # We are going to assign each node a node_id property that corresponds to its
-            # order in the list beginning at 0.
-            node_id = 0
-            for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
-                # Wrap node creating in a try-catch block so that we can simply log problematic nodes
-                # without killing the entire effort.
-                try:
-                    item = node.List.make_node(element, tree, config, dates)
+        # Use CED and MYA to build nodes list
+        # Begin by fetching the desired CED elements
+        inventory = Inventory(
+            config['ced']['zone'],
+            config['ced']['types'],
+            config['ced']['properties'],
+            config['ced']['expressions']
+        )
+        elements = inventory.elements()
 
-                    # If no node was created, it means that there was not type match.  This could happen if
-                    # the CED query was something broad like "BeamElem", but the config file only indicates the
-                    # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
-                    if item:
-                        # Load the data now so that we can give user a progressbar
-                        item.pv_data()
-                        # Assign id values based on order of encounter
-                        item.node_id = node_id
-                        node_list.append(item)
-                        node_id += 1
-                except mya.MyaException as err:
-                    print(err)
-            # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
-            node.List.populate_links(node_list)
+        # It's important to preserve the order of the elements in the nodeList.
+        # We are going to assign each node a node_id property that corresponds to its
+        # order in the list beginning at 0.
+        node_id = 0
+        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
+            # Wrap node creating in a try-catch block so that we can simply log problematic nodes
+            # without killing the entire effort.
+            try:
+                item = node.List.make_node(element, tree, config, dates)
 
-            # At this point we've got all the data necessary to start writing out data sets
-            node.List.write_data_sets(global_data, node_list, config, args.output_dir)
-            print("done ", dates['begin'])
+                # If no node was created, it means that there was not type match.  This could happen if
+                # the CED query was something broad like "BeamElem", but the config file only indicates the
+                # desired EPICS fields for specific sub-types (Magnet, BPM, etc.)
+                if item:
+                    # Load the data now so that we can give user a progressbar
+                    item.pv_data()
+                    # Assign id values based on order of encounter
+                    item.node_id = node_id
+                    node_list.append(item)
+                    node_id += 1
+            except mya.MyaException as err:
+                print(err)
+        # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
+        node.List.populate_links(node_list)
+
+        # At this point we've got all the data necessary to start writing out data sets
+        node.List.write_data_sets(global_data, node_list, config, args.output_dir)
 
     # Throw an exception if we have an empty node_list at this point to guard against having been provided
     # empty date ranges
@@ -167,9 +145,6 @@ try:
     # Save the tree, nodes, and global data list to a file for later use?
     indent = 2
     if args.save_json:
-        # Todo reorganize code so that we can save the raw data of multi-daterange data sets
-        if len(date_ranges(config)) > 1:
-            raise RuntimeError("Saving data for more than one date range is currently not supported.")
         f = open(nodes_file, "w")
         print("[",file=f)
         i = 0

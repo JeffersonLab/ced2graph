@@ -56,6 +56,22 @@ Data is written to a date and time-based hiearchy of files anchored as illustrat
 |   |   |   `-- node.dat
 
 ```
+Note that the config file allows you to specify if the hierarchy should be exntended down to minutes and seconds
+
+```yaml
+##################################################################################################################
+# Output
+#
+# Here you specify options that will govern output and its directory structure
+#
+# minutes:  if true then two digit minutes subdirectories will be created beneath hour
+# seconds:  if true, then two digit seconds subdirectories will be created beneath minutes
+#           Note: if seconds is true, then minutes will automatically also be regarded as true
+#
+output:
+  minutes: true
+  seconds: true
+```
 ### Output Files
 Within each output directory is a data set consisting of four files.
 
@@ -102,6 +118,8 @@ test_mya.py .                                                            [100%]
 ============================== 4 passed in 0.53s ===============================
 ```
 
+
+
 ## TODO
  * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
  * Add extra 01X hour if necessary during DST/EST transition
@@ -114,6 +132,7 @@ test_mya.py .                                                            [100%]
    * ~~Probably need to break large archiver requests into (month-sized?) chunks~~  
  * Use a timestamp directory name instead of . by default
  
+
 
 ## Developer Notes
 During development it is nice (and faster) to be able to work offline without constantly fetching data 

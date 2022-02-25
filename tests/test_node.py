@@ -1,4 +1,4 @@
-# File containing some tests of the mya module.
+# File containing some tests of the node module.
 
 import modules.node as node
 from modules.mya import Sampler

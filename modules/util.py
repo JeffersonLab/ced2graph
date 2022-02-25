@@ -1,6 +1,3 @@
-import os
-import csv
-
 # -*- coding: utf-8 -*-
 # General purpose helper code
 
@@ -36,19 +33,4 @@ def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 80, f
     print()
 
 
-def date_ranges_from_file(file):
-    # verify the file is readable
-    if not os.access(file, os.R_OK):
-        raise RuntimeError("Unable to read dates from file ", file)
 
-    dates = []
-    with open(file, 'r') as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            # Single timestamp per line
-            if len(row) == 1:
-                dates.append({'begin': row[0].strip(), 'end': row[0].strip(), 'interval': '1s'})
-            # Date range per line
-            if len(row) == 3:
-                dates.append({'begin': row[0].strip(), 'end': row[1].strip(), 'interval': row[2].strip()})
-    return dates
