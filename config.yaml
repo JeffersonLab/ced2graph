@@ -41,12 +41,28 @@ nodes:
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
     IonPump: [""]               # The "" is the vacuum readback
     BCM: [""]                   # node module must handle special cases
-
   # Specify a label to be used for each type above using "" as a field name.
   default_attributes:
     BCM: Current
     BPM: WireSum
     IonPump: Vacuum
+  # Expressions to modify raw epics values
+  modifiers:
+    VINJDIG07: "0.066 * $(VINJDIG07) * 0.000001 *((5600/5600)/80)"
+    VINJDIG02: "0.066 * $(VINJDIG02) * 0.000001 *((5600/5600)/120)"
+    VINJDIG03: "0.066 * $(VINJDIG03) * 0.000001 *((5600/5600)/102)"
+    VINJDIG04: "0.066 * $(VINJDIG04) * 0.000001 *((5600/5600)/160)"
+    VINJDIG12: "0.066 * $(VINJDIG12) * 0.000001 *((5600/5600)/45)"
+    VINJDIG08: "0.066 * $(VINJDIG08) * 0.000001 *((5600/5600)/30)"
+    VINJDIG05: "0.066 * $(VINJDIG05) * 0.000001 *((5600/5600)/120)"
+    VINJDIG06: "0.066 * $(VINJDIG06) * 0.000001 *((5600/5600)/120)"
+    VIP0L08:   "0.066 * $(VIP0L08) * 0.000001 *((5600/5000)/11)"
+    VIP0L10:   "0.066 * $(VIP0L10) * 0.000001 *((5600/5000)/11)"
+    VIP0R02:   "0.066 * $(VIP0R02) * 0.000001 *((5600/5000)/22)"
+    VIP0R04:   "0.066 * $(VIP0R04) * 0.000001 *((5600/5000)/11)"
+    VIP0R06:   "0.066 * $(VIP0R06) * 0.000001 *((5600/5000)/11)"
+    VIP0R08:   "0.066 * $(VIP0R08) * 0.000001 *((5600/5000)/11)"
+    VIP0R09:   "0.066 * $(VIP0R09) * 0.000001 *((5600/5000)/11)"
 
   # Filter expression may use EPICS Macro variable syntax to reference PVs mentioned in the mya.global
   # secion of this config file

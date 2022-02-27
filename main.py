@@ -7,6 +7,7 @@
 #  5) - for each interval specified in config file that passes filters:
 #  5)   - Output nodes in HBG file format
 #  6)   - Build edges and output in HBG format
+import re
 
 import yaml
 import argparse

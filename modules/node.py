@@ -30,7 +30,7 @@ def macro_substitute(pv: str, value: str, expr: str) -> str:
     value : the value which will replace PV
     expr  : the string
     """
-    pattern = "\$\({}\)"
+    pattern = r"\$\({}\)"
     prepared = pattern.format(pv)
     return re.sub(prepared, value, expr)
 
@@ -39,12 +39,15 @@ class Node():
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
 
     # Instantiate the object
-    def __init__(self, element: dict, epics_fields: list, sampler: mya.Sampler):
+    def __init__(self, element: dict, epics_fields: list, sampler: mya.Sampler, modifiers: dict = None):
         self.element = element
         self.epics_fields = epics_fields
         self.epics_fields.sort()
         self.sampler = sampler
         self.sampler.pv_list = self.pv_list()
+        if modifiers is None:
+            modifiers = {}
+        self.modifiers = modifiers
         self.data = []      # Stores array of timestamped data sets from mya
         self.links = []     # Stores links to downstream nodes to use when building graph edges
         self.node_id = None
@@ -140,14 +143,28 @@ class Node():
         return attribute_values
 
     # Return epics-based node attributes for the specified array index
+    # The function will apply any applicable calculations from the modifiers
+    # dictionary to the returned values
     def epics_attribute_values(self, index):
         attribute_values = []
         for field in self.epics_fields:
             for value in self.pv_data_at_index(index):
                 pv_name = list(value.keys())[0]
                 if pv_name == self.pv_name(self.epics_name(),field):
-                    attribute_values.append(value[pv_name])
+                    attribute_values.append(self.modified_epics_value(pv_name, value[pv_name]))
         return attribute_values
+
+    # If necessary, apply calculations from the modifiers dictionary to the provided pv_value
+    def modified_epics_value(self, pv_name, pv_value):
+        if pv_name in self.modifiers.keys():
+           # print('{} has a modifier!'.format(pv_name))
+           # print('raw = {}'.format(pv_value))
+           expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
+           # print('expr = {}'.format(expr))
+           # print('modified = {}'.format(eval(expr)))
+           return str(eval(expr))
+        else:
+            return pv_value
 
     # Return the node's attributes
     # The attributes include ced attributes which are single-valued and the
@@ -284,17 +301,22 @@ class List():
         # Give the node a Sampler instance that it could use to retrieve data
         sampler = mya.Sampler(dates)
 
+        if 'modifiers' in config['nodes']:
+            modifiers = config['nodes']['modifiers']
+        else:
+            modifiers = {}
+
         # Attempt to match the type of the element to the types specified in the
         # config to determine whether to instantiate as ReadBack or SetPoint node variety
         # Important: we will only assign the fields of the first matched type.
         for type_name, fields in config['nodes']['setpoints'].items():
             if not node and tree.is_a(type_name, element['type']):
-                node = SetPointNode(element, fields, sampler)
+                node = SetPointNode(element, fields, sampler, modifiers)
                 node.type_name = type_name      # Assign type name that matched
                 break
         for type_name, fields in config['nodes']['readbacks'].items():
             if not node and tree.is_a(type_name, element['type']):
-                node = ReadBackNode(element, fields, sampler)
+                node = ReadBackNode(element, fields, sampler, modifiers)
                 node.type_name = type_name      # Assign type name that matched
                 break
 
@@ -328,7 +350,6 @@ class List():
     @staticmethod
     def write_data_sets(global_data: list, node_list: list, config: dict, output_dir):
         i = 0
-        # print('boo',global_data)
         valid_indexes = []
         # We expect that the global data was sampled at the same intervals as the node data,
         # so when we find a row we want to keep while looping through the global data, we will
@@ -353,7 +374,7 @@ class List():
                 hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                 hgb.write_info_dat(directory, node_list)
             else:
-                print(data['date'],'IBC0L02Current filter:', current_filter_value)
+                print(data['date'],'IBC0L02Current filter excludes:', current_filter_value)
             i += 1
 
 
