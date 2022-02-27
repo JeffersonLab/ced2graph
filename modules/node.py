@@ -17,6 +17,24 @@ default_attributes = {
     'IonPump': 'Vacuum',
 }
 
+#  replace instances of pv with value in an expression string that uses EPICS macro variable syntax
+#  $(pv) to specify pv placeholders that will be replaced.
+#
+#  ex:  macro_substitute('VIP2R', 10, '8/2 * $(VIP2R)') -> '8/2 * 10'
+#
+def macro_substitute(pv: str, value: str, expr: str) -> str:
+    """
+    Parameters
+    ----------
+    pv    : the PV name to be replaced
+    value : the value which will replace PV
+    expr  : the string
+    """
+    pattern = "\$\({}\)"
+    prepared = pattern.format(pv)
+    return re.sub(prepared, value, expr)
+
+
 class Node():
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
 
