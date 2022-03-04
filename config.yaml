@@ -4,6 +4,8 @@
 #
 # Here you specify the parameters for gathering data from the CEBAF Element Database (CED)
 #
+#  history: (optional) Set true in order to query CED history, otherwise current OPS CED is used
+#  workspace: (optional) Workspace/Date to query.  Defaults is OPS/now
 #  zone: The name of a CED zone
 #  types: A list of types to query. Can simply use BeamElem or LineElem and rely on CED inheritance
 #  properties: a list of properties to fetch in addition to default EPICSName and S which are hard-coded.
@@ -13,11 +15,14 @@
 #       Example: '!isSRF'      # Only retrieve elements whose is isSRF property is false or null
 #
 ced:
+  history: true           # We need the beamline as it existed previously
+  workspace: '2021-12-15' # When using history specify a date as the workspace
   zone: "Injector"
   types: ["LineElem"]
   properties: []
   expressions:
-    - S >= 6.65657
+    - S >= 6.65657  # skip over elements in the front of the MFA0I03 S Value
+    - S <= 101.58   # So that ILM0R08 is final element
 
 ##################################################################################################################
 # Nodes
@@ -67,7 +72,7 @@ nodes:
   # Filter expression may use EPICS Macro variable syntax to reference PVs mentioned in the mya.global
   # secion of this config file
   filters:
-    - "${IBC0R08CRCUR1} > 0.1"
+    - "${IBC0L02Current} > 0.1"
 
 
 ##################################################################################################################

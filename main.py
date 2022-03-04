@@ -14,7 +14,7 @@ import argparse
 import os
 import sys
 from modules.ced import *
-
+import modules.ced as ced
 import modules.mya as mya
 import modules.node as node
 import modules.util as util
@@ -73,6 +73,12 @@ try:
     # Read configuration yaml file
     stream = open(args.config_file, 'r')
     config = yaml.load(stream, Loader=yaml.CLoader)
+
+    # Configure the global ced attributs of the ced module
+    if history in config['ced']:
+        ced.history = True
+    if workspace in config['ced']:
+        ced.workspace = config['ced']['workspace']
 
     # Configure the default_attributes of the node module
     node.default_attributes = config['nodes']['default_attributes']

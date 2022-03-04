@@ -8,6 +8,13 @@ import requests
 # It can be changed to instead query the LED, UED, etc. alternatives
 url = "https://ced.acc.jlab.org"
 
+# If true, query history CED rather than Operational.
+history = False
+
+# The workspace or when using history, the date to use
+# None is the equivalent of OPS/now
+workspace = None
+
 # The core properties to fetch.
 #   EPICSName: necessary to construct EPICS PVNames for many elements
 #   S: necessary to calculate distances between elements
@@ -49,6 +56,10 @@ class Inventory:
         }
         if self.expressions:
             query['Ex'] = self.expressions
+        if history:
+            query['ced'] = 'history'
+        if workspace:
+            query['wrkspc'] = workspace
         return query
 
     # Query CED Web API and return the resulting array of elements.
