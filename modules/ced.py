@@ -48,7 +48,7 @@ class Inventory:
             'out': 'json'
         }
         if self.expressions:
-            query['Ex'] = " ".join(self.expressions)
+            query['Ex'] = self.expressions
         return query
 
     # Query CED Web API and return the resulting array of elements.
@@ -64,9 +64,12 @@ class Inventory:
                 raise RuntimeError(data_dictionary['message'])
 
         except json.JSONDecodeError:
-            print(response.url);
+            print(response.url)
             print("Oops!  Invalid JSON response. Check request parameters and try again.")
             raise   # rethrow the error
+        except RuntimeError:
+            print(response.url)
+            raise
 
 
 class TypeTree:
