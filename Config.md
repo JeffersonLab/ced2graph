@@ -1,4 +1,15 @@
----
+# The ced2gnn Configuration File
+
+The default name for the configuration file is config.yaml.  Its contents are discussed below on a section-by-section basis.
+
+## CED Parameters
+
+The ced block of the config specifies paramters that will be used to query the [CEBAF Element Database](https://ced.acc.jlab.org/)
+to build a list of beamline elements.  For brevity the query may specifiy a superset of the element types which will actually be 
+used to represent readbacks and setpoints (For example, fetching all BeamElem elements even though perhaps only Magnet and 
+BPM will actually be used). 
+
+```yaml
 ##################################################################################################################
 # CED
 #
@@ -8,10 +19,10 @@
 #  workspace: Workspace/Date to query.  Default is OPS/now
 #  zone: The name of a CED zone
 #
-#  types: A list of types to retrieve. Can simply use BeamElem or LineElem and rely on CED inheritance.  Must
+#  types: A list of types to retrieve. Can simply use BeamElem or LineElem and rely on CED inheritance.  Must 
 #         choose types that all have S and EPICSName property as well as any specified extra properties.
-#         Not every retrieved type of element will necessarily be used.
-#         Which elements will be used as graph nodes is determined in the nodes block of the config file.
+#         Not every retrieved type of element will necessarily be used.  
+#         Which elements will be used as graph nodes is determined in the nodes block of the config file.  
 #
 #  properties: A list of properties to fetch in addition to default EPICSName and S which are hard-coded.
 #              Any extra properties specified must be applicable to all retrieved types.
@@ -29,7 +40,13 @@ ced:
   expressions:
     - S >= 6.65657  # skip over elements in the front of the MFA0I03 S Value
     - S <= 101.58   # So that ILM0R08 is final element
+```
 
+## Node Parameters
+
+The node block settings largely govern how the inventory of CED elements will be represented as graph nodes.
+
+```yaml
 ##################################################################################################################
 # Nodes
 #
@@ -55,21 +72,19 @@ nodes:
     Dipole: [".BDL", ".S"]
     Quad: [".BDL", ".S"]
     Solenoid: [".BDL", ".S"]
-    # Note XPSET8 below actually belongs to a zone and not the cavity.
-    # Special handling for this case has been hard-coded into the node module.
-    CryoCavity: ['PSET','GSET','XPSET8']
-
+    CryoCavity: ['PSET','GSET','XPSET8']  # Note XPSET8 requires special handling (belongs zone, not cavity)
+ 
   readbacks:
     BeamLossMonitor: ["Lc"]
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
     IonPump: [""]               # The "" is the vacuum readback
     BCM: [""]                   # node module must handle special cases
-
+ 
   default_attributes:
     BCM: Current      # The bare EPICSName of a BCM gives us its Current
     BPM: WireSum      # The bare EPICSName of a BPM is its WireSum
-    IonPump: Vacuum   #
-
+    IonPump: Vacuum   # 
+ 
   modifiers:
     # Certain Ion Pumps in the injector need to be scaled differently based on their hardware type
     # and how many pumps are ganged together to provide the voltage being read.  The calculations below
@@ -94,8 +109,16 @@ nodes:
     # The filter expression below may use EPICS Macro variable syntax to reference PVs from the mya.global
     # secion of this config file
     - "${IBC0L02Current} > 0.1"
+```
 
+## Mya Parameters
 
+The mya block settings specifies the dates and times for which data will be fetched from the mya archiver.  It also 
+permits the specification of global (i.e. not node-specific) PVs to fetch for each time sample.  These global PVs may be
+used for filtering purposes.  For example fetching a BCM readback whose value can be used to determine if there was
+beam in a particular segment of the machine at the time in question.
+
+```yaml
 ##################################################################################################################
 # Mya
 #
@@ -145,7 +168,13 @@ mya:
     - IGL1I00HALLBMODE
     - IGL1I00HALLCMODE
     - IGL1I00HALLDMODE
+```
 
+## Edge parameters
+
+The edge paramters govern how the contents of the link.dat files will be produced.
+
+```yaml
 ##################################################################################################################
 # Edges
 #
@@ -159,19 +188,6 @@ mya:
 edges:
   connectivity: 2
   directed: true      # Probably stays true since the beam is directional
-  weighted: false
+  weighted: false     # If false, all weights will be 1
 
-
-##################################################################################################################
-# Output
-#
-# Here you specify options that will govern output and its directory structure
-#
-# minutes:  if true then two digit minutes subdirectories will be created beneath hour
-# seconds:  if true, then two digit seconds subdirectories will be created beneath minutes
-#           Note: if seconds is true, then minutes will automatically also be regarded as true
-#
-output:
-  minutes: false
-  seconds: false
-
+```

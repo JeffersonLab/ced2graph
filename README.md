@@ -34,6 +34,11 @@ Example:
 Fetch Data: |##################################################| 100.0%
 Write Files: |##################################################| 100.0%
 ```
+### Config File
+Execution of the program is governed by parameters supplied via YAML format configuration file. 
+The default name for the file is config.yaml, however this may be over-ridden on the command line using the -c flag.
+For details about what may be specified in the config file see [Config.md](Config.md) and the comments in the 
+included [config.yaml](config.yaml).   
 
 ## File Output
 
@@ -56,7 +61,9 @@ Data is written to a date and time-based hiearchy of files anchored as illustrat
 |   |   |   `-- node.dat
 
 ```
-Note that the config file allows you to specify if the hierarchy should be exntended down to minutes and seconds
+Note that the config file allows you to specify if the hierarchy should be exntended down to minutes and seconds.
+If minutes or seconds are not set, then only one set of data files will be generated for the hour or minute and the 
+remainder will be discarded.
 
 ```yaml
 ##################################################################################################################
