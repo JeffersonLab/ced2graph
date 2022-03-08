@@ -102,11 +102,11 @@ nodes:
 #   A list of global signal names to be fetched at each time interval.
 
 mya:
-  dates: tests/timestamps.csv
-#  dates:
-#    begin: "2021-12-10"
-#    end: "2021-12-15"
-#    interval: "4h"
+#  dates: tests/timestamps.csv
+  dates:
+    begin: "2021-01-01"
+    end: "2021-12-15"
+    interval: "1h"
   global:
     - ISD0I011G
     - BOOMHLAMODE
@@ -151,6 +151,6 @@ edges:
 #           Note: if seconds is true, then minutes will automatically also be regarded as true
 #
 output:
-  minutes: true
-  seconds: true
+  minutes: false
+  seconds: false
 
