@@ -72,7 +72,7 @@ class Sampler:
 
     # Limit the number of data points (num pvs * steps) to be fetched at each server request.
     # This number must be larger than the number of PVs to be fetched.
-    throttle = 10000
+    throttle = 2500
 
     # List of date range objects
     dates = []
