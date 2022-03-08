@@ -360,8 +360,9 @@ class List():
             # Filter the nodeList by only outputting rows that meet our criteria
             # For the moment we're using hard-coded conditions, but eventually the goal is to
             # do some sort of eval on the filters specified in the yaml config file
-            #current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
+            # current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
             current_filter_value = mya.get_pv_value(data['values'], 'IBC0L02Current')
+            #print("current filter value",current_filter_value)
             if List.filter_passes(current_filter_value):
                 directory = hgb.path_from_date(output_dir, data['date'],
                                                minutes=config['output']['minutes'],
@@ -374,7 +375,7 @@ class List():
                 hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                 hgb.write_info_dat(directory, node_list)
             else:
-                print(data['date'],'IBC0L02Current filter excludes:', current_filter_value)
+                print(data['date'],'filter excludes:', current_filter_value)
             i += 1
 
 
