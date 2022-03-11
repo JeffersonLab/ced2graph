@@ -1,5 +1,4 @@
 # File containing some tests of the node module.
-
 import modules.node as node
 from modules.mya import Sampler
 
@@ -64,12 +63,3 @@ def test_extended_links_not_for_readbacks():
     assert len(rb3.extended_links(3)) == 0
     assert len(rb4.extended_links(3)) == 0
 
-def test_macro_substitution():
-    value = '10'
-    pv = 'VIP2R'
-    expr = '8/2 * $(VIP2R) + $(x)'
-    expr = node.macro_substitute(pv, value, expr)
-    assert expr == '8/2 * 10 + $(x)'
-    expr = node.macro_substitute('x', '3', expr)
-    assert expr == '8/2 * 10 + 3'
-    assert eval(expr) == 43

@@ -17,7 +17,7 @@ from modules.ced import *
 import modules.ced as ced
 import modules.mya as mya
 import modules.node as node
-import modules.util as util
+import modules.filter as filter
 from modules.util import progressBar
 
 

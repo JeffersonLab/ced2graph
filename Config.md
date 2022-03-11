@@ -105,10 +105,9 @@ nodes:
     VIP0R08:   "0.066 * $(VIP0R08) * 0.000001 *((5600/5000)/11)"
     VIP0R09:   "0.066 * $(VIP0R09) * 0.000001 *((5600/5000)/11)"
 
-  filter:
-    # The filter expression below may use EPICS Macro variable syntax to reference PVs from the mya.global
-    # secion of this config file
-    - "${IBC0L02Current} > 0.1"
+   # The filter expression below may use EPICS Macro variable syntax to reference PVs from the mya.global
+  # secion of this config file  
+  filter: "$(IBC0L02Current) > 0.1"
 ```
 
 ## Mya Parameters

@@ -7,7 +7,12 @@ import pandas
 import os
 from modules import ced
 from modules import mya
+import modules.util as util
 import modules.hgb as hgb
+
+from modules.filter import macro_substitute
+from modules.filter import make as makeFilter
+
 
 # A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
 # EPICSName.  The defaults below should be updated at runtime with config file data.
@@ -16,23 +21,6 @@ default_attributes = {
     'BPM': 'WireSum',
     'IonPump': 'Vacuum',
 }
-
-#  replace instances of pv with value in an expression string that uses EPICS macro variable syntax
-#  $(pv) to specify pv placeholders that will be replaced.
-#
-#  ex:  macro_substitute('VIP2R', 10, '8/2 * $(VIP2R)') -> '8/2 * 10'
-#
-def macro_substitute(pv: str, value: str, expr: str) -> str:
-    """
-    Parameters
-    ----------
-    pv    : the PV name to be replaced
-    value : the value which will replace PV
-    expr  : the string
-    """
-    pattern = r"\$\({}\)"
-    prepared = pattern.format(pv)
-    return re.sub(prepared, value, expr)
 
 
 class Node():
@@ -89,7 +77,7 @@ class Node():
                 return 'IBC0R08CRCUR1'
             if re.match(r'^VIP0L04(A|20|30|40|50|B)$',self.name()):
                 return f'{epics_name}LOG'
-            # An empty field means the naked EPICSNAme should be treated as a PVName
+            # An empty field means the naked EPICSName should be treated as a PVName
             return epics_name
         else:
             return f'{epics_name}{field}'
@@ -246,14 +234,6 @@ class List():
         return nodes
 
 
-    # Until capability exists to eval an expression from the config file,
-    # this function will contain the necessary logic to decide if a given hour's
-    # data should be included in the output data set.
-    #   value is the value being tested.
-    @staticmethod
-    def filter_passes(value) -> bool:
-        return value and value != '<undefined>' and float(value) > 0.1
-
     # Returns a dictionary with information about how many instances of each type
     # of node were encountered in node_list
     @staticmethod
@@ -346,24 +326,18 @@ class List():
             if len(working_list) < 1:
                 break
 
-    # Write out
+    # Write out the node.dat, link.dat, meta.dat, and info.dat for each sampled timestamp
     @staticmethod
     def write_data_sets(global_data: list, node_list: list, config: dict, output_dir):
         i = 0
         valid_indexes = []
+        filter = makeFilter(config['nodes']['filter'])
         # We expect that the global data was sampled at the same intervals as the node data,
         # so when we find a row we want to keep while looping through the global data, we will
         # have nodes data for the same time period at the at the identical array index.
-        for data in global_data:
-            # print('writing', data['date'])
-            # for data in progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
-            # Filter the nodeList by only outputting rows that meet our criteria
-            # For the moment we're using hard-coded conditions, but eventually the goal is to
-            # do some sort of eval on the filters specified in the yaml config file
-            # current_filter_value = mya.get_pv_value(data['values'], 'IBC0R08CRCUR1')
-            current_filter_value = mya.get_pv_value(data['values'], 'IBC0L02Current')
-            #print("current filter value",current_filter_value)
-            if List.filter_passes(current_filter_value):
+        # for data in global_data:
+        for data in util.progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
+            if filter.passes(data):
                 directory = hgb.path_from_date(output_dir, data['date'],
                                                minutes=config['output']['minutes'],
                                                seconds=config['output']['seconds'])
@@ -374,8 +348,6 @@ class List():
                 hgb.write_node_dat(directory, node_list, i)
                 hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                 hgb.write_info_dat(directory, node_list)
-            else:
-                print(data['date'],'filter excludes:', current_filter_value)
             i += 1
 
 
