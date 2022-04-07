@@ -12,6 +12,7 @@ import modules.hgb as hgb
 
 from modules.filter import macro_substitute
 from modules.filter import make as makeFilter
+from modules.filter import FilterException
 
 
 # A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
@@ -337,22 +338,25 @@ class List():
         # have nodes data for the same time period at the at the identical array index.
         # for data in global_data:
         for data in util.progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
-            if filter.passes(data):
-                directory = hgb.path_from_date(output_dir, data['date'],
-                                               minutes=config['output']['minutes'],
-                                               seconds=config['output']['seconds'])
-                # print("to", directory)
-                if not os.path.exists(directory):
-                    os.makedirs(directory)
-                hgb.write_meta_dat(directory, node_list)
-                hgb.write_node_dat(directory, node_list, i)
-                hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
-                hgb.write_info_dat(directory, node_list)
+            try:
+                if filter.passes(data):
+                    directory = hgb.path_from_date(output_dir, data['date'],
+                                                   minutes=config['output']['minutes'],
+                                                   seconds=config['output']['seconds'])
+                    # print("to", directory)
+                    if not os.path.exists(directory):
+                        os.makedirs(directory)
+                    hgb.write_meta_dat(directory, node_list)
+                    hgb.write_node_dat(directory, node_list, i)
+                    hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
+                    hgb.write_info_dat(directory, node_list)
+            except FilterException as err:
+                print(data['date'], err)
             i += 1
 
 
 class ListEncoder(json.JSONEncoder):
-    """Helper class for exporting json-encoded node lists""" 
+    """Helper class for exporting json-encoded node lists"""
 
     # Override of the parent method from JSONEncoder to return an encodable data structure for
     # _node_list and for the ced and mya classes that it contains
