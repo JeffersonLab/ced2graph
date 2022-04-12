@@ -55,9 +55,16 @@ nodes:
     Dipole: [".BDL", ".S"]
     Quad: [".BDL", ".S"]
     Solenoid: [".BDL", ".S"]
+
     # Note XPSET8 below actually belongs to a zone and not the cavity.
     # Special handling for this case has been hard-coded into the node module.
     CryoCavity: ['PSET','GSET','XPSET8']
+
+    # Because the types below will be matched in the order listed, we can provide
+    # special PV list for the Capture and then let the catch-all WarmCavity
+    # handle PreBuncher, Buncher, Chopper, etc.
+    Capture: ['PSET','GSET']
+    WarmCavity: ['PSET','GSET','Psum']
 
   readbacks:
     BeamLossMonitor: ["Lc"]
@@ -124,9 +131,9 @@ nodes:
 
 mya:
   dates:
-    begin: "2021-01-01"
+    begin: "2021-09-01"
     end: "2021-12-15"
-    interval: "1h"
+    interval: "1d"
   global:
     - ISD0I011G
     - BOOMHLAMODE
@@ -156,7 +163,7 @@ mya:
 #  weighted : if true, edges will be weighted using 1/(S[2]-S[1])
 
 edges:
-  connectivity: 2
+  connectivity: 5
   directed: true      # Probably stays true since the beam is directional
   weighted: false
 
@@ -171,6 +178,6 @@ edges:
 #           Note: if seconds is true, then minutes will automatically also be regarded as true
 #
 output:
-  minutes: true
-  seconds: true
+  minutes: false
+  seconds: false
 
