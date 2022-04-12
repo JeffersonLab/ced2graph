@@ -140,7 +140,7 @@ class Sampler:
             'b': datetime.strftime(span.begin_date, '%Y-%m-%d %X'),
             's': span.interval,
             'n': self.total_steps(span),
-            'm': 'ops',
+            'm': self.deployment,
             'channels': " ".join(self.pv_list)
         }
 
