@@ -13,6 +13,7 @@ import yaml
 import argparse
 import os
 import sys
+import logging
 from modules.ced import *
 import modules.ced as ced
 import modules.mya as mya
@@ -69,6 +70,7 @@ try:
     if not os.access(args.output_dir, os.X_OK | os.W_OK):
         sys.exit('Unable to write to output directory ' + args.output_dir)
 
+    logging.basicConfig(level = logging.INFO, filename = 'warnings.log')
 
     # Read configuration yaml file
     stream = open(args.config_file, 'r')
