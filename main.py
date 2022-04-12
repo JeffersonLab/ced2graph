@@ -72,7 +72,7 @@ try:
 
     logging.basicConfig(
         level = logging.INFO,
-        filename = 'warnings.log', 
+        filename = 'warnings.log',
         filemode='w'   # Fresh file every run.
     )
 
