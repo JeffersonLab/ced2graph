@@ -70,7 +70,11 @@ try:
     if not os.access(args.output_dir, os.X_OK | os.W_OK):
         sys.exit('Unable to write to output directory ' + args.output_dir)
 
-    logging.basicConfig(level = logging.INFO, filename = 'warnings.log')
+    logging.basicConfig(
+        level = logging.INFO,
+        filename = 'warnings.log', 
+        filemode='w'   # Fresh file every run.
+    )
 
     # Read configuration yaml file
     stream = open(args.config_file, 'r')
