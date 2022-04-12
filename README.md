@@ -42,7 +42,10 @@ included [config.yaml](config.yaml).
 
 ## File Output
 
-### Directory Structure
+### Error Messages
+Non-fatal warnings generated during program get written to the log file *warnings.log*.
+
+### Data Directory Structure
 Data is written to a date and time-based hiearchy of files anchored as illustrated below:
 
 ```
