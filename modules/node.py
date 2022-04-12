@@ -5,6 +5,7 @@ import re
 import json
 import pandas
 import os
+import logging
 from modules import ced
 from modules import mya
 import modules.util as util
@@ -146,11 +147,7 @@ class Node():
     # If necessary, apply calculations from the modifiers dictionary to the provided pv_value
     def modified_epics_value(self, pv_name, pv_value):
         if pv_name in self.modifiers.keys():
-           # print('{} has a modifier!'.format(pv_name))
-           # print('raw = {}'.format(pv_value))
            expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
-           # print('expr = {}'.format(expr))
-           # print('modified = {}'.format(eval(expr)))
            return str(eval(expr))
         else:
             return pv_value
@@ -319,7 +316,6 @@ class List():
         while current_node:
             next_node = working_list.pop(0)
             if isinstance(current_node, SetPointNode):
-                # print(f"append {next_node.name()} to {current_node.name()}")
                 current_node.links.append(next_node)
             if isinstance(next_node, SetPointNode):
                 current_node = next_node
@@ -343,7 +339,6 @@ class List():
                     directory = hgb.path_from_date(output_dir, data['date'],
                                                    minutes=config['output']['minutes'],
                                                    seconds=config['output']['seconds'])
-                    # print("to", directory)
                     if not os.path.exists(directory):
                         os.makedirs(directory)
                     hgb.write_meta_dat(directory, node_list)
@@ -351,7 +346,8 @@ class List():
                     hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                     hgb.write_info_dat(directory, node_list)
             except FilterException as err:
-                print(data['date'], err)
+                # The details of RuntimeErrors are stored in the args attribute, which is a list.
+                logging.info(data['date'] +' ' + err.args[0])
             i += 1
 
 
