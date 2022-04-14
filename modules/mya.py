@@ -1,9 +1,11 @@
 import math
+import sys
 from datetime import datetime, timedelta, timezone
 import pandas
 import requests
 import os
 import csv
+import itertools
 from dateutil.tz import gettz
 from types import SimpleNamespace
 
@@ -143,6 +145,12 @@ class Sampler:
             'channels': " ".join(self.pv_list)
         }
 
+    # Rotate the feedback spinner
+    def spin(self, spinner):
+        sys.stdout.write(next(spinner))  # write the next character
+        sys.stdout.flush()              # flush stdout buffer (actual character display)
+        sys.stdout.write('\b')          # erase the last written char
+
     # Query CED Web API and return the resulting array of elements.
     #
     # Example JSON response: {"data":[
@@ -152,7 +160,7 @@ class Sampler:
     #
     # Throws if server response is not a "success" status code.
     #
-    def data(self) -> list:
+    def data(self, with_spin=False) -> list:
         # Fetch the pv_data if it hasn't already been retrieved.
         if not self._data:
 
@@ -165,16 +173,19 @@ class Sampler:
             if len(self.pv_list) > throttle:
                 raise RuntimeError("PV list is too large for mya.throttle limit")
 
+            spinner = itertools.cycle(['-', '/', '|', '\\'])
+
             # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.
             self._data = []
             for date_range in self.dates:
                 span = self.date_span(date_range)
                 current_date = span.begin_date
                 while current_date <= span.end_date:
+                    if with_spin:
+                        self.spin(spinner)
                     steps = self.steps_per_chunk(current_date, span.end_date, span.interval)
                     self._data.extend(self.get_data_chunk(current_date, steps, span))
                     current_date = current_date + pandas.to_timedelta(span.interval) * steps
-        
         return self._data
 
     # Make a SimpleNamespace object that contains begin_date, end_date, interval

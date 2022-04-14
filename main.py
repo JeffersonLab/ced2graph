@@ -114,14 +114,10 @@ try:
         # And finally the node list
         node_list = node.List.from_json(nodes_file, tree_file, args.config_file)
     else:
-        dates = mya.date_ranges(config)
-
-        # Retrieve the global PV list
-        # TODO - feedback to user b/c this can also take a while
-        global_data = mya.Sampler(dates, config['mya']['global']).data()
 
         # Use CED and MYA to build nodes list
         # Begin by fetching the desired CED elements
+        # TODO - feedback to user b/c this can also take a while
         inventory = Inventory(
             config['ced']['zone'],
             config['ced']['types'],
@@ -130,11 +126,19 @@ try:
         )
         elements = inventory.elements()
 
+        # The dates for fetching
+        dates = mya.date_ranges(config)
+
+        # Retrieve the global PV list
+        sys.stdout.write("Fetching Global Data: ")
+        global_data = mya.Sampler(dates, config['mya']['global']).data(with_spin=True)
+        sys.stdout.write("\n")
+
         # It's important to preserve the order of the elements in the nodeList.
         # We are going to assign each node a node_id property that corresponds to its
         # order in the list beginning at 0.
         node_id = 0
-        for element in progressBar(elements, prefix = 'Fetch from mya:', suffix = '', length = 60):
+        for element in progressBar(elements, prefix = 'Fetching Node Data:', suffix = '', length = 60):
             # Wrap node creating in a try-catch block so that we can simply log problematic nodes
             # without killing the entire effort.
             try:
