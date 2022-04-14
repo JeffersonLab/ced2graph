@@ -74,6 +74,12 @@ nodes:
     Solenoid: [".BDL", ".S"]
     CryoCavity: ['PSET','GSET','XPSET8']  # Note XPSET8 requires special handling (belongs zone, not cavity)
  
+    # Because the types below will be matched in the order listed, we can provide
+    # special PV list for the Capture and then let the catch-all WarmCavity
+    # handle PreBuncher, Buncher, Chopper, etc.
+    Capture: ['PSET','GSET']
+    WarmCavity: ['PSET','GSET','Psum']
+    
   readbacks:
     BeamLossMonitor: ["Lc"]
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
@@ -123,6 +129,15 @@ beam in a particular segment of the machine at the time in question.
 #
 # Here you specify information that will govern fetching of data from the mya archiver.
 #
+# deployment:
+#   Which mya deployment to use (history or ops).  Deployment "history" should suffice in most situations. It contains
+#   data going back much further (~10 years) than the ops deployment (~2 years).  However the history
+#   deployment only gets refreshed at the first of each month, so any more recent data must come from ops.
+#
+# throttle:
+#   Sets the max number of data points to be fetched from the archiver web api in a single HTTP request.
+#   The web server will timeout if a request takes too long to complete.
+#
 # dates:
 #   begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
 #   end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
@@ -146,10 +161,12 @@ beam in a particular segment of the machine at the time in question.
 #   variables in node.filter.
 
 mya:
+  deployment: "history"
+  throttle: 2500
   dates:
-    begin: "2021-01-01"
-    end: "2021-12-15"
-    interval: "1h"
+    begin: "2021-09-01"
+    end: "2021-09-30"
+    interval: "1d"
   global:
     - ISD0I011G
     - BOOMHLAMODE
@@ -160,13 +177,6 @@ mya:
     - IBC0R08CRCUR1
     - IBC1H04CRCUR2
     - IBC2C24CRCUR3
-    - IBC3H00CRCUR4
-    - IBCAD00CRCUR6
-    - IGL1I00BEAMODE
-    - IGL1I00HALLAMODE
-    - IGL1I00HALLBMODE
-    - IGL1I00HALLCMODE
-    - IGL1I00HALLDMODE
 ```
 
 ## Edge parameters
