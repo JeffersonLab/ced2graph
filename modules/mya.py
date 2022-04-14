@@ -15,6 +15,14 @@ url = "https://myaweb.acc.jlab.org/"
 # The archiver lives in the America/New_York timezone
 tz = gettz('America/New_York')
 
+# The mya deployment in use (history | ops).
+# Most recent data in ops, older data in history
+deployment = "history"
+
+# Limit the number of data points (num pvs * steps) to be fetched at each server request.
+# This number must be larger than the number of PVs to be fetched.
+throttle = 2500
+
 # Custom exception class for errors encountered interacting with myaweb
 class MyaException(RuntimeError): pass
 
@@ -64,15 +72,6 @@ class Sampler:
 
     # The base URL for the API
     url = url + 'mySampler/data'
-
-    # The mya deployment to use.
-    # Most recent data in ops
-    # older data in history
-    deployment = "history"
-
-    # Limit the number of data points (num pvs * steps) to be fetched at each server request.
-    # This number must be larger than the number of PVs to be fetched.
-    throttle = 2500
 
     # List of date range objects
     dates = []
@@ -129,7 +128,7 @@ class Sampler:
 
     # Returns the lesser of max allowed steps or number of steps remaining
     def steps_per_chunk(self, begin_date, end_date, interval):
-        max_steps = math.floor(self.throttle / len(self.pv_list))
+        max_steps = math.floor(throttle / len(self.pv_list))
         remaining_steps = self.steps_between(begin_date, end_date, interval)
         return remaining_steps if remaining_steps <= max_steps else max_steps
 
@@ -140,7 +139,7 @@ class Sampler:
             'b': datetime.strftime(span.begin_date, '%Y-%m-%d %X'),
             's': span.interval,
             'n': self.total_steps(span),
-            'm': self.deployment,
+            'm': deployment,
             'channels': " ".join(self.pv_list)
         }
 
@@ -161,9 +160,9 @@ class Sampler:
             if not self.pv_list:
                 raise RuntimeError("No channels to fetch")
 
-            # If the throttle limit is less than the size of the pv list the fetch we're about to do
-            # would enter an infinite loop, so we'll raise an error here instead
-            if len(self.pv_list) > self.throttle:
+            # If the throttle limit is less than the size of the pv list to be fetched,
+            # we would enter an infinite loop, so we'll raise an error here instead
+            if len(self.pv_list) > throttle:
                 raise RuntimeError("PV list is too large for mya.throttle limit")
 
             # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.

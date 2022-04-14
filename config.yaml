@@ -73,9 +73,9 @@ nodes:
     BCM: [""]                   # node module must handle special cases
 
   default_attributes:
-    BCM: Current      # The bare EPICSName of a BCM gives us its Current
-    BPM: WireSum      # The bare EPICSName of a BPM is its WireSum
-    IonPump: Vacuum   #
+    BCM: "Current"      # The bare EPICSName of a BCM gives us its Current
+    BPM: "WireSum"      # The bare EPICSName of a BPM is its WireSum
+    IonPump: "Vacuum"   #
 
   modifiers:
     # Certain Ion Pumps in the injector need to be scaled differently based on their hardware type
@@ -107,6 +107,15 @@ nodes:
 #
 # Here you specify information that will govern fetching of data from the mya archiver.
 #
+# deployment:
+#   Which mya deployment to use (history or ops).  Deployment "history" should suffice in most situations. It contains
+#   data going back much further (~10 years) than the ops deployment (~2 years).  However the history
+#   deployment only gets refreshed at the first of each month, so any more recent data must come from ops.
+#
+# throttle:
+#   Sets the max number of data points to be fetched from the archiver web api in a single HTTP request.
+#   The web server will timeout if a request takes too long to complete.
+#
 # dates:
 #   begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
 #   end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
@@ -130,9 +139,11 @@ nodes:
 #   variables in node.filter.
 
 mya:
+  deployment: "history"
+  throttle: 2500
   dates:
     begin: "2021-09-01"
-    end: "2021-12-15"
+    end: "2021-09-30"
     interval: "1d"
   global:
     - ISD0I011G

@@ -61,6 +61,22 @@ def make_cli_parser() -> argparse.ArgumentParser:
 
     return parser
 
+# Initialize module-level configurations
+def initialize_modules(config: dict):
+    # Class attributes of the ced module
+    if 'history' in config['ced']:
+        ced.history = True
+    if 'workspace' in config['ced']:
+        ced.workspace = config['ced']['workspace']
+
+    # Class attributes of the mya module
+    if 'deployment' in config['mya']:
+        mya.deployment = config['mya']['deployment']
+    if 'throttle' in config['mya']:
+        mya.throttle = config['mya']['throttle']
+
+    # Class attributes of the node module
+    node.default_attributes = config['nodes']['default_attributes']
 
 try:
     # Access the command line arguments
@@ -80,16 +96,12 @@ try:
     stream = open(args.config_file, 'r')
     config = yaml.load(stream, Loader=yaml.CLoader)
 
-    # Configure the global ced attributs of the ced module
-    if history in config['ced']:
-        ced.history = True
-    if workspace in config['ced']:
-        ced.workspace = config['ced']['workspace']
+    # Module-level configuration
+    initialize_modules(config)
 
-    # Configure the default_attributes of the node module
-    node.default_attributes = config['nodes']['default_attributes']
-
-    # Are we reading saved data instead of going out to CED and MYA?
+    # The conditional block below chooses between two methods of populating the node list
+    # 1) Reading saved data or
+    # 2) Going out to CED and MYA to get fresh data
     if args.read_json:
         # Read the type tree file
         with open(tree_file, 'r') as tree_file_handle:
@@ -103,7 +115,9 @@ try:
         node_list = node.List.from_json(nodes_file, tree_file, args.config_file)
     else:
         dates = mya.date_ranges(config)
+
         # Retrieve the global PV list
+        # TODO - feedback to user b/c this can also take a while
         global_data = mya.Sampler(dates, config['mya']['global']).data()
 
         # Use CED and MYA to build nodes list
@@ -141,8 +155,6 @@ try:
         # Link each SetPointNode to its downstream nodes up to and including the next SetPoint.
         node.List.populate_links(node_list)
 
-        # At this point we've got all the data necessary to start writing out data sets
-        node.List.write_data_sets(global_data, node_list, config, args.output_dir)
 
     # Throw an exception if we have an empty node_list at this point to guard against having been provided
     # empty date ranges
