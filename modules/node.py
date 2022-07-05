@@ -287,16 +287,18 @@ class List():
         # Attempt to match the type of the element to the types specified in the
         # config to determine whether to instantiate as ReadBack or SetPoint node variety
         # Important: we will only assign the fields of the first matched type.
-        for type_name, fields in config['nodes']['setpoints'].items():
-            if not node and tree.is_a(type_name, element['type']):
-                node = SetPointNode(element, fields, sampler, modifiers)
-                node.type_name = type_name      # Assign type name that matched
-                break
-        for type_name, fields in config['nodes']['readbacks'].items():
-            if not node and tree.is_a(type_name, element['type']):
-                node = ReadBackNode(element, fields, sampler, modifiers)
-                node.type_name = type_name      # Assign type name that matched
-                break
+        if 'setpoints' in config['nodes']:
+            for type_name, fields in config['nodes']['setpoints'].items():
+                if not node and tree.is_a(type_name, element['type']):
+                    node = SetPointNode(element, fields, sampler, modifiers)
+                    node.type_name = type_name      # Assign type name that matched
+                    break
+        if 'readbacks' in config['nodes']:
+            for type_name, fields in config['nodes']['readbacks'].items():
+                if not node and tree.is_a(type_name, element['type']):
+                    node = ReadBackNode(element, fields, sampler, modifiers)
+                    node.type_name = type_name      # Assign type name that matched
+                    break
 
         return node        
 
