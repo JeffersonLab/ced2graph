@@ -1,4 +1,4 @@
-# ced2gnn
+# ced2graph
 Script and supporting modules to extract data from CEBAF Element Database (CED) and the Mya archiver and output it in a format useful for generating graph neural networks.
 
 ## Usage
@@ -7,7 +7,7 @@ Since the tools have been written to use web API for both CED and Mya, it is not
 ```csh
 # Clone the repository into your home directory
 cd ~
-git clone https://github.com/JeffersonLab/ced2gnn.git
+git clone https://github.com/JeffersonLab/ced2graph.git
 # Specify a version of python3 in pubtools that has necessary modules
 setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
 
@@ -156,7 +156,7 @@ To run the test suite:
 ```csh
 # Clone the repository into your home directory
 cd ~
-git clone https://github.com/JeffersonLab/ced2gnn.git
+git clone https://github.com/JeffersonLab/ced2graph.git
 # Specify a version of python3 in pubtools that has necessary modules
 setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
 # Run the tests
@@ -169,7 +169,7 @@ Example output:
 [53] theo@devl77 > python3 tests.py
 ============================= test session starts ==============================
 platform linux -- Python 3.7.6, pytest-6.2.5, py-1.11.0, pluggy-1.0.0
-rootdir: /a/csmuser/theo/ced2gnn/tests
+rootdir: /a/csmuser/theo/ced2graph/tests
 collected 4 items
 
 test_ced.py ...                                                          [ 75%]
@@ -181,12 +181,12 @@ test_mya.py .                                                            [100%]
 
 
 ## TODO
- * Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0
+ * ~~Evaluate filter expression(s) from config file rather than hard-code IBC0R08 > 0~~
  * Add extra 01X hour if necessary during DST/EST transition
  * ~~Write out meta.dat files~~
  * ~~Convert type to type_id in node.dat, info.dat~~
  * ~~Make Edge links to nth readback node for n > 1~~
- * Progress bar during global data fetch (a long pause for large data sets)  
+ * ~~Progress bar during global data fetch (a long pause for large data sets)~~  
  * Test against longer date ranges
    * ~~2021-01-01 thru 2021-12-06 took about 15 minutes for element data but bombed on global~~
    * ~~Probably need to break large archiver requests into (month-sized?) chunks~~  
