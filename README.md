@@ -46,7 +46,35 @@ included [config.yaml](config.yaml).
 Non-fatal warnings generated during program get written to the log file *warnings.log*.
 
 ### Data Directory Structure
-Data is written to a date and time-based hiearchy of files anchored as illustrated below:
+
+Beginning with version tag 2.1 data can be written out in one of two different folder structures.
+Which structure gets used is determined by the **output:structure** key in config.yaml.  If the output:structure
+is specified as **directory**, then each set of graph files will be written into folders whose name 
+format is yyyymmdd_hhmmss.  
+
+```
+20221111_121235  # Timestamp of program execution is default top level
+|-- 20210919_070000  # 2021-09-19 07:00
+|   |-- info.dat
+|   |-- link.dat
+|   |-- meta.dat
+|   `-- node.dat
+|-- 20210919_080000  # 2021-09-19 08:00
+|   |-- info.dat
+|   |-- link.dat
+|   |-- meta.dat
+|   `-- node.dat
+|-- 20210919_090000  # 2021-09-19 09:00
+|   |-- info.dat
+|   |-- link.dat
+|   |-- meta.dat
+|   `-- node.dat
+```
+
+
+
+If the **output:strucuture** is specified as **tree** (or if the key is omitted) then data is written to a date and time-based hiearchy of 
+folders and files anchored as illustrated below:
 
 ```
 2021 # Year
