@@ -14,9 +14,12 @@ import argparse
 import os
 import sys
 import logging
+import datetime
+import pytz
 from modules.ced import *
 import modules.ced as ced
 import modules.mya as mya
+import modules.hgb as hgb
 import modules.node as node
 import modules.filter as filter
 from modules.util import progressBar
@@ -26,6 +29,9 @@ from modules.util import progressBar
 # bypass SSL verification because of the annoying JLAB MITM
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+# The top-level directory where data will be written
+output_dir = None
 
 # The file names that will be used when saving the data fetched from
 # CED and MYA as json and when reading that data back in lieu of
@@ -52,7 +58,7 @@ def make_cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='Command Line Options')
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
-    parser.add_argument("-d", type=str, dest='output_dir', default=".",
+    parser.add_argument("-d", type=str, dest='output_dir', default='.',
                         help="Directory where generated graph file hierarchy will be written")
     parser.add_argument("--read-json", action='store_true',
                         help = f"Read data from {tree_file}, {nodes_file}, and {globals_file} instead of CED and Mya")
@@ -79,12 +85,23 @@ def initialize_modules(config: dict):
     node.default_attributes = config['nodes']['default_attributes']
 
 try:
+
     # Access the command line arguments
     args = make_cli_parser().parse_args()
 
+
+    # If defaulting to '.' try to make a subdir
+    if args.output_dir == '.':
+        output_dir = hgb.dir_from_date('.', datetime.datetime.now(pytz.timezone('America/New_York')))
+        os.makedirs(output_dir)
+    else:
+        output_dir = args.output_dir
+
     # Before doing any time-consuming work, verify the output dir is writable
-    if not os.access(args.output_dir, os.X_OK | os.W_OK):
-        sys.exit('Unable to write to output directory ' + args.output_dir)
+    if not os.access(output_dir, os.X_OK | os.W_OK):
+        sys.exit('Unable to write to output directory ' + output_dir)
+    else:
+        print("Output will be written to "+output_dir)
 
     logging.basicConfig(
         level = logging.INFO,
@@ -169,7 +186,7 @@ try:
     node.List.populate_links(node_list)
 
     # At this point we've got all the data necessary to start writing out data sets
-    node.List.write_data_sets(global_data, node_list,config, args.output_dir)
+    node.List.write_data_sets(global_data, node_list,config, output_dir)
 
     # Save the tree, nodes, and global data list to a file for later use?
     indent = 2

@@ -35,12 +35,12 @@ def test_steps_per_chunk():
     span = {'begin_date': '2021-10-01', 'end_date': '2021-10-02', 'interval': '1h'}
     dates = [span]
     sampler = mya.Sampler(dates, ['IBC0R08CRCUR1'])
-    sampler.throttle = 5
+    mya.throttle = 5
     assert sampler.steps_per_chunk('2021-10-01', span['end_date'], span['interval']) == 5 # floor(Throttle/PVCount=1)
     assert sampler.steps_per_chunk('2021-10-01 22:00', span['end_date'], span['interval']) == 2 # Limited to remaining hours
 
     # Now when the PV list is > 1
     sampler = mya.Sampler(dates, ['IBC0R08CRCUR1','IBC0R08CRCUR2','IBC0R08CRCUR3'])
-    sampler.throttle = 5
+    mya.throttle = 5
     assert sampler.steps_per_chunk('2021-10-01', span['end_date'], span['interval']) == 1  # floor(Throttle/PVCount=3)
     assert sampler.steps_per_chunk('2021-10-01 22:00', span['end_date'], span['interval']) == 1  # Limited by PV size not remaining hours

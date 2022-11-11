@@ -184,11 +184,17 @@ edges:
 #
 # Here you specify options that will govern output and its directory structure
 #
-# minutes:  if true then two digit minutes subdirectories will be created beneath hour
-# seconds:  if true, then two digit seconds subdirectories will be created beneath minutes
+# structure: tree (default) or directory
+#            tree: output data sets in a year/month/day/hour/min/sec folder hierarchy
+#            directory: output data sets beneath a single directory in folders named yyyymmdd_hhmmss
+#
+# minutes:  (tree only) if true then two digit minutes subdirectories will be created beneath hour
+# seconds:  (tree only) if true, then two digit seconds subdirectories will be created beneath minutes
+
 #           Note: if seconds is true, then minutes will automatically also be regarded as true
 #
 output:
+  structure: directory
   minutes: false
   seconds: false
 

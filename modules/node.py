@@ -15,7 +15,6 @@ from modules.filter import macro_substitute
 from modules.filter import make as makeFilter
 from modules.filter import FilterException
 
-
 # A dictionary that provides an attribute name for the PV that is represented by an element's unadorned
 # EPICSName.  The defaults below should be updated at runtime with config file data.
 default_attributes = {
@@ -38,11 +37,10 @@ class Node():
         if modifiers is None:
             modifiers = {}
         self.modifiers = modifiers
-        self.data = []      # Stores array of timestamped data sets from mya
-        self.links = []     # Stores links to downstream nodes to use when building graph edges
+        self.data = []  # Stores array of timestamped data sets from mya
+        self.links = []  # Stores links to downstream nodes to use when building graph edges
         self.node_id = None
         self.type_name = None
-
 
     # Get the name used to construct EPICS PVs.
     def epics_name(self):
@@ -59,11 +57,11 @@ class Node():
 
     # The list of PV names from which node attributes should be constructed
     def pv_list(self):
-       pv_list = []
-       for field in self.epics_fields:
-           pv_list.append(self.pv_name(self.epics_name(),field))
-       pv_list.sort()
-       return pv_list
+        pv_list = []
+        for field in self.epics_fields:
+            pv_list.append(self.pv_name(self.epics_name(), field))
+        pv_list.sort()
+        return pv_list
 
     # Return a PV name formed from the given base epics name field
     # Handle special cases such as XPSET8, BCMs, certain IonPumps
@@ -77,13 +75,12 @@ class Node():
                 return 'IBC0L02Current'
             if self.name() == 'IBC0R08':
                 return 'IBC0R08CRCUR1'
-            if re.match(r'^VIP0L04(A|20|30|40|50|B)$',self.name()):
+            if re.match(r'^VIP0L04(A|20|30|40|50|B)$', self.name()):
                 return f'{epics_name}LOG'
             # An empty field means the naked EPICSName should be treated as a PVName
             return epics_name
         else:
             return f'{epics_name}{field}'
-
 
     # Retrieve PV values using the available data sampler
     # TODO stash the data keyed by timestamp for most efficient retrieval
@@ -106,8 +103,8 @@ class Node():
 
     # Retrieve the pv values for the specified index position in the data array
     def pv_data_at_index(self, index):
-       data = self.pv_data()
-       return data[index]['values']
+        data = self.pv_data()
+        return data[index]['values']
 
     # Define the string representation of the Node
     #   tab-delimited node_id, node_name, node_type, ced_attributes
@@ -129,7 +126,7 @@ class Node():
     def ced_attribute_values(self):
         attribute_values = []
         for attribute_name in self.ced_attribute_names():
-                attribute_values.append(self.element['properties'][attribute_name])
+            attribute_values.append(self.element['properties'][attribute_name])
         return attribute_values
 
     # Return epics-based node attributes for the specified array index
@@ -140,15 +137,15 @@ class Node():
         for field in self.epics_fields:
             for value in self.pv_data_at_index(index):
                 pv_name = list(value.keys())[0]
-                if pv_name == self.pv_name(self.epics_name(),field):
+                if pv_name == self.pv_name(self.epics_name(), field):
                     attribute_values.append(self.modified_epics_value(pv_name, value[pv_name]))
         return attribute_values
 
     # If necessary, apply calculations from the modifiers dictionary to the provided pv_value
     def modified_epics_value(self, pv_name, pv_value):
         if pv_name in self.modifiers.keys():
-           expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
-           return str(eval(expr))
+            expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
+            return str(eval(expr))
         else:
             return pv_value
 
@@ -186,11 +183,13 @@ class Node():
 
         return links
 
+
 # Nodes that represent setpoints
-class SetPointNode(Node):pass
+class SetPointNode(Node): pass
+
 
 # Nodes that represent readbacks
-class ReadBackNode(Node):pass
+class ReadBackNode(Node): pass
 
 
 class List():
@@ -201,7 +200,7 @@ class List():
     #  tree_file - name of file containing json-encoded ced.Tree object
     #  config_file - name of yaml config file 
     @staticmethod
-    def from_json(nodes_file: str, tree_file: str, config_file: str):        
+    def from_json(nodes_file: str, tree_file: str, config_file: str):
         # Read configuration yaml file
         stream = open(config_file, 'r')
         config = yaml.load(stream, Loader=yaml.CLoader)
@@ -209,11 +208,11 @@ class List():
         with open(tree_file, 'r') as treefile:
             tree_data = treefile.read()
         tree = ced.TypeTree()
-        tree.tree = json.loads(tree_data)   # parses file into dict
+        tree.tree = json.loads(tree_data)  # parses file into dict
         # Read in node data
         with open(nodes_file, 'r') as nodefile:
             node_data = nodefile.read()
-        elements_info = json.loads(node_data)   # parses file into dict
+        elements_info = json.loads(node_data)  # parses file into dict
 
         # Make vanilla list of nodes first
         nodes = list()
@@ -230,7 +229,6 @@ class List():
                 node_id += 1
 
         return nodes
-
 
     # Returns a dictionary with information about how many instances of each type
     # of node were encountered in node_list
@@ -250,13 +248,13 @@ class List():
     @staticmethod
     def type_map(node_list) -> dict:
         type_map = {}
-        i=0
+        i = 0
         for item in node_list:
             if item.type_name not in type_map:
                 type_map[item.type_name] = {
-                    'id' : i,
-                    'labels' : item.attribute_names(),
-                    'count' : 1
+                    'id': i,
+                    'labels': item.attribute_names(),
+                    'count': 1
                 }
                 i += 1
             else:
@@ -291,18 +289,19 @@ class List():
             for type_name, fields in config['nodes']['setpoints'].items():
                 if not node and tree.is_a(type_name, element['type']):
                     node = SetPointNode(element, fields, sampler, modifiers)
-                    node.type_name = type_name      # Assign type name that matched
+                    node.type_name = type_name  # Assign type name that matched
                     break
         if 'readbacks' in config['nodes']:
             for type_name, fields in config['nodes']['readbacks'].items():
                 if not node and tree.is_a(type_name, element['type']):
                     node = ReadBackNode(element, fields, sampler, modifiers)
-                    node.type_name = type_name      # Assign type name that matched
+                    node.type_name = type_name  # Assign type name that matched
                     break
 
-        return node        
+        return node
 
-    # Link downstream nodes to each ReadbackNode within node_list.
+        # Link downstream nodes to each ReadbackNode within node_list.
+
     # The connectivity built here is just up to and including the next ReadBackNode.
     # Later when writing out edge files, the connectivity can be extended by simply
     # appending the links of terminal ReadBackNode elements to those of the initial
@@ -335,12 +334,18 @@ class List():
         # so when we find a row we want to keep while looping through the global data, we will
         # have nodes data for the same time period at the at the identical array index.
         # for data in global_data:
-        for data in util.progressBar(global_data, prefix = 'Write to Disk:', suffix = '', length = 60):
+        for data in util.progressBar(global_data, prefix='Write to Disk:', suffix='', length=60):
             try:
                 if filter.passes(data):
-                    directory = hgb.path_from_date(output_dir, data['date'],
-                                                   minutes=config['output']['minutes'],
-                                                   seconds=config['output']['seconds'])
+                    # For compatibility with older config files which didn't have it,
+                    # we must check for existance of the structure key.  If it's missing we
+                    # will default to the original tree-style output.
+                    if 'structure' in config['output'] and config['output']['structure'] == 'directory':
+                        directory = hgb.dir_from_date(output_dir, data['date'])
+                    else:
+                        directory = hgb.path_from_date(output_dir, data['date'],
+                                                       minutes=config['output']['minutes'],
+                                                       seconds=config['output']['seconds'])
                     if not os.path.exists(directory):
                         os.makedirs(directory)
                     hgb.write_meta_dat(directory, node_list)
@@ -349,7 +354,7 @@ class List():
                     hgb.write_info_dat(directory, node_list)
             except FilterException as err:
                 # The details of RuntimeErrors are stored in the args attribute, which is a list.
-                logging.info(data['date'] +' ' + err.args[0])
+                logging.info(data['date'] + ' ' + err.args[0])
             i += 1
 
 
@@ -361,16 +366,16 @@ class ListEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, mya.Sampler):
             return {
-                'dates'   : obj.dates,
-                'pv_list'    : obj.pv_list,
-                'data'       : obj._data,
+                'dates': obj.dates,
+                'pv_list': obj.pv_list,
+                'data': obj._data,
             }
         if isinstance(obj, Node):
             return {
                 'element': obj.element,
-                'type_name' : obj.type_name,
-                'epics_fields' : obj.epics_fields,
-                'sampler' : obj.sampler,
+                'type_name': obj.type_name,
+                'epics_fields': obj.epics_fields,
+                'sampler': obj.sampler,
             }
         if isinstance(obj, pandas.Timestamp):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
