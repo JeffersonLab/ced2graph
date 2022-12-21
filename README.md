@@ -2,8 +2,31 @@
 Script and supporting modules to extract data from CEBAF Element Database (CED) and the Mya archiver and output it in a format useful for generating graph neural networks.
 
 ## Usage
-Since the tools have been written to use web API for both CED and Mya, it is not a requirement that they be executed from an accelerator workstation.  Any computer with python3 and the necessary modules that has access to https://ced.acc.jlab.org and https://myaweb.acc.jlab.org should be capable of using them.  However as a baseline example, running from an ACE linux host is outlined.
+Since the tools have been written to use web API for both CED and Mya, it is not a requirement that they be executed from an accelerator workstation.  Any computer with python3 and the necessary modules that has access to https://ced.acc.jlab.org and https://myaweb.acc.jlab.org should be capable of using them.  However as a baseline example, running from a CUE linux host and an ACE linux host are outlined.
 
+### CUE
+```csh
+# Use an RHEL8 linux host such as jlabl5 which has python 3.9 installed
+ssh jlabl5
+# Create a virtual environment
+/apps/python3/3.9.7/bin/python3  -m venv venv
+# Activate it
+cd venv
+source bin/activate.csh
+
+# Clone the repository into your home directory
+cd ~
+git clone https://github.com/JeffersonLab/ced2graph.git
+# Install the dependencies into the venv virtual environment
+pip install -r requirements.txt
+
+# Run the script with -h or --help to see available arguments
+python3 main.py --help
+
+```
+
+
+### ACE
 ```csh
 # Clone the repository into your home directory
 cd ~
