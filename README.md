@@ -21,7 +21,7 @@ git clone https://github.com/JeffersonLab/ced2graph.git
 pip install -r requirements.txt
 
 # Run the script with -h or --help to see available arguments
-python3 main.py --help
+python3 ced2graph.py --help
 
 ```
 
@@ -35,9 +35,9 @@ git clone https://github.com/JeffersonLab/ced2graph.git
 setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
 
 # Run the script with -h or --help to see available arguments
-python3 main.py --help
+python3 ced2graph.py --help
 
-usage: main.py [-h] [-c CONFIG_FILE] [-d OUTPUT_DIR] [-o] [--read-json] [--save-json]
+usage: ced2graph.py [-h] [-c CONFIG_FILE] [-d OUTPUT_DIR] [-o] [--read-json] [--save-json]
 
 Command Line Options
 
@@ -53,7 +53,7 @@ Example:
 
 ```
 % PATH /usr/csite/pubtools/python/3.7/bin:$PATH
-% python3 main.py
+% python3 ced2graph.py
 Fetch Data: |##################################################| 100.0%
 Write Files: |##################################################| 100.0%
 ```
@@ -76,7 +76,8 @@ is specified as **directory**, then each set of graph files will be written into
 format is yyyymmdd_hhmmss.  
 
 ```
-20221111_121235  # Timestamp of program execution is default top level
+20221111_121235  # Timestamp of program execution is data set default top level
+/-- config.yaml  # Copy of the config file used to generate data set
 |-- 20210919_070000  # 2021-09-19 07:00
 |   |-- info.dat
 |   |-- link.dat
@@ -101,6 +102,7 @@ folders and files anchored as illustrated below:
 
 ```
 2021 # Year
+/-- config.yaml  # Copy of the config file used to generate data set
 |-- 01 # Day
 |   |-- 03 # Hour  - Note Missing 01 and 03 hours were excluded by filter (IBC0R08CRCUR1 > 0)
 |   |   |-- 02
@@ -251,12 +253,12 @@ from the CED and archiver.  To do so, follow these steps.
 
 While connected to a network with access to ced and mya web servers:
 ```
-python3 main.py --save-json
+python3 ced2graph.py --save-json
 ```
 
 Thereafter, to use the saved data, simply run
 ```
-python3 main.py --read-json
+python3 ced2graph.py --read-json
 ```
 
 Note that if the config changes after the --save-json execution, it's possible that it will become 
