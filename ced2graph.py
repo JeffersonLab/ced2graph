@@ -56,6 +56,12 @@ tree = TypeTree()
 # Define the program's command line arguments and build a parser to process them
 def make_cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='Command Line Options')
+    parser.add_argument("-b", type=str, dest='begin',
+                        help="Beginning of date range (YYYY-MM-DD HH:MM)")
+    parser.add_argument("-e", type=str, dest='end',
+                        help="End of date range (YYYY-MM-DD HH:MM)")
+    parser.add_argument("-i", type=str, dest='interval',
+                        help="Interval for data samples", default="1h")
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
     parser.add_argument("-d", type=str, dest='output_dir', default='.',
@@ -112,6 +118,15 @@ if __name__ == "__main__":
         # Read configuration yaml file
         stream = open(args.config_file, 'r')
         config = yaml.load(stream, Loader=yaml.CLoader)
+
+        # Override config with Command line options
+        if args.begin:
+            config['mya']['dates']['begin'] = args.begin
+        if args.end:
+            config['mya']['dates']['end'] = args.end
+        if args.interval:
+            config['mya']['dates']['interval'] = args.interval
+
 
         # Module-level configuration
         initialize_modules(config)
