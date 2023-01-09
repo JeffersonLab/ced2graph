@@ -2,61 +2,47 @@
 Script and supporting modules to extract data from CEBAF Element Database (CED) and the Mya archiver and output it in a format useful for generating graph neural networks.
 
 ## Usage
-Since the tools have been written to use web API for both CED and Mya, it is not a requirement that they be executed from an accelerator workstation.  Any computer with python3 and the necessary modules that has access to https://ced.acc.jlab.org and https://myaweb.acc.jlab.org should be capable of using them.  However as a baseline example, running from a CUE linux host and an ACE linux host are outlined.
+Since the tools have been written to use web API for both CED and Mya, it is not a requirement that they be executed from an accelerator workstation.  Any computer with python3 and the necessary modules that has access to https://ced.acc.jlab.org and https://myaweb.acc.jlab.org should be capable of using them.  However as a baseline example, running from an CUE linux host is outlined.
 
 ### CUE
 ```csh
 # Use an RHEL8 linux host such as jlabl5 which has python 3.9 installed
 ssh jlabl5
-# Create a virtual environment
-/apps/python3/3.9.7/bin/python3  -m venv venv
-# Activate it
-cd venv
-source bin/activate.csh
+
+# Activate the ced2graph virtual environment
+source /group/accsft/venv/ced2graph/bin/activate.csh
 
 # Clone the repository into your home directory
 cd ~
 git clone https://github.com/JeffersonLab/ced2graph.git
-# Install the dependencies into the venv virtual environment
-pip install -r requirements.txt
 
 # Run the script with -h or --help to see available arguments
 python3 ced2graph.py --help
 
-```
-
-
-### ACE
-```csh
-# Clone the repository into your home directory
-cd ~
-git clone https://github.com/JeffersonLab/ced2graph.git
-# Specify a version of python3 in pubtools that has necessary modules
-setenv PATH /usr/csite/pubtools/python/3.7/bin:$PATH
-
-# Run the script with -h or --help to see available arguments
-python3 ced2graph.py --help
-
-usage: ced2graph.py [-h] [-c CONFIG_FILE] [-d OUTPUT_DIR] [-o] [--read-json] [--save-json]
+usage: ced2graph.py [-h] [-b BEGIN] [-e END] [-i INTERVAL] [-c CONFIG_FILE] [-d OUTPUT_DIR] [--read-json] [--save-json]
 
 Command Line Options
 
 optional arguments:
   -h, --help      show this help message and exit
+  -b BEGIN        Beginning of date range (YYYY-MM-DD HH:MM)
+  -e END          End of date range (YYYY-MM-DD HH:MM)
+  -i INTERVAL     Interval for data samples
   -c CONFIG_FILE  Name of a yaml formatted config file
   -d OUTPUT_DIR   Directory where generated graph file hierarchy will be written
   --read-json     Read data from tree.json, nodes.json, and global.json instead of CED and Mya
   --save-json     Save fetched data in tree.json, nodes.json, and global.json
 
-```
-Example:
 
-```
-% PATH /usr/csite/pubtools/python/3.7/bin:$PATH
-% python3 ced2graph.py -b 2021-09-01 -2 2021-09-30 -i 1h
-Fetch Data: |##################################################| 100.0%
-Write Files: |##################################################| 100.0%
-```
+# Example 
+
+python3 ced2graph.py -b 2021-09-01 -2 2021-09-30 -i 1h --save-json
+
+Output will be written to ./20221221_142817
+Fetching Node Data: |############################################################| 100.0%
+Write to Disk: |############################################################| 100.0%
+Write Json: |############################################################| 100.0%
+
 ### Config File
 Execution of the program is governed by parameters supplied via YAML format configuration file. 
 The default name for the file is config.yaml, however this may be over-ridden on the command line using the -c flag.
@@ -79,16 +65,19 @@ format is yyyymmdd_hhmmss.
 20221111_121235  # Timestamp of program execution is data set default top level
 /-- config.yaml  # Copy of the config file used to generate data set
 |-- 20210919_070000  # 2021-09-19 07:00
+|   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
 |   |-- meta.dat
 |   `-- node.dat
 |-- 20210919_080000  # 2021-09-19 08:00
+|   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
 |   |-- meta.dat
 |   `-- node.dat
 |-- 20210919_090000  # 2021-09-19 09:00
+|   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
 |   |-- meta.dat
@@ -106,11 +95,13 @@ folders and files anchored as illustrated below:
 |-- 01 # Day
 |   |-- 03 # Hour  - Note Missing 01 and 03 hours were excluded by filter (IBC0R08CRCUR1 > 0)
 |   |   |-- 02
+|   |   |   |-- graph.pkl
 |   |   |   |-- info.dat
 |   |   |   |-- link.dat
 |   |   |   |-- meta.dat
 |   |   |   `-- node.dat
 |   |   |-- 04
+|   |   |   |-- graph.pkl
 |   |   |   |-- info.dat
 |   |   |   |-- link.dat
 |   |   |   |-- meta.dat
@@ -136,7 +127,11 @@ output:
   seconds: true
 ```
 ### Output Files
-Within each output directory is a data set consisting of four files.
+Within each output directory is a data set consisting of five files.
+
+#### graph.pkl
+This is a python "pckle" file containing a serialized copy of the network graph build from the .dat files in the directory.
+Unlike those other files which are plain text, the graph.pkl format is binary.
 
 #### node.dat
 The ordered list of nodes with comma-separate list of attribute values.
