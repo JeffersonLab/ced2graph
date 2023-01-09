@@ -53,7 +53,7 @@ Example:
 
 ```
 % PATH /usr/csite/pubtools/python/3.7/bin:$PATH
-% python3 ced2graph.py
+% python3 ced2graph.py -b 2021-09-01 -2 2021-09-30 -i 1h
 Fetch Data: |##################################################| 100.0%
 Write Files: |##################################################| 100.0%
 ```
