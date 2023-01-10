@@ -361,9 +361,16 @@ class List():
     # Write out a globals.json file at the specified path
     @staticmethod
     def write_global_data_values(path, global_data):
+
+        # First we simplify the data structure
+        global_dict = {}
+        for item in global_data['values']:
+            for key in item.keys():
+                global_dict[key] = item[key]
+        # Then we write simplified version to a file
         file_name = os.path.join(path, 'globals.json')
         f = open(file_name, 'w')
-        json.dump(global_data['values'], f, indent=2)
+        json.dump(global_dict, f, indent=2)
         f.close()
 
 class ListEncoder(json.JSONEncoder):

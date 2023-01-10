@@ -137,26 +137,24 @@ Within each output directory is a data set consisting of five files.
 #### globals.json
 This is a json formatted file containing the pertinent global data for the data set.
 ```json
-[
-  {
-    "IBC0L02Current": "69.6119"
-  },
-  {
-    "IBC0R08CRCUR1": "69.24"
-  },
-  {
-    "IGL1I00HALLAMODE": "0"
-  },
-  {
-    "IGL1I00HALLBMODE": "3"
-  },
-  {
-    "IGL1I00HALLCMODE": "3"
-  },
-  {
-    "IGL1I00HALLDMODE": "3"
-  }
-]
+{
+  "ISD0I011G": "0",
+  "BOOMHLAMODE": "0",
+  "BOOMHLBMODE": "4",
+  "BOOMHLCMODE": "4",
+  "BOOMHLDMODE": "4",
+  "IBC0L02Current": "69.6119",
+  "IBC0R08CRCUR1": "69.24",
+  "IBC1H04CRCUR2": "0",
+  "IBC2C24CRCUR3": "106.5",
+  "IBC3H00CRCUR4": "68.85",
+  "IBCAD00CRCUR6": "45",
+  "IGL1I00BEAMODE": "3",
+  "IGL1I00HALLAMODE": "0",
+  "IGL1I00HALLBMODE": "3",
+  "IGL1I00HALLCMODE": "3",
+  "IGL1I00HALLDMODE": "3"
+}
 ```
 
 #### graph.pkl
