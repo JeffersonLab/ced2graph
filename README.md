@@ -65,18 +65,21 @@ format is yyyymmdd_hhmmss.
 20221111_121235  # Timestamp of program execution is data set default top level
 /-- config.yaml  # Copy of the config file used to generate data set
 |-- 20210919_070000  # 2021-09-19 07:00
+|   |-- globals.json
 |   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
 |   |-- meta.dat
 |   `-- node.dat
 |-- 20210919_080000  # 2021-09-19 08:00
+|   |-- globals.json
 |   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
 |   |-- meta.dat
 |   `-- node.dat
 |-- 20210919_090000  # 2021-09-19 09:00
+|   |-- globals.json
 |   |-- graph.pkl
 |   |-- info.dat
 |   |-- link.dat
@@ -95,12 +98,14 @@ folders and files anchored as illustrated below:
 |-- 01 # Day
 |   |-- 03 # Hour  - Note Missing 01 and 03 hours were excluded by filter (IBC0R08CRCUR1 > 0)
 |   |   |-- 02
+|   |   |   |-- globals.json
 |   |   |   |-- graph.pkl
 |   |   |   |-- info.dat
 |   |   |   |-- link.dat
 |   |   |   |-- meta.dat
 |   |   |   `-- node.dat
 |   |   |-- 04
+|   |   |   |-- globals.json
 |   |   |   |-- graph.pkl
 |   |   |   |-- info.dat
 |   |   |   |-- link.dat
@@ -128,6 +133,31 @@ output:
 ```
 ### Output Files
 Within each output directory is a data set consisting of five files.
+
+#### globals.json
+This is a json formatted file containing the pertinent global data for the data set.
+```json
+[
+  {
+    "IBC0L02Current": "69.6119"
+  },
+  {
+    "IBC0R08CRCUR1": "69.24"
+  },
+  {
+    "IGL1I00HALLAMODE": "0"
+  },
+  {
+    "IGL1I00HALLBMODE": "3"
+  },
+  {
+    "IGL1I00HALLCMODE": "3"
+  },
+  {
+    "IGL1I00HALLDMODE": "3"
+  }
+]
+```
 
 #### graph.pkl
 This is a python "pckle" file containing a serialized copy of the network graph build from the .dat files in the directory.
