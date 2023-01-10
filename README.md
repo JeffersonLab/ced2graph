@@ -36,7 +36,7 @@ optional arguments:
 
 # Example 
 
-python3 ced2graph.py -b 2021-09-01 -2 2021-09-30 -i 1h --save-json
+python3 ced2graph.py -b 2021-09-01 -e 2021-09-30 -i 1h --save-json
 
 Output will be written to ./20221221_142817
 Fetching Node Data: |############################################################| 100.0%
