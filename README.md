@@ -42,6 +42,7 @@ Output will be written to ./20221221_142817
 Fetching Node Data: |############################################################| 100.0%
 Write to Disk: |############################################################| 100.0%
 Write Json: |############################################################| 100.0%
+```
 
 ### Config File
 Execution of the program is governed by parameters supplied via YAML format configuration file. 
@@ -61,7 +62,7 @@ Which structure gets used is determined by the **output:structure** key in confi
 is specified as **directory**, then each set of graph files will be written into folders whose name 
 format is yyyymmdd_hhmmss.  
 
-```
+```text
 20221111_121235  # Timestamp of program execution is data set default top level
 /-- config.yaml  # Copy of the config file used to generate data set
 |-- 20210919_070000  # 2021-09-19 07:00
@@ -92,7 +93,7 @@ format is yyyymmdd_hhmmss.
 If the **output:strucuture** is specified as **tree** (or if the key is omitted) then data is written to a date and time-based hiearchy of 
 folders and files anchored as illustrated below:
 
-```
+```text
 2021 # Year
 /-- config.yaml  # Copy of the config file used to generate data set
 |-- 01 # Day
