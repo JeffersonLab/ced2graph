@@ -61,7 +61,7 @@ def make_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument("-e", type=str, dest='end',
                         help="End of date range (YYYY-MM-DD HH:MM)")
     parser.add_argument("-i", type=str, dest='interval',
-                        help="Interval for data samples", default="1h")
+                        help="Interval for data samples")
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
     parser.add_argument("-d", type=str, dest='output_dir', default='.',
@@ -216,7 +216,7 @@ if __name__ == "__main__":
         # Save the tree, nodes, and global data list to a file for later use?
         indent = 2
         if args.save_json:
-            f = open(nodes_file, "w")
+            f = open(os.path.join(output_dir,nodes_file), "w")
             print("[", file=f)
             i = 0
             for index, item in enumerate(progressBar(node_list, prefix='Write Json:', suffix='', length=60)):
@@ -226,11 +226,11 @@ if __name__ == "__main__":
             print("]", file=f)
             f.close()
 
-            f = open(globals_file, "w")
+            f = open(os.path.join(output_dir, globals_file), "w")
             json.dump(global_data, f, indent=indent)
             f.close()
 
-            f = open(tree_file, "w")
+            f = open(os.path.join(output_dir,tree_file), "w")
             json.dump(tree.tree, f, indent=indent)
             f.close()
 
