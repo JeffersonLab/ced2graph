@@ -117,6 +117,12 @@ nodes:
 #   The web server will timeout if a request takes too long to complete.
 #
 # dates:
+#
+#   ---IMPORTANT---
+#   It is probably best practice leave the begin and end parameters blank here and specify them
+#   on the command line instead.  That way the same config file can be used for multiple date ranges.
+#   ---------------
+
 #   begin: The start of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
 #   end: The end of the date range to fetch (YYYY-MM-DD [HH:MM:SS])
 #   interval: An interval specifier ('1h' = 1 hour, '1d' = 1 day, etc.)
@@ -142,9 +148,9 @@ mya:
   deployment: "history"
   throttle: 2500
   dates:
-    begin: "2021-09-01"
-    end: "2021-09-30"
-    interval: "1d"
+    begin:
+    end:
+    interval: 1h
   global:
     - ISD0I011G
     - BOOMHLAMODE
