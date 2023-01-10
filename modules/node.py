@@ -352,11 +352,19 @@ class List():
                     hgb.write_node_dat(directory, node_list, i)
                     hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                     hgb.write_info_dat(directory, node_list)
+                    List.write_global_data_values(directory, data)   # data is global_data at current date
             except FilterException as err:
                 # The details of RuntimeErrors are stored in the args attribute, which is a list.
                 logging.info(data['date'] + ' ' + err.args[0])
             i += 1
 
+    # Write out a globals.json file at the specified path
+    @staticmethod
+    def write_global_data_values(path, global_data):
+        file_name = os.path.join(path, 'globals.json')
+        f = open(file_name, 'w')
+        json.dump(global_data['values'], f, indent=2)
+        f.close()
 
 class ListEncoder(json.JSONEncoder):
     """Helper class for exporting json-encoded node lists"""
