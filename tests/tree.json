@@ -37,7 +37,6 @@
       "BeamElem": {
         "BeamStopper": "BeamStopper",
         "Collimator": "Collimator",
-        "CryoCavity": "CryoCavity",
         "Detector": "Detector",
         "Diagnostic": {
           "Accelerometer": "Accelerometer",
@@ -176,15 +175,19 @@
         },
         "Mark": "Mark",
         "MatchMarker": "MatchMarker",
+        "RFCavity": {
+          "CryoCavity": "CryoCavity",
+          "WarmCavity": {
+            "Buncher": "Buncher",
+            "Capture": "Capture",
+            "Chopper": "Chopper",
+            "Laser": "Laser",
+            "PreBuncher": "PreBuncher",
+            "RFSeparator": "RFSeparator"
+          }
+        },
         "Radiator": "Radiator",
-        "Target": "Target",
-        "WarmCavity": {
-          "Buncher": "Buncher",
-          "Capture": "Capture",
-          "Chopper": "Chopper",
-          "PreBuncher": "PreBuncher",
-          "RFSeparator": "RFSeparator"
-        }
+        "Target": "Target"
       },
       "BeamLossMonitor": "BeamLossMonitor",
       "BeamProfiler": "BeamProfiler",
@@ -226,6 +229,7 @@
       "WaterMeter": "WaterMeter"
     },
     "NetElem": {
+      "GPIBServer": "GPIBServer",
       "IOC": {
         "DHCPioc": "DHCPioc",
         "ExternIOC": "ExternIOC",
@@ -235,6 +239,8 @@
         },
         "VME": "VME"
       },
+      "LabJack": "LabJack",
+      "PortServer": "PortServer",
       "Xport": "Xport"
     },
     "NeutronDetector": "NeutronDetector",
@@ -286,7 +292,11 @@
     }
   },
   "Resource": {
-    "Building": "Building",
-    "Data": "Data"
+    "Data": "Data",
+    "Structure": {
+      "Building": "Building",
+      "CoolingTower": "CoolingTower",
+      "Substation": "Substation"
+    }
   }
 }

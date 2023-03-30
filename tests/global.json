@@ -1,21 +1,77 @@
 [
   {
-    "date": "2021-11-01T00:00:00",
+    "date": "2021-09-05T00:00:00",
     "values": [
       {
-        "ISD0I011G": "16"
+        "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "1"
+        "BOOMHLAMODE": "0"
       },
       {
-        "BOOMHLBMODE": "1"
+        "BOOMHLBMODE": "0"
       },
       {
-        "BOOMHLCMODE": "1"
+        "BOOMHLCMODE": "0"
       },
       {
-        "BOOMHLDMODE": "1"
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "1.00311"
+      },
+      {
+        "IBC0R08CRCUR1": "5.37"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "0"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "2"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "0"
+      },
+      {
+        "IGL1I00HALLCMODE": "2"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-06T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "2"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "0"
+      },
+      {
+        "BOOMHLCMODE": "0"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
       },
       {
         "IBC0R08CRCUR1": "0"
@@ -50,22 +106,25 @@
     ]
   },
   {
-    "date": "2021-11-01T01:00:00",
+    "date": "2021-09-07T00:00:00",
     "values": [
       {
         "ISD0I011G": "4"
       },
       {
-        "BOOMHLAMODE": "1"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "1"
       },
       {
-        "BOOMHLCMODE": "1"
+        "BOOMHLCMODE": "0"
       },
       {
-        "BOOMHLDMODE": "1"
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
       },
       {
         "IBC0R08CRCUR1": "0"
@@ -100,22 +159,25 @@
     ]
   },
   {
-    "date": "2021-11-01T02:00:00",
+    "date": "2021-09-08T00:00:00",
     "values": [
       {
-        "ISD0I011G": "4"
+        "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "1"
+        "BOOMHLAMODE": "0"
       },
       {
-        "BOOMHLBMODE": "1"
+        "BOOMHLBMODE": "3"
       },
       {
-        "BOOMHLCMODE": "1"
+        "BOOMHLCMODE": "3"
       },
       {
-        "BOOMHLDMODE": "1"
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
       },
       {
         "IBC0R08CRCUR1": "0"
@@ -150,363 +212,13 @@
     ]
   },
   {
-    "date": "2021-11-01T03:00:00",
+    "date": "2021-09-09T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "43.62"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "132"
-      },
-      {
-        "IBC3H00CRCUR4": "42.87"
-      },
-      {
-        "IBCAD00CRCUR6": "199.5"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T04:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "37.62"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "31.5"
-      },
-      {
-        "IBC3H00CRCUR4": "37.44"
-      },
-      {
-        "IBCAD00CRCUR6": "204"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T05:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "40.14"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "124.5"
-      },
-      {
-        "IBC3H00CRCUR4": "39.63"
-      },
-      {
-        "IBCAD00CRCUR6": "195"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T06:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "43.44"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "132"
-      },
-      {
-        "IBC3H00CRCUR4": "43.32"
-      },
-      {
-        "IBCAD00CRCUR6": "202.5"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T07:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "40.56"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "132"
-      },
-      {
-        "IBC3H00CRCUR4": "40.23"
-      },
-      {
-        "IBCAD00CRCUR6": "193.5"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T08:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "41.82"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "153"
-      },
-      {
-        "IBC3H00CRCUR4": "41.28"
-      },
-      {
-        "IBCAD00CRCUR6": "201"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T09:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "40.44"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "133.5"
-      },
-      {
-        "IBC3H00CRCUR4": "40.05"
-      },
-      {
-        "IBCAD00CRCUR6": "195"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T10:00:00",
-    "values": [
-      {
-        "ISD0I011G": "8"
-      },
-      {
-        "BOOMHLAMODE": "1"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "1"
@@ -515,7 +227,10 @@
         "BOOMHLCMODE": "1"
       },
       {
-        "BOOMHLDMODE": "1"
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
       },
       {
         "IBC0R08CRCUR1": "0"
@@ -550,425 +265,28 @@
     ]
   },
   {
-    "date": "2021-11-01T11:00:00",
+    "date": "2021-09-10T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "40.86"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "133.5"
-      },
-      {
-        "IBC3H00CRCUR4": "40.53"
-      },
-      {
-        "IBCAD00CRCUR6": "198"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T12:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "43.11"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "124.5"
-      },
-      {
-        "IBC3H00CRCUR4": "42.33"
-      },
-      {
-        "IBCAD00CRCUR6": "201"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T13:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "41.88"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "133.5"
-      },
-      {
-        "IBC3H00CRCUR4": "41.73"
-      },
-      {
-        "IBCAD00CRCUR6": "195"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T14:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "43.83"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "115.5"
-      },
-      {
-        "IBC3H00CRCUR4": "43.98"
-      },
-      {
-        "IBCAD00CRCUR6": "198"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T15:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "42.36"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "130.5"
-      },
-      {
-        "IBC3H00CRCUR4": "42.27"
-      },
-      {
-        "IBCAD00CRCUR6": "207"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T16:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "45.09"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "141"
-      },
-      {
-        "IBC3H00CRCUR4": "44.61"
-      },
-      {
-        "IBCAD00CRCUR6": "204"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T17:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "38.88"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "129"
-      },
-      {
-        "IBC3H00CRCUR4": "38.49"
-      },
-      {
-        "IBCAD00CRCUR6": "199.5"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T18:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
-      },
-      {
-        "BOOMHLBMODE": "4"
-      },
-      {
-        "BOOMHLCMODE": "4"
-      },
-      {
-        "BOOMHLDMODE": "4"
-      },
-      {
-        "IBC0R08CRCUR1": "40.35"
-      },
-      {
-        "IBC1H04CRCUR2": "0"
-      },
-      {
-        "IBC2C24CRCUR3": "124.5"
-      },
-      {
-        "IBC3H00CRCUR4": "39.75"
-      },
-      {
-        "IBCAD00CRCUR6": "204"
-      },
-      {
-        "IGL1I00BEAMODE": "3"
-      },
-      {
-        "IGL1I00HALLAMODE": "0"
-      },
-      {
-        "IGL1I00HALLBMODE": "3"
-      },
-      {
-        "IGL1I00HALLCMODE": "3"
-      },
-      {
-        "IGL1I00HALLDMODE": "3"
-      }
-    ]
-  },
-  {
-    "date": "2021-11-01T19:00:00",
-    "values": [
-      {
-        "ISD0I011G": "0"
-      },
-      {
-        "BOOMHLAMODE": "3"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "1"
       },
       {
-        "BOOMHLCMODE": "1"
+        "BOOMHLCMODE": "2"
       },
       {
-        "BOOMHLDMODE": "1"
+        "BOOMHLDMODE": "0"
       },
       {
-        "IBC0R08CRCUR1": "0"
+        "IBC0L02Current": "0.368723"
+      },
+      {
+        "IBC0R08CRCUR1": "3.06"
       },
       {
         "IBC1H04CRCUR2": "0"
@@ -983,13 +301,66 @@
         "IBCAD00CRCUR6": "1.5"
       },
       {
-        "IGL1I00BEAMODE": "3"
+        "IGL1I00BEAMODE": "2"
       },
       {
         "IGL1I00HALLAMODE": "0"
       },
       {
         "IGL1I00HALLBMODE": "0"
+      },
+      {
+        "IGL1I00HALLCMODE": "2"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-11T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "22.6847"
+      },
+      {
+        "IBC0R08CRCUR1": "22.71"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "115.5"
+      },
+      {
+        "IBC3H00CRCUR4": "22.68"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
       },
       {
         "IGL1I00HALLCMODE": "3"
@@ -1000,13 +371,13 @@
     ]
   },
   {
-    "date": "2021-11-01T20:00:00",
+    "date": "2021-09-12T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "4"
@@ -1015,10 +386,13 @@
         "BOOMHLCMODE": "4"
       },
       {
-        "BOOMHLDMODE": "4"
+        "BOOMHLDMODE": "0"
       },
       {
-        "IBC0R08CRCUR1": "42.12"
+        "IBC0L02Current": "15.4022"
+      },
+      {
+        "IBC0R08CRCUR1": "15.75"
       },
       {
         "IBC1H04CRCUR2": "0"
@@ -1027,10 +401,540 @@
         "IBC2C24CRCUR3": "129"
       },
       {
-        "IBC3H00CRCUR4": "41.46"
+        "IBC3H00CRCUR4": "15.63"
       },
       {
-        "IBCAD00CRCUR6": "195"
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-13T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "10.0473"
+      },
+      {
+        "IBC0R08CRCUR1": "10.17"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "115.5"
+      },
+      {
+        "IBC3H00CRCUR4": "10.14"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-14T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "1"
+      },
+      {
+        "BOOMHLCMODE": "1"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
+      },
+      {
+        "IBC0R08CRCUR1": "0"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "0"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "0"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "0"
+      },
+      {
+        "IGL1I00HALLCMODE": "0"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-15T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "8.31573"
+      },
+      {
+        "IBC0R08CRCUR1": "8.16"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "124.5"
+      },
+      {
+        "IBC3H00CRCUR4": "8.13"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-16T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "16"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "0"
+      },
+      {
+        "BOOMHLCMODE": "0"
+      },
+      {
+        "BOOMHLDMODE": "0"
+      },
+      {
+        "IBC0L02Current": "9.25125e-05"
+      },
+      {
+        "IBC0R08CRCUR1": "0"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "0"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "0"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "0"
+      },
+      {
+        "IGL1I00HALLCMODE": "0"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-17T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "39.7222"
+      },
+      {
+        "IBC0R08CRCUR1": "40.44"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "132"
+      },
+      {
+        "IBC3H00CRCUR4": "40.41"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-18T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "5.20056"
+      },
+      {
+        "IBC0R08CRCUR1": "5.25"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "106.5"
+      },
+      {
+        "IBC3H00CRCUR4": "5.16"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-19T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "4"
+      },
+      {
+        "IBC0L02Current": "20.6816"
+      },
+      {
+        "IBC0R08CRCUR1": "21.51"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "112.5"
+      },
+      {
+        "IBC3H00CRCUR4": "21.42"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-20T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "4"
+      },
+      {
+        "IBC0L02Current": "17.7126"
+      },
+      {
+        "IBC0R08CRCUR1": "18.87"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "109.5"
+      },
+      {
+        "IBC3H00CRCUR4": "18.72"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-21T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "4"
+      },
+      {
+        "IBC0L02Current": "70.5072"
+      },
+      {
+        "IBC0R08CRCUR1": "69.36"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "112.5"
+      },
+      {
+        "IBC3H00CRCUR4": "69.18"
+      },
+      {
+        "IBCAD00CRCUR6": "3"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-22T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "4"
+      },
+      {
+        "IBC0L02Current": "69.5158"
+      },
+      {
+        "IBC0R08CRCUR1": "71.52"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "115.5"
+      },
+      {
+        "IBC3H00CRCUR4": "71.49"
+      },
+      {
+        "IBCAD00CRCUR6": "199.5"
       },
       {
         "IGL1I00BEAMODE": "3"
@@ -1050,13 +954,13 @@
     ]
   },
   {
-    "date": "2021-11-01T21:00:00",
+    "date": "2021-09-23T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "4"
@@ -1068,19 +972,22 @@
         "BOOMHLDMODE": "4"
       },
       {
-        "IBC0R08CRCUR1": "43.68"
+        "IBC0L02Current": "69.9332"
+      },
+      {
+        "IBC0R08CRCUR1": "68.67"
       },
       {
         "IBC1H04CRCUR2": "0"
       },
       {
-        "IBC2C24CRCUR3": "142.5"
+        "IBC2C24CRCUR3": "117"
       },
       {
-        "IBC3H00CRCUR4": "43.29"
+        "IBC3H00CRCUR4": "68.73"
       },
       {
-        "IBCAD00CRCUR6": "207"
+        "IBCAD00CRCUR6": "144"
       },
       {
         "IGL1I00BEAMODE": "3"
@@ -1100,13 +1007,13 @@
     ]
   },
   {
-    "date": "2021-11-01T22:00:00",
+    "date": "2021-09-24T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "4"
@@ -1118,16 +1025,284 @@
         "BOOMHLDMODE": "4"
       },
       {
-        "IBC0R08CRCUR1": "42.57"
+        "IBC0L02Current": "70.3045"
+      },
+      {
+        "IBC0R08CRCUR1": "68.4"
       },
       {
         "IBC1H04CRCUR2": "0"
       },
       {
-        "IBC2C24CRCUR3": "130.5"
+        "IBC2C24CRCUR3": "132"
       },
       {
-        "IBC3H00CRCUR4": "42.33"
+        "IBC3H00CRCUR4": "68.19"
+      },
+      {
+        "IBCAD00CRCUR6": "49.5"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "3"
+      },
+      {
+        "IGL1I00HALLDMODE": "3"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-25T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "1"
+      },
+      {
+        "BOOMHLCMODE": "1"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "0.623233"
+      },
+      {
+        "IBC0R08CRCUR1": "4.98"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "0"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "1.5"
+      },
+      {
+        "IGL1I00BEAMODE": "2"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "0"
+      },
+      {
+        "IGL1I00HALLCMODE": "2"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-26T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "1"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "0.089774"
+      },
+      {
+        "IBC0R08CRCUR1": "0.06"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "124.5"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "0"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-27T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "1"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "0.0944061"
+      },
+      {
+        "IBC0R08CRCUR1": "0.06"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "117"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "0"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-28T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "1"
+      },
+      {
+        "BOOMHLDMODE": "1"
+      },
+      {
+        "IBC0L02Current": "0.0923103"
+      },
+      {
+        "IBC0R08CRCUR1": "0.06"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "121.5"
+      },
+      {
+        "IBC3H00CRCUR4": "0"
+      },
+      {
+        "IBCAD00CRCUR6": "0"
+      },
+      {
+        "IGL1I00BEAMODE": "3"
+      },
+      {
+        "IGL1I00HALLAMODE": "0"
+      },
+      {
+        "IGL1I00HALLBMODE": "3"
+      },
+      {
+        "IGL1I00HALLCMODE": "0"
+      },
+      {
+        "IGL1I00HALLDMODE": "0"
+      }
+    ]
+  },
+  {
+    "date": "2021-09-29T00:00:00",
+    "values": [
+      {
+        "ISD0I011G": "0"
+      },
+      {
+        "BOOMHLAMODE": "0"
+      },
+      {
+        "BOOMHLBMODE": "4"
+      },
+      {
+        "BOOMHLCMODE": "4"
+      },
+      {
+        "BOOMHLDMODE": "4"
+      },
+      {
+        "IBC0L02Current": "72.6162"
+      },
+      {
+        "IBC0R08CRCUR1": "70.74"
+      },
+      {
+        "IBC1H04CRCUR2": "0"
+      },
+      {
+        "IBC2C24CRCUR3": "111"
+      },
+      {
+        "IBC3H00CRCUR4": "69.99"
       },
       {
         "IBCAD00CRCUR6": "196.5"
@@ -1150,13 +1325,13 @@
     ]
   },
   {
-    "date": "2021-11-01T23:00:00",
+    "date": "2021-09-30T00:00:00",
     "values": [
       {
         "ISD0I011G": "0"
       },
       {
-        "BOOMHLAMODE": "3"
+        "BOOMHLAMODE": "0"
       },
       {
         "BOOMHLBMODE": "4"
@@ -1168,19 +1343,22 @@
         "BOOMHLDMODE": "4"
       },
       {
-        "IBC0R08CRCUR1": "41.04"
+        "IBC0L02Current": "5.22156"
+      },
+      {
+        "IBC0R08CRCUR1": "5.28"
       },
       {
         "IBC1H04CRCUR2": "0"
       },
       {
-        "IBC2C24CRCUR3": "109.5"
+        "IBC2C24CRCUR3": "10.5"
       },
       {
-        "IBC3H00CRCUR4": "40.23"
+        "IBC3H00CRCUR4": "5.16"
       },
       {
-        "IBCAD00CRCUR6": "193.5"
+        "IBCAD00CRCUR6": "84"
       },
       {
         "IGL1I00BEAMODE": "3"

@@ -1,9 +1,12 @@
 # File containing some tests of the node module.
 import modules.node as node
 from modules.mya import Sampler
-
+from pprint import pprint
 
 # Data for tests of node linking
+sampler = Sampler('2021-11-01','2021-11-02')
+sampler.set_data(['foo'])
+mn1 = node.MasterNode(sampler)
 sp1 = node.SetPointNode({"name": "SP1"},[],Sampler('2021-11-01','2021-11-02'))
 sp2 = node.SetPointNode({"name": "SP2"},[],Sampler('2021-11-01','2021-11-02'))
 rb1 = node.ReadBackNode({"name": "RB1"},[],Sampler('2021-11-01','2021-11-02'))
@@ -13,12 +16,16 @@ rb3 = node.ReadBackNode({"name": "RB3"},[],Sampler('2021-11-01','2021-11-02'))
 sp4 = node.SetPointNode({"name": "SP4"},[],Sampler('2021-11-01','2021-11-02'))
 rb4 = node.ReadBackNode({"name": "RB4"},[],Sampler('2021-11-01','2021-11-02'))
 
-node_list = [sp1, sp2, rb1, sp3, rb2, rb3, sp4, rb4]
+node_list = [mn1,sp1, sp2, rb1, sp3, rb2, rb3, sp4, rb4]
 
 
 # Test the population of Node links property.
 def test_populate_links():
     node.List.populate_links(node_list)
+    # Master Node connects to all downstream setpoint nodes
+    pprint(vars(mn1))
+    assert len(mn1.links) == 4
+    assert mn1.links[-1].name() == sp4.name()
     assert len(sp1.links) == 1
     assert sp1.links[-1].name() == sp2.name()
     assert len(sp2.links) == 2

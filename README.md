@@ -167,27 +167,27 @@ The ordered list of nodes with comma-separate list of attribute values.
 The label for the value in the TYPE column is defined info.dat as are
 the labels for data in the VALUES column.
 ```
-NODE    NAME            TYPE    VALUES
-0       MFA0I03          0       6.6565725,243.994,1394.25
-1       CHOP1Y           1       6.75976,<undefined>,86.9,61.9
-2       CHOP1X           1       6.8629475,<undefined>,90,65
-3       MBH0I03H         2       6.8629475,-16.5,-92.4888
-4       MBH0I03V         2       6.8629475,10,70.2247
-5       VIP0I03          3       7.2314509996126,0.0
-6       MFD0I04          0       7.3768604,60.619,0.747
-7       MFD0I04A         0       7.5483104,60.619,0.747
+NODE	NAME	TYPE	VALUES
+0	MasterNode 	 0 	 0.368723
+1	MFA0I03 	 1 	 6.6565725,243.994,1394.25
+2	CHOP1Y 	 2 	 6.75976,29,86.9,61.9
+3	CHOP1X 	 2 	 6.8629475,<undefined>,90,65
+4	MBH0I03H 	 3 	 6.8629475,-16.5,-92.4888
+5	MBH0I03V 	 3 	 6.8629475,10,70.2247
+6	VIP0I03 	 4 	 7.2314509996126,0.0
+7	MFD0I04 	 1 	 7.3768604,60.619,0.747
+8	MFD0I04A 	 1 	 7.5483104,60.619,0.747
 ...
 ```
 
 #### info.dat
 The labels for types and attributes.
 ```
-TYPE     NAME           LABELS
-0        Solenoid       S,.BDL,.S
-1        WarmCavity     S,GSET,PSET,Psum
-2        Corrector      S,.BDL,.S
-3        IonPump        S,Vacuum
-4        BPM            S,WireSum,.XPOS,.YPOS
+TYPE	NAME	LABELS
+0 	 MasterNode IBC0L02Current
+1 	 Solenoid S,.BDL,.S
+2 	 WarmCavity S,GSET,PSET,Psum
+3 	 Corrector S,.BDL,.S
 ...
 ```
 
@@ -198,9 +198,9 @@ START   END     LINK_TYPE     LINK_WEIGHT
 0        1       0            1
 0        2       0            1
 0        3       0            1
-0        4       0            1
-0        5       0            1
-0        6       0            1
+...
+0        119       0            1
+0        120      0            1
 1        2       0            1
 1        3       0            1
 1        4       0            1
@@ -215,14 +215,12 @@ START   END     LINK_TYPE     LINK_WEIGHT
 #### meta.dat
 The counts for each type of node in the data set.
 ```
-Total Nodes:     206
-Node_Type_0:     6
-Node_Type_1:     5
-Node_Type_2:     56
-Node_Type_3:     49
-Node_Type_4:     21
-Node_Type_5:     2
-Node_Type_6:     6
+Total Nodes: 	 207
+Node_Type_0: 	 1
+Node_Type_1: 	 6
+Node_Type_2: 	 5
+Node_Type_3: 	 56
+Node_Type_4: 	 49
 ...
 ```
 

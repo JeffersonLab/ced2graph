@@ -35,6 +35,7 @@ ced:
 #
 # Here you specify information about the nodes that will be generated from the CED data.
 #
+# master:     List signals from the mya.global list to define attributes of a master node
 # setpoints:  List CED types whose elements are to be considered setpoints and their desired EPICS fields
 # readgacks:  List CED types whose elements are to be considered readbacks and their desired EPICS fields
 #
@@ -50,6 +51,10 @@ ced:
 #
 
 nodes:
+
+  master:
+    - IBC0L02Current     # must also be present in mya.global
+
   setpoints:
     Corrector: [".BDL", ".S"]
     Dipole: [".BDL", ".S"]

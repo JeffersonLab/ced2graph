@@ -23,6 +23,12 @@ default_attributes = {
     'IonPump': 'Vacuum',
 }
 
+# The list of signals for the master node to be linked to all setpoints.
+# An empty list signifies a master node does not exist.
+master = []
+
+def has_master():
+    return len(master) > 0
 
 class Node():
     """Class for merging CED element and Mya archive data to use as basis of a Neural Network Graph Node """
@@ -183,14 +189,28 @@ class Node():
 
         return links
 
+# Nodes that represent readbacks
+class ReadBackNode(Node): pass
 
 # Nodes that represent setpoints
 class SetPointNode(Node): pass
 
+# The special master setpoint nodes
+class MasterNode(SetPointNode):
+    def __init__(self, sampler: mya.Sampler):
+        # Pseudo CED element
+        element = {
+            "name": "",
+            "type" : "MasterNode",
+            "properties": [],
+        }
+        super().__init__(element,master,sampler)
+        self.data = sampler.data()
+        self.type_name = 'MasterNode'
 
-# Nodes that represent readbacks
-class ReadBackNode(Node): pass
-
+    # The node's name
+    def name(self):
+        return self.type_name
 
 class List():
     """Methods for making and working with lists of ced.Node (and subclasses thereof) objects"""
@@ -218,7 +238,12 @@ class List():
         nodes = list()
         node_id = 0
         for item in elements_info:
-            node = List.make_node(item['element'], tree, config, mya.date_ranges(config))
+            if (item['type_name'] == 'MasterNode'):
+                sampler = mya.Sampler(mya.date_ranges(config), config['mya']['global'])
+                sampler.set_data(item['sampler']['data'])
+                node = MasterNode(sampler)
+            else:
+                node = List.make_node(item['element'], tree, config, mya.date_ranges(config))
             if (node):
                 # By setting the node's data below, we preclude the need
                 # for a call to mya to load it later.
@@ -315,9 +340,16 @@ class List():
         # The while loop below fills the links list of every SetPoint node with references
         # to all the ensuing nodes up to and including the next SetPoint Node.
         while current_node:
+            # The master node is special and must be linked to all ensuing setpoint nodes
+            if isinstance(current_node, MasterNode):
+                current_node.links = list(filter(lambda x: isinstance(x, SetPointNode), working_list))
+                current_node = working_list.pop(0)
+                current_node.links = []
+                continue  # Do not fall through to regular SetPointNode processing
+            # For regular nodes, we need the next node as well as the current one
             next_node = working_list.pop(0)
             if isinstance(current_node, SetPointNode):
-                current_node.links.append(next_node)
+                current_node.links.append(next_node)    # Node following a set point is always linked
             if isinstance(next_node, SetPointNode):
                 current_node = next_node
                 current_node.links = []

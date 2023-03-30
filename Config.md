@@ -46,12 +46,16 @@ ced:
 
 The node block settings largely govern how the inventory of CED elements will be represented as graph nodes.
 
+A master node may also optionally be specified.  When specified, it does not come from CED, but consists of a subset
+list of signals from the global attribute in the mya section of settings.
+
 ```yaml
 ##################################################################################################################
 # Nodes
 #
 # Here you specify information about the nodes that will be generated from the CED data.
 #
+# master:     List signals from the mya.global list to define attributes of a master node
 # setpoints:  List CED types whose elements are to be considered setpoints and their desired EPICS fields
 # readgacks:  List CED types whose elements are to be considered readbacks and their desired EPICS fields
 #
@@ -67,30 +71,37 @@ The node block settings largely govern how the inventory of CED elements will be
 #
 
 nodes:
+
+  master:
+    - IBC0L02Current     # must also be present in mya.global
+
   setpoints:
     Corrector: [".BDL", ".S"]
     Dipole: [".BDL", ".S"]
     Quad: [".BDL", ".S"]
     Solenoid: [".BDL", ".S"]
-    CryoCavity: ['PSET','GSET','XPSET8']  # Note XPSET8 requires special handling (belongs zone, not cavity)
- 
+
+    # Note XPSET8 below actually belongs to a zone and not the cavity.
+    # Special handling for this case has been hard-coded into the node module.
+    CryoCavity: ['PSET','GSET','XPSET8']
+
     # Because the types below will be matched in the order listed, we can provide
     # special PV list for the Capture and then let the catch-all WarmCavity
     # handle PreBuncher, Buncher, Chopper, etc.
     Capture: ['PSET','GSET']
     WarmCavity: ['PSET','GSET','Psum']
-    
+
   readbacks:
     BeamLossMonitor: ["Lc"]
     BPM: [".XPOS", ".YPOS", ""] # The "" is to give us a bare EPICSName which means the wire sum
     IonPump: [""]               # The "" is the vacuum readback
     BCM: [""]                   # node module must handle special cases
- 
+
   default_attributes:
-    BCM: Current      # The bare EPICSName of a BCM gives us its Current
-    BPM: WireSum      # The bare EPICSName of a BPM is its WireSum
-    IonPump: Vacuum   # 
- 
+    BCM: "Current"      # The bare EPICSName of a BCM gives us its Current
+    BPM: "WireSum"      # The bare EPICSName of a BPM is its WireSum
+    IonPump: "Vacuum"   #
+
   modifiers:
     # Certain Ion Pumps in the injector need to be scaled differently based on their hardware type
     # and how many pumps are ganged together to provide the voltage being read.  The calculations below
@@ -112,8 +123,9 @@ nodes:
     VIP0R09:   "0.066 * $(VIP0R09) * 0.000001 *((5600/5000)/11)"
 
    # The filter expression below may use EPICS Macro variable syntax to reference PVs from the mya.global
-  # secion of this config file  
+   # secion of this config file
   filter: "$(IBC0L02Current) > 0.1"
+
 ```
 
 ## Mya Parameters
