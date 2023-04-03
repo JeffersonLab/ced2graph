@@ -212,6 +212,12 @@ class MasterNode(SetPointNode):
     def name(self):
         return self.type_name
 
+    # Override Node::extended_links
+    def extended_links(self, distance: int) -> list:
+        # The Master Node links to all setpointnodes, so extended_links will never vary.
+        # It will always be the same as links.
+        return self.links
+
 class List():
     """Methods for making and working with lists of ced.Node (and subclasses thereof) objects"""
 
