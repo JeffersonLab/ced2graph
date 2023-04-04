@@ -19,24 +19,25 @@ git clone https://github.com/JeffersonLab/ced2graph.git
 # Run the script with -h or --help to see available arguments
 python3 ced2graph.py --help
 
-usage: ced2graph.py [-h] [-b BEGIN] [-e END] [-i INTERVAL] [-c CONFIG_FILE] [-d OUTPUT_DIR] [--read-json] [--save-json]
+usage: ced2graph.py [-h] [-b BEGIN] [-e END] [-i INTERVAL] [-c CONFIG_FILE] [-m MYA_DEPLOYMENT] [-d OUTPUT_DIR] [--read-json READ_JSON_FROM_DIR] [--no-save-json]
 
 Command Line Options
 
 optional arguments:
-  -h, --help      show this help message and exit
-  -b BEGIN        Beginning of date range (YYYY-MM-DD HH:MM)
-  -e END          End of date range (YYYY-MM-DD HH:MM)
-  -i INTERVAL     Interval for data samples
-  -c CONFIG_FILE  Name of a yaml formatted config file
-  -d OUTPUT_DIR   Directory where generated graph file hierarchy will be written
-  --read-json     Read data from tree.json, nodes.json, and global.json instead of CED and Mya
-  --save-json     Save fetched data in tree.json, nodes.json, and global.json
-
+  -h, --help            show this help message and exit
+  -b BEGIN              Beginning of date range (YYYY-MM-DD HH:MM)
+  -e END                End of date range (YYYY-MM-DD HH:MM)
+  -i INTERVAL           Interval for data samples
+  -c CONFIG_FILE        Name of a yaml formatted config file
+  -m MYA_DEPLOYMENT     Mya deployment to query (history|ops)
+  -d OUTPUT_DIR         Directory where generated graph file hierarchy will be written
+  --read-json READ_JSON_FROM_DIR
+                        Read tree.json, nodes.json, global.json from directory instead of CED and Mya
+  --no-save-json        Do not save tree.json, nodes.json, global.json in data output directory
 
 # Example 
 
-python3 ced2graph.py -b 2021-09-01 -e 2021-09-30 -i 1h --save-json
+python3 ced2graph.py -b 2021-09-01 -e 2021-09-30 -i 1h 
 
 Output will be written to ./20221221_142817
 Fetching Node Data: |############################################################| 100.0%
@@ -44,11 +45,29 @@ Write to Disk: |############################################################| 10
 Write Json: |############################################################| 100.0%
 ```
 
-### Config File
-Execution of the program is governed by parameters supplied via YAML format configuration file. 
+### Config File & Command Line Options
+Execution of the program is primarily governed by parameters supplied via YAML format configuration file. 
 The default name for the file is config.yaml, however this may be over-ridden on the command line using the -c flag.
 For details about what may be specified in the config file see [Config.md](Config.md) and the comments in the 
-included [config.yaml](config.yaml).   
+included [config.yaml](config.yaml).  
+
+### JSON Data Files.
+By default, the raw data retrieved from CED and MYA from an execution of ced2graph is saved in the top level 
+output directory above the subdirectories containing the *.dat and graph.pkl files.  These files (tree.json, nodes.json,
+and globals.json) can be used in some scenarios to generated derivative data sets without the overhead of querying
+CED and mya again.  
+
+To do so, use the **--read-json** command line option with the path to the directory containing the 
+json files.  
+
+Some use cases for --read-json include:
+  * Apply different filter criteria
+  * Apply different edge connectivity
+  * Choose different global signals as node.master attributes
+
+*Note that when using the data from previously generated json data files, the mya-related command line arguments
+(-b, -e, -i) are ignored.*
+
 
 ## File Output
 

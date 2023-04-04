@@ -70,11 +70,10 @@ def make_cli_parser() -> argparse.ArgumentParser:
                         help="Mya deployment to query (history|ops)")
     parser.add_argument("-d", type=str, dest='output_dir', default='.',
                         help="Directory where generated graph file hierarchy will be written")
-    parser.add_argument("--read-json", action='store_true',
-                        help=f"Read data from {tree_file}, {nodes_file}, and {globals_file} instead of CED and Mya")
-    parser.add_argument("--save-json", action='store_true',
-                        help=f"Save fetched data in {tree_file}, {nodes_file}, and {globals_file}")
-
+    parser.add_argument("--read-json", type=str, dest='read_json_from_dir',
+                        help=f"Read {tree_file}, {nodes_file}, {globals_file} from directory instead of CED and Mya")
+    parser.add_argument("--no-save-json", action='store_true',
+                        help=f"Do not save {tree_file}, {nodes_file}, {globals_file} in data output directory")
     return parser
 
 
@@ -143,17 +142,19 @@ if __name__ == "__main__":
         # The conditional block below chooses between two methods of populating the node list
         # 1) Reading saved data or
         # 2) Going out to CED and MYA to get fresh data
-        if args.read_json:
+        if args.read_json_from_dir:
             # Read the type tree file
-            with open(tree_file, 'r') as tree_file_handle:
+            with open(os.path.join(args.read_json_from_dir, tree_file), 'r') as tree_file_handle:
                 data = tree_file_handle.read()
             tree.tree = json.loads(data)  # pre-populate the data so no need to lazy-load later
             # Read the global data
-            with open(globals_file, 'r') as globals_file_handle:
+            with open(os.path.join(args.read_json_from_dir,globals_file), 'r') as globals_file_handle:
                 data = globals_file_handle.read()
             global_data = json.loads(data)
             # And finally the node list
-            node_list = node.List.from_json(nodes_file, tree_file, args.config_file)
+            node_list = node.List.from_json(os.path.join(args.read_json_from_dir,nodes_file),
+                                            os.path.join(args.read_json_from_dir, tree_file),
+                                            args.config_file)
         else:
             # Use CED and MYA to build nodes list
             # Begin by fetching the desired CED elements
@@ -227,15 +228,15 @@ if __name__ == "__main__":
         loader.load_graph()
         loader.make_pickles()
 
+        if not args.no_save_json:
+            # Copy the config file we just used to the top level output directory so it can be
+            # referenced as part of the data set.
+            config_file = os.path.basename(args.config_file)
+            shutil.copyfile(config_file, os.path.join(output_dir, 'config.yaml'))
 
-        # Copy the config file we just used to the top level output directory so it can be
-        # referenced as part of the data set.
-        config_file = os.path.basename(args.config_file)
-        shutil.copyfile(config_file, os.path.join(output_dir, 'config.yaml'))
+            # Save the tree, nodes, and global data list to a file for later reuse
+            indent = 2
 
-        # Save the tree, nodes, and global data list to a file for later use?
-        indent = 2
-        if args.save_json:
             f = open(os.path.join(output_dir,nodes_file), "w")
             print("[", file=f)
             i = 0
