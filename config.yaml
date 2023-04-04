@@ -116,6 +116,7 @@ nodes:
 #   Which mya deployment to use (history or ops).  Deployment "history" should suffice in most situations. It contains
 #   data going back much further (~10 years) than the ops deployment (~2 years).  However the history
 #   deployment only gets refreshed at the first of each month, so any more recent data must come from ops.
+#   This parameter can be over-ridden on the command line.
 #
 # throttle:
 #   Sets the max number of data points to be fetched from the archiver web api in a single HTTP request.

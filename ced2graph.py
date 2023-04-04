@@ -66,6 +66,8 @@ def make_cli_parser() -> argparse.ArgumentParser:
                         help="Interval for data samples")
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
+    parser.add_argument("-m", type=str, dest='mya_deployment', default="history",
+                        help="Mya deployment to query (history|ops)")
     parser.add_argument("-d", type=str, dest='output_dir', default='.',
                         help="Directory where generated graph file hierarchy will be written")
     parser.add_argument("--read-json", action='store_true',
@@ -132,7 +134,8 @@ if __name__ == "__main__":
             config['mya']['dates']['end'] = args.end
         if args.interval:
             config['mya']['dates']['interval'] = args.interval
-
+        if args.mya_deployment:
+            config['mya']['deployment'] = args.mya_deployment
 
         # Module-level configuration
         initialize_modules(config)
