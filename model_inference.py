@@ -58,6 +58,20 @@ def make_cli_parser() -> argparse.ArgumentParser:
     return parser
 
 #
+# Verify existence, accessibility of file system arguments
+#
+def verify_filesystem_args(args):
+    if not os.access(data_dir, os.X_OK | os.R_OK):
+        raise RuntimeError('Unable to access the data directory ' + data_dir)
+    if (args.append):
+        if not os.access(output_file, os.W_OK | os.R_OK):
+            raise RuntimeError('Unable to access existing output file ' + output_file)
+    if not os.access(model_file, os.R_OK):
+        raise RuntimeError('Unable to access the model file ' + model_file)
+    if not os.access(analysis_lib, os.X_OK | os.R_OK):
+        raise RuntimeError('Unable to access the cebaf-graph-analyze library ' + analysis_lib)
+
+#
 # The path and glob pattern for locating graph pickle files
 #
 def pickle_path():
@@ -110,8 +124,11 @@ if __name__ == "__main__":
         model_file = args.model_file
         analysis_lib = args.analysis_lib
 
+        # Before doing any time-consuming work, verify the output dir is writable
+        verify_filesystem_args(args)
+
         # Add Song's analysis tools to library path
-        sys.path.append('../cebaf-graph-analyze')
+        sys.path.append(analysis_lib)
 
         # load the model
         model = torch.load(model_file, map_location='cpu')
