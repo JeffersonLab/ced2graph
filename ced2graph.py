@@ -22,6 +22,7 @@ import modules.mya as mya
 import modules.hgb as hgb
 import modules.node as node
 from modules.util import progressBar
+from modules.filter import FilterException
 from data_loader.data_loader import CEBAFGraphLoader
 
 from pprint import pprint
@@ -175,6 +176,22 @@ if __name__ == "__main__":
             global_sampler = mya.Sampler(dates, config['mya']['global'])
             global_data = global_sampler.data(with_spin=True)
             sys.stdout.write("\n")
+
+            # Apply the filter condition to the global data to check whether any
+            # data will remain afterwards to work with.
+            filter = node.makeFilter(config['nodes']['filter'])
+            hasFilteredData = False
+            for data in global_data:
+                try:
+                    if filter.passes(data):
+                        hasFilteredData = True
+                        break
+                except FilterException as err:
+                    # The details of RuntimeErrors are stored in the args attribute, which is a list.
+                    logging.info(data['date'] + ' ' + err.args[0])
+            if not hasFilteredData:
+                raise RuntimeError("No post-filter data available. See warnings.log file.\n"
+                                   + "Verify correct mya instance and config filter expression")
 
             # It's important to preserve the order of the elements in the nodeList.
             # We are going to assign each node a node_id property that corresponds to its
