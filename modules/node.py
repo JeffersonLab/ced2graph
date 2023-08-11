@@ -389,12 +389,10 @@ class List():
                                                        seconds=config['output']['seconds'])
                     if not os.path.exists(directory):
                         os.makedirs(directory)
-                    hgb.write_meta_dat(directory, node_list)
+                    hgb.write_meta_dat(directory, config, node_list)
                     hgb.write_node_dat(directory, node_list, i)
                     hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
-                    # toggle third param between 'node' and 'config' to control
-                    # the order type get written out.
-                    hgb.write_info_dat(directory, config, 'config', node_list)
+                    hgb.write_info_dat(directory, config, node_list)
                     List.write_global_data_values(directory, data)   # data is global_data at current date
             except FilterException as err:
                 # The details of RuntimeErrors are stored in the args attribute, which is a list.

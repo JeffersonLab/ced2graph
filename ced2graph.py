@@ -47,6 +47,10 @@ globals_file = 'global.json'
 # the list of nodes that will be used to output graph data
 node_list = []
 
+# Whether node order in output data files is governed by the config file order
+# or the order they appear in the node list
+hgb.order_types_by = 'config'  # 'config' or 'node'
+
 # the global data that will be used for filtering
 global_data = []
 
@@ -133,7 +137,8 @@ if __name__ == "__main__":
         # pprint(config['nodes'])
         # info = node.TypeInfo(config)
         # pprint(info.label_dict().keys())
-        # hgb.write_info_dat('.',config)
+        # hgb.write_info_dat('.',config, [])
+        # hgb.write_meta_dat('.', config, [])
         # sys.exit(1)
 
         # Override config with Command line options
