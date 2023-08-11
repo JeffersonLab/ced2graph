@@ -1,4 +1,5 @@
 # Module of classes for generating graph nodes
+import sys
 
 import yaml
 import re
@@ -120,6 +121,7 @@ class Node():
 
     # Return a sorted list of the CED properties usable as attributes.
     # In practice it is all properties requested except EPICSName which is excluded
+    # TODO replace with TypeInfo invocation
     def ced_attribute_names(self):
         attribute_names = []
         for attribute in filter(lambda x: x != 'EPICSName', self.element['properties']):
@@ -160,7 +162,7 @@ class Node():
     # epics data attributes which come from an array of values at the specified index.
     def attribute_values(self, index):
         return self.ced_attribute_values() + self.epics_attribute_values(index)
-
+    # TODO replace with TypeInfo invocation
     def attribute_names(self):
         attribute_names = self.ced_attribute_names()
         for field in self.epics_fields:
@@ -273,9 +275,10 @@ class List():
                 type_dict[item.type_name] = 1
         return type_dict
 
-    # Builds and returns a dictionary of info about the each types in node_list.
-    # Dictionary is keyed by type_name and has the fields "id" and "labels".
+    # Builds and returns a dictionary of info about the types in node_list.
+    # Dictionary is keyed by type_name and has the fields "id", "labels", and "count".
     # The id value gets assigned to each type in the order it is encountered.
+    # The count tallies how many instance of each type.
     @staticmethod
     def type_map(node_list) -> dict:
         type_map = {}
@@ -389,7 +392,9 @@ class List():
                     hgb.write_meta_dat(directory, node_list)
                     hgb.write_node_dat(directory, node_list, i)
                     hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
-                    hgb.write_info_dat(directory, node_list)
+                    # toggle third param between 'node' and 'config' to control
+                    # the order type get written out.
+                    hgb.write_info_dat(directory, config, 'config', node_list)
                     List.write_global_data_values(directory, data)   # data is global_data at current date
             except FilterException as err:
                 # The details of RuntimeErrors are stored in the args attribute, which is a list.
@@ -434,3 +439,74 @@ class ListEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
+# Information about the types of nodes
+class TypeInfo():
+
+    # Instantiate the object
+    def __init__(self, config: dict):
+        self.config = config
+
+    def has_master(self):
+        return 'master' in self.config['nodes'].keys()
+
+    def has_setpoints(self):
+        return 'setpoints' in self.config['nodes'].keys()
+
+    def has_setpoint(self, type_name):
+        return self.has_setpoints() and type_name in self.config['nodes']['setpoints']
+
+    def has_readbacks(self):
+        return 'readbacks' in self.config['nodes'].keys()
+
+    def has_readback(self, type_name):
+        return self.has_readbacks() and type_name in self.config['nodes']['readbacks']
+
+    def has_defaults(self):
+        return 'default_attributes' in self.config['nodes'].keys()
+
+    def has_default(self, type_name):
+        return self.has_defaults() and type_name in self.config['nodes']['default_attributes']
+
+    # Fetches the list of attributes for a type as written in the config file
+    def config_attribute_names(self, type_name) -> list:
+        if  type_name == 'MasterNode' and self.has_master():
+            return self.config['nodes']['master']
+        if  self.has_setpoint(type_name):
+            return self.config['nodes']['setpoints'][type_name]
+        if  self.has_readback(type_name):
+            return self.config['nodes']['readbacks'][type_name]
+        raise RuntimeError(f'No such type in config  {type_name}')
+
+
+
+    # Fetches the attribute labels to be used for reporting
+    def type_labels(self, type_name):
+        # Attempt to substitute a default label for any instances where empty string
+        # was used as the attribute name.  The empty string convention is used when
+        # the EpicsName without field modifiers was desired.
+        labels = list(map(lambda attr: self.config['nodes']['default_attributes'][type_name] \
+            if attr == '' and self.has_default(type_name) \
+            else attr, self.config_attribute_names(type_name)))
+        if '' in labels:
+            raise RuntimeError(f'No default attribute labels configured for {type_name}')
+        return labels
+
+    # Returns a dictionary of the types and their labels by the order in which
+    # they are encountered in each group in the config file with the groups
+    # ordered as follows:
+    #    Master (if present)
+    #    Set Points
+    #    Readbacks (if present)
+
+    def label_dict(self) -> dict:
+        label_dict = {}      # Since python 3.6 keys preserve order of insertion
+        if self.has_master():
+            label_dict['MasterNode'] = self.config['nodes']['master']
+        if self.has_setpoints():
+            for type_name in self.config['nodes']['setpoints'].keys():
+                label_dict[type_name] = self.type_labels(type_name)
+        if self.has_readbacks():
+            for type_name in self.config['nodes']['readbacks'].keys():
+                label_dict[type_name] = self.type_labels(type_name)
+        return label_dict

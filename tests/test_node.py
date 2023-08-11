@@ -18,7 +18,6 @@ rb4 = node.ReadBackNode({"name": "RB4"},[],Sampler('2021-11-01','2021-11-02'))
 
 node_list = [mn1,sp1, sp2, rb1, sp3, rb2, rb3, sp4, rb4]
 
-
 # Test the population of Node links property.
 def test_populate_links():
     node.List.populate_links(node_list)
@@ -70,3 +69,62 @@ def test_extended_links_not_for_readbacks():
     assert len(rb3.extended_links(3)) == 0
     assert len(rb4.extended_links(3)) == 0
 
+# Data for node Info tests
+config = {
+    'nodes': {
+        'master': ['IBC0L02Current'],
+        'setpoints': {
+            'Dipole': ['.BDL', '.S'],
+            'Quad': ['.BDL', '.S'],
+            'Capture': ['PSET', 'GSET'],
+            'Corrector': ['.BDL', '.S'],
+            'CryoCavity': ['PSET', 'GSET', 'XPSET8'],
+            'Solenoid': ['.BDL', '.S'],
+            'WarmCavity': ['PSET', 'GSET', 'Psum']
+        },
+        'readbacks': {
+            'BCM': [''],
+            'BPM': ['.XPOS', '.YPOS', ''],
+            'BeamLossMonitor': ['Lc'],
+            'IonPump': ['']
+        },
+        'default_attributes': {
+            'BCM': 'Current',
+            'BPM': 'WireSum',
+            'IonPump': 'Vacuum'
+        },
+    }
+}
+
+def test_node_info():
+    type_info = node.TypeInfo(config)
+    # Basic boolean tests
+    assert(type_info.has_master())
+    assert(type_info.has_setpoints())
+    assert(type_info.has_readbacks())
+    assert(type_info.has_setpoint('Quad'))
+    assert (not type_info.has_readback('Quad'))
+    assert (type_info.has_readback('BCM'))
+    assert (not type_info.has_setpoint('BCM'))
+    # Basic raw config retrieval
+    assert('IBC0L02Current' in type_info.config_attribute_names('MasterNode'))
+    assert('.BDL' in type_info.config_attribute_names('Quad'))
+    assert('.XPOS' in type_info.config_attribute_names('BPM'))
+    assert(not '.BDL' in type_info.config_attribute_names('BPM'))
+    assert(not '.XPOS' in type_info.config_attribute_names('Quad'))
+    # Default attributes
+    assert('Current' in type_info.type_labels('BCM'))
+    assert('WireSum' in type_info.type_labels('BPM'))
+    assert(3 == len(type_info.type_labels('WarmCavity')))  # verify no extraneous values!!
+    # And all put together
+    label_dict = type_info.label_dict()
+    # The order should match that of config keys above
+    i = 0
+    expected = ['MasterNode','Dipole', 'Quad','Capture','Corrector','CryoCavity','Solenoid','WarmCavity',
+                                  'BCM','BPM','BeamLossMonitor','IonPump']
+    for key in label_dict.keys():
+         assert expected[i] == key
+         i = i +1
+
+    assert('.XPOS' in label_dict['BPM'])
+    assert('WireSum' in label_dict['BPM'])

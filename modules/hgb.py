@@ -8,14 +8,21 @@ import modules.node as node
 
 # Write out an info.dat file at the specified path
 # Per https://www.biendata.xyz/hgb/#/about:
-#   label.dat: The information of node labels. Each line has (node_id, node_type_id, node_label).
+#   info.dat: The information of node labels. Each line has (node_id, node_type_id, node_label).
 #   For multi-label setting, node_labels are split by comma.
-def write_info_dat(path, node_list):
+def write_info_dat(path, config, order_by='node',node_list=None):
     file_name = os.path.join(path, 'info.dat')
     f = open(file_name, 'w')
     print("\t".join(['TYPE', 'NAME', 'LABELS']), file=f)
-    for key, item in node.List.type_map(node_list).items():
-        print(item['id'], "\t", key, ','.join(item['labels']), file=f)
+    if order_by == 'node' and node_list:
+        for key, item in node.List.type_map(node_list).items():
+            print(item['id'], "\t", key, ','.join(item['labels']), file=f)
+    else:
+        id = 0
+        label_dict = node.TypeInfo(config).label_dict()
+        for key in label_dict:
+            print(id, "\t", key, ','.join(label_dict[key]), file=f)
+            id = id + 1
     f.close()
 
 
@@ -79,4 +86,8 @@ def dir_from_date(base_path, target_date):
           '_' + date.strftime("%H") + date.strftime("%M") + date.strftime("%S")
     path = os.path.join(base_path, dir)
     return path
+
+
+
+
 
