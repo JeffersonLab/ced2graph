@@ -82,7 +82,10 @@ def make_cli_parser() -> argparse.ArgumentParser:
 def initialize_modules(config: dict):
     # Class attributes of the ced module
     if 'history' in config['ced']:
+        ced.history = config['ced']['history']
+    else:
         ced.history = True
+
     if 'workspace' in config['ced']:
         ced.workspace = config['ced']['workspace']
 
@@ -126,6 +129,12 @@ if __name__ == "__main__":
         # Read configuration yaml file
         stream = open(args.config_file, 'r')
         config = yaml.load(stream, Loader=yaml.CLoader)
+
+        # pprint(config['nodes'])
+        # info = node.TypeInfo(config)
+        # pprint(info.label_dict().keys())
+        # hgb.write_info_dat('.',config)
+        # sys.exit(1)
 
         # Override config with Command line options
         if args.begin:
