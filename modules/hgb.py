@@ -6,15 +6,17 @@ import pandas
 import modules.node as node
 
 
+order_types_by = 'config'  # Choose config or node
+
 # Write out an info.dat file at the specified path
 # Per https://www.biendata.xyz/hgb/#/about:
 #   info.dat: The information of node labels. Each line has (node_id, node_type_id, node_label).
 #   For multi-label setting, node_labels are split by comma.
-def write_info_dat(path, config, order_by='node',node_list=None):
+def write_info_dat(path, config, node_list):
     file_name = os.path.join(path, 'info.dat')
     f = open(file_name, 'w')
     print("\t".join(['TYPE', 'NAME', 'LABELS']), file=f)
-    if order_by == 'node' and node_list:
+    if order_types_by == 'node':
         for key, item in node.List.type_map(node_list).items():
             print(item['id'], "\t", key, ','.join(item['labels']), file=f)
     else:
@@ -58,13 +60,24 @@ def write_link_dat(path, node_list, distance=1):
 
 # Write out a meta.dat file at the specified path
 # The file contains summary data such as the number of each type of node
-def write_meta_dat(path, node_list):
+def write_meta_dat(path, config, node_list):
     type_map = node.List.type_map(node_list)
     file_name = os.path.join(path, 'meta.dat')
     f = open(file_name, 'w')
     print('Total Nodes:', "\t", len(node_list), file=f)
-    for type_name, data in type_map.items():
-        print(f"Node_Type_{data['id']}:", "\t", data['count'], file=f)
+    if order_types_by == 'node':
+        for type_name, data in type_map.items():
+            print(f"Node_Type_{data['id']}:", "\t", data['count'], file=f)
+    else:
+        id = 0
+        label_dict = node.TypeInfo(config).label_dict()
+        for key in label_dict:
+            if key in type_map:
+                data = type_map[key]
+            else:
+                data = {'count' : 0}
+            print(f"Node_Type_{id}:", "\t", data['count'], file=f)
+            id = id + 1
     f.close()
 
 
