@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
         if len(embs) > 0:
             # save the final embeddings (as a matrix)
-            struct = torch.stack(embs, 0).detach().cpu().numpy()
+            struct = torch.stack(embs, 0).detach().cpu().numpy()  # numpy() casts to ndarray
             np.save(output_file, struct)
             if not args.quiet:
                 print('wrote ' + len(embs).__str__() + ' embeddings to ' + output_file)
