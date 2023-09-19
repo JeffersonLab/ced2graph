@@ -8,11 +8,14 @@ import csv
 import itertools
 from dateutil.tz import gettz
 from types import SimpleNamespace
+from pprint import pprint
 
 # Module of classes for interacting with Mya Web API to fetch data.
 
-# The base URL for accessing Mya Web
-url = "https://myaweb.acc.jlab.org/"
+
+# The base URL for accessing Mya data
+# https://github.com/JeffersonLab/myquery/wiki/API-Reference
+url = "https://epicsweb.jlab.org/myquery/"
 
 # The archiver lives in the America/New_York timezone
 tz = gettz('America/New_York')
@@ -21,9 +24,8 @@ tz = gettz('America/New_York')
 # Most recent data in ops, older data in history
 deployment = "history"
 
-# Limit the number of data points (num pvs * steps) to be fetched at each server request.
-# This number must be larger than the number of PVs to be fetched.
-throttle = 2500
+# Limit the number of pvs be fetched at each server request.
+throttle = 10
 
 # Custom exception class for errors encountered interacting with myaweb
 class MyaException(RuntimeError): pass
@@ -73,7 +75,8 @@ class Sampler:
     """Class to query the Mya Web API and retrieve values for a list of PVs"""
 
     # The base URL for the API
-    url = url + 'mySampler/data'
+    # url = url + 'mySampler/data'
+    url = url + 'mysampler'
 
     # List of date range objects
     dates = []
@@ -94,11 +97,6 @@ class Sampler:
             pv_list = []
         self.pv_list = pv_list
         self._data = None
-        # self.begin_date = pandas.to_datetime(begin_date)
-        # self.end_date = pandas.to_datetime(end_date)
-        # self.interval = interval
-        # if begin_date > end_date:
-        #     raise RuntimeError("End date must be after Begin date")
 
     # Raise a DateException if span is not valid otherwise return true.
     def assert_span_is_valid(self, span):
@@ -134,15 +132,19 @@ class Sampler:
         remaining_steps = self.steps_between(begin_date, end_date, interval)
         return remaining_steps if remaining_steps <= max_steps else max_steps
 
+    # Convert string time intervals such as '1h' to integer milliseconds
+    def to_milliseconds(self, interval: str) -> int :
+        return int(pandas.to_timedelta(interval).total_seconds() * 1000)
 
     # Return a dictionary containing the query parameters to be used when making API call.
+    # see https://github.com/JeffersonLab/myquery/wiki/API-Reference
     def queryParams(self, span) -> dict:
         return {
             'b': datetime.strftime(span.begin_date, '%Y-%m-%d %X'),
-            's': span.interval,
+            's': self.to_milliseconds(span.interval),
             'n': self.total_steps(span),
             'm': deployment,
-            'channels': " ".join(self.pv_list)
+            'c': ",".join(self.pv_list)
         }
 
     # Rotate the feedback spinner
@@ -151,12 +153,24 @@ class Sampler:
         sys.stdout.flush()              # flush stdout buffer (actual character display)
         sys.stdout.write('\b')          # erase the last written char
 
-    # Query CED Web API and return the resulting array of elements.
-    #
-    # Example JSON response: {"data":[
-    #    {"date":"2021-11-10T00:00:00","values":[{"MQB0L09.BDL":"405.921"},{"MQB0L10.BDL":"317.829"}]},
-    #    {"date":"2021-11-10T01:00:00","values":[{"MQB0L09.BDL":"405.921"},{"MQB0L10.BDL":"317.829"}]}
-    # ]}
+    # Query Mya Web API and return the resulting array of elements.
+    # Example expected JSON response:
+    # {"channels": {
+    #    "IBC0L02Current": {
+    #      "metadata":{},
+    #      "data": [
+    #        {"d":"2021-11-10T00:00:00","v":"405.921"},
+    #        {"d":"2021-11-10T01:00:00","v":"405.921"}
+    #       ]
+    #     },
+    #    "MQB0L10.BDL": {
+    #      "metadata":{},
+    #      "data": [
+    #        {"d":"2021-11-10T00:00:00","v":"317.829"},
+    #        {"d":"2021-11-10T01:00:00","v":"317.829"}
+    #       ]
+    #     }
+    # }
     #
     # Throws if server response is not a "success" status code.
     #
@@ -168,25 +182,43 @@ class Sampler:
             if not self.pv_list:
                 raise RuntimeError("No channels to fetch")
 
-            # If the throttle limit is less than the size of the pv list to be fetched,
-            # we would enter an infinite loop, so we'll raise an error here instead
-            if len(self.pv_list) > throttle:
-                raise RuntimeError("PV list is too large for mya.throttle limit")
-
             spinner = itertools.cycle(['-', '/', '|', '\\'])
 
-            # Accumulate data in chunks to avoid a server timeouts from requesting too much at once.
-            self._data = []
-            for date_range in self.dates:
-                span = self.date_span(date_range)
-                current_date = span.begin_date
-                while current_date <= span.end_date:
+            # Accumulate data for sets of PVS limited in number by the throttle parameter
+            # tp avoid server timeouts from requesting too much at once.
+            self._data = {}
+            items = self.pv_list.copy()     # Preserve original list. We will shift items off a copy
+            while items:
+                pvs = items[0:throttle]     # Get throttle number of pvs from front of list
+                items = items[throttle:]    # Remove those items from the list
+                for date_range in self.dates:
+                    span = self.date_span(date_range)
                     if with_spin:
                         self.spin(spinner)
-                    steps = self.steps_per_chunk(current_date, span.end_date, span.interval)
-                    self._data.extend(self.get_data_chunk(current_date, steps, span))
-                    current_date = current_date + pandas.to_timedelta(span.interval) * steps
-        return self._data
+                    self.append_to_data(self.get_data_for_pvs(pvs, span))
+        return self.structured_data()
+
+    # Return data in the structure expected by other modules.
+    # The new myquery returns data per-channel rather than per-timestamp, but the application
+    # works best with the original per-timestamp format.  After all, we are going to be writing
+    # out a set of .dat files per-timestamp.
+    #
+    # Here is structure we will return
+    #  [
+    #    {date: scalar, values:[]},
+    #    {date: scalar, values:[]}
+    #  ]
+    def structured_data(self):
+        if (isinstance(self._data, list)):
+            return self._data
+        else:
+            data = []
+            for key in self._data.keys():
+                data.append({
+                    'date':key,
+                    'values': self._data[key]
+                })
+            return data
 
     # Make a SimpleNamespace object that contains begin_date, end_date, interval
     # from a dictionary containing begin, end, interval where begin_date and end_date
@@ -202,24 +234,21 @@ class Sampler:
     # fetching it from the archiver which may not be available in the test environment.
     #@data.setter
     def set_data(self, val):
-        if not isinstance(val, list):
-             raise TypeError("Expected: list")
+        # For newly fetched data we'll use a dict, but data from older versions
+        # read from disk might be a list.
+        if not (isinstance(val, dict) or isinstance(val, list)):
+             raise TypeError("Expected: dict or list")
         self._data = val
 
-    # Return a steps sized chunk of data commencing at begin_date
-    def get_data_chunk(self, begin_date: datetime, steps: int, span):
+    # Fetch data for a list of pvs
+    def get_data_for_pvs(self, pv_list: list, span):
         # The queryParams method returns by default parameters to fetch the entire data set
         # so here we override the necessary keys so that we can fetch desired subset
         params = self.queryParams(span)
-        params['b'] = datetime.strftime(begin_date, '%Y-%m-%d %X')
-        params['n'] = steps
+        params['c'] = ",".join(pv_list)
 
         # Set verify to False because of jlab MITM interference
         response = requests.get(self.url, params, verify=False)
-
-        # Example Request URL:
-        #  https://myaweb.acc.jlab.org/mySampler/data?b=2021-11-10&s=1h&n=2&m=ops&channels=MQB0L09.BDL+MQB0L10.BDL
-        # print(response.url)       # For debugging -- what URL actually used?
 
         if response.status_code != requests.codes.ok:
             print(response.url)  # Useful for debugging -- what URL actually used?
@@ -229,8 +258,24 @@ class Sampler:
                 message = f'Mya web server returned error status code {response.status_code}'
             raise MyaException(message)
 
-        # Save the data as an object property
-        return response.json()['data']
+        data = {}
+        for channel in response.json()['channels'].keys():
+          for datum in response.json()['channels'][channel]['data']:
+            if datum['d'] not in data.keys():
+                data[datum['d']] = []
+            if 'v' not in datum:
+                data[datum['d']].append({channel: '<undefined>'})
+            else:
+                data[datum['d']].append({channel: datum['v']})
+        return data
+
+    def append_to_data(self, from_data:dict):
+        for key in from_data.keys():
+            if key in self._data.keys():
+                self._data[key].extend(from_data[key])
+            else:
+                self._data[key] = from_data[key]
+        return self._data
 
 # Utility function for extracting a value from a list containing key:value dictionaries,
 # such as the myaweb server returns for the PV values.
