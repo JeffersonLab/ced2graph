@@ -155,7 +155,7 @@ class Node():
             expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
             return str(eval(expr))
         else:
-            return pv_value
+            return str(pv_value)
 
     # Return the node's attributes
     # The attributes include ced attributes which are single-valued and the
