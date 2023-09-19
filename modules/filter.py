@@ -8,7 +8,7 @@ class FilterException(RuntimeError): pass
 #
 #  ex:  macro_substitute('VIP2R', 10, '8/2 * $(VIP2R)') -> '8/2 * 10'
 #
-def macro_substitute(pv: str, value: str, expr: str) -> str:
+def macro_substitute(pv: str, value, expr: str) -> str:
     """
     Parameters
     ----------
@@ -18,7 +18,7 @@ def macro_substitute(pv: str, value: str, expr: str) -> str:
     """
     pattern = r"\$\({}\)"
     prepared = pattern.format(pv)
-    return re.sub(prepared, value, expr)
+    return re.sub(prepared, str(value), expr)
 
 # Factory method to return a Filter object
 def make(rule: str):
