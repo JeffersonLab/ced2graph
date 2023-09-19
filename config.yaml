@@ -21,8 +21,8 @@
 #       Example: '!isSRF'      # Only retrieve elements whose is isSRF property is false or null
 #
 ced:
-  history: true           # Optional.  Default is false meaning use OPS ced.
-  workspace: '2021-12-15' # Optional.  Default is OPS workspace/current timestamp
+  history: true                # Optional.  Default is false meaning use OPS ced.
+  workspace: '2021-09-10'             # Optional.  Default is OPS workspace/current timestamp
   zone: "Injector"        # Required.  See https://ced.acc.jlab.org/zones/
   types: ["LineElem"]     # Required.  See https://ced.acc.jlab.org/catalog/
   properties: []          # Optional.  Specify properties in addition to default EPICSName and S
@@ -104,7 +104,7 @@ nodes:
 
    # The filter expression below may use EPICS Macro variable syntax to reference PVs from the mya.global
    # secion of this config file
-  filter: "$(IBC0L02Current) > 0.1"
+  filter: "$(IBC0L02Current) >= 0"
 
 
 ##################################################################################################################
@@ -116,11 +116,11 @@ nodes:
 #   Which mya deployment to use (history or ops).  Deployment "history" should suffice in most situations. It contains
 #   data going back much further (~10 years) than the ops deployment (~2 years).  However the history
 #   deployment only gets refreshed at the first of each month, so any more recent data must come from ops.
-#   This parameter can be over-ridden on the command line.
 #
 # throttle:
-#   Sets the max number of data points to be fetched from the archiver web api in a single HTTP request.
-#   The web server will timeout if a request takes too long to complete.
+#   Sets the max number of pvs fetched from the archiver web api in a single HTTP request.
+#   The new myquery is optimized for sending stream of time-series data per-channel, so it
+#   is better to limit fetches per pv rather than per-date range.
 #
 # dates:
 #
@@ -152,7 +152,7 @@ nodes:
 
 mya:
   deployment: "history"
-  throttle: 2500
+  throttle: 20
   dates:
     begin:
     end:
@@ -186,7 +186,7 @@ mya:
 #  weighted : if true, edges will be weighted using 1/(S[2]-S[1])
 
 edges:
-  connectivity: 5
+  connectivity: 2
   directed: true      # Probably stays true since the beam is directional
   weighted: false
 
