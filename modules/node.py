@@ -7,6 +7,7 @@ import json
 import pandas
 import os
 import logging
+import datetime
 from modules import ced
 from modules import mya
 import modules.util as util
@@ -437,6 +438,10 @@ class ListEncoder(json.JSONEncoder):
             }
         if isinstance(obj, pandas.Timestamp):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
+        
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+                return obj.isoformat()
+                
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
