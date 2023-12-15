@@ -7,8 +7,10 @@ Since the tools have been written to use web API for both CED and Mya, it is not
 ### CUE
 ```csh
 # Use an RHEL8 linux host such as jlabl4 which has python 3.9 installed.
-# You can/should verify version with `cat /etc/redhat-release`
-ssh jlabl5
+ssh jlabl4
+
+# Verify the version 
+cat /etc/redhat-release
 
 # Activate the ced2graph virtual environment
 source /group/accsft/venv/ced2graph/bin/activate.csh
