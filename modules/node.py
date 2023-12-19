@@ -95,6 +95,11 @@ class Node():
         # If data not already retrieved, do that first
         if not self.data:
             self.sampler.pv_list = self.pv_list()
+            # Try to optimize data fetching
+            if (isinstance(self, SetPointNode)):
+                self.sampler.strategy = 's'
+            else:
+                self.sampler.strategy = 'n'
             self.data = self.sampler.data()
         # And then give it to the user
         return self.data

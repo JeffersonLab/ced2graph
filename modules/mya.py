@@ -81,6 +81,10 @@ class Sampler:
     # List of date range objects
     dates = []
 
+    # What sampling strategy to use (n for multiple queries, s for streaming)
+    # see https://github.com/JeffersonLab/myquery/wiki/API-Reference#mysampler
+    strategy = "s"
+
     # Instantiate the object
     #
     #  dates: a list of date range objects with the fields
@@ -144,6 +148,7 @@ class Sampler:
             's': self.to_milliseconds(span.interval),
             'n': self.total_steps(span),
             'm': deployment,
+            'x': self.strategy,
             'c': ",".join(self.pv_list)
         }
 
@@ -249,7 +254,7 @@ class Sampler:
 
         # Set verify to False because of jlab MITM interference
         response = requests.get(self.url, params, verify=False)
-
+        # print(response.url)
         if response.status_code != requests.codes.ok:
             print(response.url)  # Useful for debugging -- what URL actually used?
             if 'error' in response.json():
