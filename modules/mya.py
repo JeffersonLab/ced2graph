@@ -83,7 +83,7 @@ class Sampler:
 
     # What sampling strategy to use (n for multiple queries, s for streaming)
     # see https://github.com/JeffersonLab/myquery/wiki/API-Reference#mysampler
-    strategy = "s"
+    strategy = "n"
 
     # Instantiate the object
     #
