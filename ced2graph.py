@@ -71,7 +71,7 @@ def make_cli_parser() -> argparse.ArgumentParser:
                         help="Interval for data samples")
     parser.add_argument("-c", type=str, dest='config_file', default="config.yaml",
                         help="Name of a yaml formatted config file")
-    parser.add_argument("-m", type=str, dest='mya_deployment', default="history",
+    parser.add_argument("-m", type=str, dest='mya_deployment',
                         help="Mya deployment to query (history|ops)")
     parser.add_argument("-d", type=str, dest='output_dir', default='.',
                         help="Directory where generated graph file hierarchy will be written")
@@ -184,6 +184,9 @@ if __name__ == "__main__":
 
             # The dates for fetching
             dates = mya.date_ranges(config)
+
+            # pprint(mya.deployment)
+            # sys.exit(1)
 
             # Retrieve the global PV list
             sys.stdout.write("Fetching Global Data: ")
