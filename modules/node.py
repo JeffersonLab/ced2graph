@@ -157,7 +157,7 @@ class Node():
 
     # If necessary, apply calculations from the modifiers dictionary to the provided pv_value
     def modified_epics_value(self, pv_name, pv_value):
-        if pv_name in self.modifiers.keys():
+        if pv_name in self.modifiers.keys() and pv_value != '<undefined>':
             expr = macro_substitute(pv_name, pv_value, self.modifiers[pv_name])
             return str(eval(expr))
         else:
