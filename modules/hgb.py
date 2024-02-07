@@ -32,8 +32,12 @@ def write_info_dat(path, config, node_list):
 # Per https://www.biendata.xyz/hgb/#/about:
 #   node.dat:The information of nodes. Each line has (node_id, node_name, node_type_id, node_feature).
 #   Node features are vectors split by comma.
-def write_node_dat(path, node_list, index):
-    type_map = node.List.type_map(node_list)
+def write_node_dat(path, config, node_list, index):
+    if order_types_by == 'node':
+        type_map = node.List.type_map(node_list)
+    else:
+        type_map = node.TypeInfo(config).type_id_map()
+
     file_name = os.path.join(path, 'node.dat')
     f = open(file_name, 'w')
     print("\t".join(['NODE', 'NAME', 'TYPE', 'VALUES']), file=f)

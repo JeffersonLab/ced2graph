@@ -396,7 +396,7 @@ class List():
                     if not os.path.exists(directory):
                         os.makedirs(directory)
                     hgb.write_meta_dat(directory, config, node_list)
-                    hgb.write_node_dat(directory, node_list, i)
+                    hgb.write_node_dat(directory, config, node_list, i)
                     hgb.write_link_dat(directory, node_list, config['edges']['connectivity'])
                     hgb.write_info_dat(directory, config, node_list)
                     List.write_global_data_values(directory, data)   # data is global_data at current date
@@ -518,3 +518,14 @@ class TypeInfo():
             for type_name in self.config['nodes']['readbacks'].keys():
                 label_dict[type_name] = self.type_labels(type_name)
         return label_dict
+
+    # Returns a dictionary for looking up type ID values by name.
+    # The ID values in the dictionary are assigned based on the order they
+    # are encountered in the label dictionary.
+    def type_id_map(self) -> dict:
+        type_map = {}
+        id = 0
+        for key in self.label_dict():
+            type_map[key] = {'id': id}  # for compatibility with node.List.type_map
+            id = id + 1
+        return type_map
